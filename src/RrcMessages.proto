@@ -1,0 +1,27 @@
+message RrcMessage {
+	required MessageType messageType = 1;
+
+	enum MessageType {
+	TypeRaPreamble = 0;
+	TypeRaResponse = 1;//A Completer
+	}
+	optional RaPreamble messageRaP = 2;
+	optional RaResponse messageRaR = 3;
+//A COMPLETER
+}
+
+message RaPreamble {
+	required UeIdRntiType ueIdRntiType = 1;
+	required int64 ueIdRntiValue = 2;
+}
+
+enum UeIdRntiType {
+     RA_RNTI = 0;
+     C_RNTI = 1;
+}
+
+message RaResponse {
+	required UeIdRntiType ueIdRntiType = 1;
+	required int64 ueIdRntiValue = 2;
+	required int64 ueIdCRnti = 3;
+}
