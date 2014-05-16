@@ -4,23 +4,26 @@
 #include <cstring> //for memset
 #include <sys/socket.h>
 #include <netdb.h>
+#include <pthread.h>
 #include <unistd.h>
 
 using namespace std;
 
-void CreateRaPreamble (RaPreamble *rapreamble) {
+void CreateRaPreamble (RaPreamble *rapreamble, int ueId) {
 
   rapreamble->set_ueidrntitype(RA_RNTI);
-  rapreamble->set_ueidrntivalue(456);
+  rapreamble->set_ueidrntivalue(ueId);
 
 }
 
-int main () {
+void *powerOn (void * ueId_void){
 
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
+GOOGLE_PROTOBUF_VERIFY_VERSION;
+ int ueId = *((int *) ueId_void);
+ free (ueId_void);
   //Create the RaPreamble
   RaPreamble *rapreamble = new RaPreamble;
-  CreateRaPreamble (rapreamble);
+  CreateRaPreamble (rapreamble, ueId);
   std::cout << "Ra_rnti is : " << rapreamble->ueidrntivalue() << std::endl;
   //Pack it into a RrcMessage
   RrcMessage rrcMessage;
@@ -101,6 +104,28 @@ int main () {
   std::cout << "Stopping server..." << std::endl;
   freeaddrinfo(host_info_list);
   close(socketfd);
+}
+
+
+int main () {
+
+  pthread_t t1;
+  //Aim:powerOn several UEs in different threads
+  for (int i = 1; i<=2;i++){
+
+    int *arg =(int *)malloc(sizeof(*arg));
+    if (arg == NULL){
+      //error
+      exit(EXIT_FAILURE);
+    }
+    
+    *arg = i;
+    
+    pthread_create (&t1, NULL, powerOn,arg);
+    
+  }
+  //Wait
+  sleep(5);
 
   return 0;
 }
