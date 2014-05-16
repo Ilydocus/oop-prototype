@@ -46,6 +46,48 @@ void UeContext::handleRrcConnectionRequest(RrcConnectionRequest message){
   cout << "Type of rnti is : " << message.ueidrntitype() << endl;
   cout << "Value of rnti is : " << message.ueidrntivalue() << endl;
   cout << "UE identity is : " << (message.ueidentity()).mcc()<<"-"<< (message.ueidentity()).mnc() << "-"<< (message.ueidentity()).msin() << endl;
+  //store Imsi
+  m_state.imsi = message.ueidentity();
+  //Decide if reject or accept connection
+  RrcMessage rrcMessage;
+  bool reject;
+  reject = (message.ueidrntivalue() % 30)==0;
+  if (reject) {
+    //Create response
+    RrcConnectionReject *rrcCReject = new RrcConnectionReject;
+    rrcCReject->set_uecrnti(message.ueidrntivalue());
+    rrcCReject->set_waitingtime((message.ueidrntivalue() % 15)+1);
+    //Pack it
+    rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReject);
+    rrcMessage.set_allocated_messagerrccreject(rrcCReject);
+  
+  }
+  else {
+    //Create SRB
+    string * srbId = new string;
+    genRandId(srbId, 8);
+    //Create response
+    RrcConnectionSetup *rrcCS = new RrcConnectionSetup;
+    rrcCS->set_ueidrntitype(C_RNTI);
+    rrcCS->set_ueidrntivalue(message.ueidrntivalue());
+    rrcCS->set_srbidentity(*srbId);
+    //Store SRB
+    m_state.srbIdentity = *srbId;
+    //Pack it
+    rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCS);
+    rrcMessage.set_allocated_messagerrccs(rrcCS);
+  }
+  //Serialize message
+  string output_message;
+  rrcMessage.SerializeToString(&output_message);
+  //Send Response
+  int len;
+  ssize_t bytes_sent;
+
+  bytes_sent = send (m_ueSocket, output_message.c_str(), 
+		     output_message.length(), 0);
+  cout << "RRC Connection Setup or Reject sent " << endl;
+  
 }
 
 void UeContext::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message){

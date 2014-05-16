@@ -13,7 +13,5 @@ struct UeContext_ue{
 };
 
 void genImsi (Imsi_message *imsi);
-void genRandId(string * id,const int len);
-
 
 #endif

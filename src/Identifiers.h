@@ -2,15 +2,10 @@
 #define DEF_IDENTIFIERS
 
 #include <string>
+#include <cstdlib>
 
 using namespace std;
 
-enum Rat {E_UTRA, UTRA, GERAN_CS, GERAN_PS, CDMA2000};
-
-struct Imsi{
-  string mcc;
-  string mnc;
-  string msin;
-};
+void genRandId(string * id,const int len);
 
 #endif

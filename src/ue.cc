@@ -1,11 +1,12 @@
 #include <iostream>
 #include "ue.h"
+#include "Identifiers.h"
 #include <cstring> //for memset
 #include <sys/socket.h>
 #include <netdb.h>
 #include <pthread.h>
 #include <unistd.h>
-#include <cstdlib>
+
 
 using namespace std;
 
@@ -102,6 +103,71 @@ RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
 		     
 }
 
+bool handleRrcConnectionSetup (int socketfd, UeContext_ue *ue_state) {
+  //Part 1: Recieve the message
+  ssize_t bytes_recieved;
+  char incoming_data_buffer[1000];
+  bytes_recieved = recv(socketfd, incoming_data_buffer,1000, 0);
+  // If no data arrives, the program will just wait here until some data arrives.
+  if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
+  if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}
+  std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
+  if (bytes_recieved != -1 && bytes_recieved != 0){
+    incoming_data_buffer[bytes_recieved] = '\0';
+    //The message is serialized, we need to deserialize it
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+    RrcMessage rrcMessage;
+    string str_message(incoming_data_buffer, bytes_recieved);
+    rrcMessage.ParseFromString(str_message);
+    std::cout << "Message deserialized " << endl;
+    switch (rrcMessage.messagetype()) {
+    case RrcMessage_MessageType_TypeRrcCS :
+      {RrcConnectionSetup rrcConnectionSetup;
+      rrcConnectionSetup = rrcMessage.messagerrccs();
+      cout << "Setup: Value of rnti is : " << rrcConnectionSetup.ueidrntivalue() << endl;
+      //add srb to the state
+      ue_state->srbId = rrcConnectionSetup.srbidentity();
+      //Send Response
+      
+      //Not rejected
+      return false;}
+      break;
+    case RrcMessage_MessageType_TypeRrcCReject :
+      {RrcConnectionReject rrcConnectionReject;
+      rrcConnectionReject = rrcMessage.messagerrccreject();
+      cout << "Reject: Value of rnti is : " << rrcConnectionReject.uecrnti() << endl;
+      //Rejected
+      return true;}
+      break;
+    };
+
+    //Part 2: Send Response
+  /*RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
+  rrcConnectionRequest->set_ueidrntitype(C_RNTI);
+  rrcConnectionRequest->set_ueidrntivalue(raResponse.ueidrntivalue());
+  Imsi_message *tempImsi = new Imsi_message(ue_state->imsi);
+  //tempImsi = ue_state->imsi;
+  rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
+  std::cout << "C_rnti is : " << rrcConnectionRequest->ueidrntivalue() << std::endl;
+  //Pack it into a RrcMessage
+  RrcMessage rrcMessage_o;
+  rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
+  rrcMessage_o.set_allocated_messagerrccrequest(rrcConnectionRequest);
+  //Serialize the message
+  std::string message;
+  rrcMessage_o.SerializeToString(&message);
+  std::cout << "Serialization completed " << std::endl;
+
+  ssize_t bytes_sent;
+  bytes_sent = send (socketfd, message.c_str(), 
+		     message.length(), 0);
+
+  std::cout << "Message RrcConnectionRequest sent" << std::endl;
+  std::cout << "Bytes sent: "<<bytes_sent << std::endl;*/
+		     }
+		     
+}
+
 void *powerOn (void * ueId_void){
 
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -137,6 +203,7 @@ void *powerOn (void * ueId_void){
   //Connection setup procedure
   sendRaPreamble (socketfd, ueId);
   handleRaResponse (socketfd, ue_state);
+  bool reject = handleRrcConnectionSetup (socketfd, ue_state);
  
 
   
@@ -186,14 +253,5 @@ void genImsi(Imsi_message *imsi){
   imsi->set_msin(*randomId_msin);//randomId.substr(2,10));
 }
 
-void genRandId(string * id,const int len){
-  char temp[len];
-  static const char num[11] = "0123456789";
-  for (int i = 0; i<len; ++i){
-    temp[i] = num[(int)((double)rand() / ((double)RAND_MAX + 1)*(sizeof(num)-1))];
-  }
-  temp[len]=0;
-  string s(temp);
-  *id = s;
-}
+
 
