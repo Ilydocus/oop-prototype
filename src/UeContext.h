@@ -2,7 +2,30 @@
 #define DEF_UECONTEXT
 
 #include <iostream>
+#include <string>
 #include "RrcMessages.pb.h"
+#include "Identifiers.h"
+
+using namespace std;
+
+enum RrcState {RRC_Idle, RRC_Connected};
+
+struct RatCapability{
+  Rat rat;
+  bool isSupported;
+};
+
+struct UeContext_enb{
+  RrcState rrcState;
+  int c_rnti;
+  Imsi imsi;
+  string srbIdentity;
+  int enbUeS1ApId;
+  RatCapability ratCapabilities[5];
+  int securityKey;
+  string epsBearerId; 
+};
+
 
 class UeContext 
 {
@@ -10,13 +33,20 @@ class UeContext
 
   UeContext(int ueSocket, int mmeSocket);
   void handleRaPreamble(RaPreamble message);
+  void handleRrcConnectionRequest(RrcConnectionRequest message);
+  void handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message);
+  //void handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest); 
+  void handleSecurityModeComplete(SecurityModeComplete message);
+  void handleUeCapabilityInformation(UeCapabilityInformation message);
+  void handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message);
 
  private:
 
   int m_ueSocket;
   int m_mmeSocket;
-  int m_state;//To be expanded afterwards
+  UeContext_enb m_state;//struct needed?
 
 };
+
 
 #endif

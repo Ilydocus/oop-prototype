@@ -2,12 +2,32 @@ message RrcMessage {
 	required MessageType messageType = 1;
 
 	enum MessageType {
-	TypeRaPreamble = 0;
-	TypeRaResponse = 1;//A Completer
+	TypeRaP = 0;
+	TypeRaR = 1;
+	TypeRrcCRequest = 2;
+	TypeRrcCS = 3;
+	TypeRrcCSC = 4;
+	TypeSecurityMCommand = 5;
+	TypeSecurityMComplete = 6;
+	TypeUeCE = 7;
+	TypeUeCI = 8;
+	TypeRrcCReconfiguration = 9;
+	TypeRrcCRC = 10;
+	TypeRrcCReject = 11;	
 	}
+
 	optional RaPreamble messageRaP = 2;
 	optional RaResponse messageRaR = 3;
-//A COMPLETER
+	optional RrcConnectionRequest messageRrcCRequest = 4;
+	optional RrcConnectionSetup messageRrcCS = 5;
+	optional RrcConnectionSetupComplete messageRrcCSC = 6;
+	optional SecurityModeCommand messageSecurityMCommand = 7;
+	optional SecurityModeComplete messageSecurityMComplete = 8;
+	optional UeCapabilityEnquiry messageUeCE = 9;
+	optional UeCapabilityInformation messageUeCI = 10;
+	optional RrcConnectionReconfiguration messageRrcCreconfiguration = 11;
+	optional RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
+	optional RrcConnectionReject messageRrcCReject = 13;
 }
 
 message RaPreamble {
@@ -24,4 +44,75 @@ message RaResponse {
 	required UeIdRntiType ueIdRntiType = 1;
 	required int64 ueIdRntiValue = 2;
 	required int64 ueIdCRnti = 3;
+}
+
+message RrcConnectionRequest {
+	required UeIdRntiType ueIdRntiType = 1;
+	required int64 ueIdRntiValue = 2;
+	required Imsi_message ueIdentity = 3;
+}
+
+message Imsi_message {
+	required string mcc = 1;
+	required string mnc = 2;
+	required string msin = 3;
+}
+
+message RrcConnectionSetup {
+	required UeIdRntiType ueIdRntiType = 1;
+	required int64 ueIdRntiValue = 2;
+	required string srbIdentity = 3;
+}
+
+message RrcConnectionSetupComplete {
+	required int64 ueCRnti = 1;
+	required string selectedPlmnIdentity = 2;
+}
+
+message SecurityModeCommand {
+	required int64 ueCRnti = 1;
+	required string message_security = 2; //To change if encryption - type bytes exists in protobuff
+}
+
+message SecurityModeComplete {
+	required int64 ueCRnti = 1;
+	required bool securityModeSuccess = 2;
+}
+
+message UeCapabilityEnquiry {
+	required int64 ueCRnti = 1;
+	repeated RatType ueCapabilityRequest = 2 [packed=true]; 
+}
+
+enum RatType {
+     E_UTRA = 0;
+     UTRA = 1;
+     GERAN_CS = 2;
+     GERAN_PS = 3;
+     CDMA2000 = 4;
+}
+
+message UeCapabilityInformation {
+	required int64 ueCRnti = 1;
+	repeated RatCapability ueCapabilityRatList = 2 [packed=true];
+}
+
+message RatCapability {
+	required RatType rat = 1;
+	required bool isSupported = 2;
+}
+
+message RrcConnectionReconfiguration {
+	required int64 ueCRnti = 1;
+	required string epsRadioBearerIdentity = 2;
+}
+
+message RrcConnectionReconfigurationComplete {
+	required int64 ueCRnti = 1;
+	required bool epsRadioBearerActivated = 2;
+}
+
+message RrcConnectionReject {
+	required int64 ueCRnti = 1;
+	required int32 waitingTime = 2;
 }

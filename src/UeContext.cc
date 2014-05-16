@@ -21,14 +21,14 @@ void UeContext::handleRaPreamble(RaPreamble message)
   raResponse->set_ueidcrnti(message.ueidrntivalue());
   //Pack it into a RrcMessage
   RrcMessage rrcMessage;
-  rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRaResponse);
+  rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRaR);
   rrcMessage.set_allocated_messagerar(raResponse);
   //Serialize message
   string output_message;
   rrcMessage.SerializeToString(&output_message);
   //Modify state
-  m_state = message.ueidrntivalue();
-  cout << "State is : " << m_state << endl;
+  m_state.c_rnti = message.ueidrntivalue();
+  cout << "State is : " << m_state.c_rnti << endl;
   //Send Response
   int len;
   ssize_t bytes_sent;
@@ -37,4 +37,23 @@ void UeContext::handleRaPreamble(RaPreamble message)
 		     output_message.length(), 0);
   cout << "RA Response sent " << endl;
   
+}
+
+void UeContext::handleRrcConnectionRequest(RrcConnectionRequest message){
+}
+
+void UeContext::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message){
+
+}
+
+//void UeContext::handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest){
+}
+
+void UeContext::handleSecurityModeComplete(SecurityModeComplete message){
+}
+
+void UeContext::handleUeCapabilityInformation(UeCapabilityInformation message){
+}
+
+void UeContext::handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message){
 }

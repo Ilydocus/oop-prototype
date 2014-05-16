@@ -27,7 +27,7 @@ GOOGLE_PROTOBUF_VERIFY_VERSION;
   std::cout << "Ra_rnti is : " << rapreamble->ueidrntivalue() << std::endl;
   //Pack it into a RrcMessage
   RrcMessage rrcMessage;
-  rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRaPreamble);
+  rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRaP);
   rrcMessage.set_allocated_messagerap(rapreamble);
   //Serialize the message
   std::string message;
