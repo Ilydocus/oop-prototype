@@ -35,14 +35,36 @@ void protobuf_ShutdownFile_RrcMessages_2eproto();
 class RrcMessage;
 class RaPreamble;
 class RaResponse;
+class RrcConnectionRequest;
+class Imsi_message;
+class RrcConnectionSetup;
+class RrcConnectionSetupComplete;
+class SecurityModeCommand;
+class SecurityModeComplete;
+class UeCapabilityEnquiry;
+class UeCapabilityInformation;
+class RatCapability;
+class RrcConnectionReconfiguration;
+class RrcConnectionReconfigurationComplete;
+class RrcConnectionReject;
 
 enum RrcMessage_MessageType {
-  RrcMessage_MessageType_TypeRaPreamble = 0,
-  RrcMessage_MessageType_TypeRaResponse = 1
+  RrcMessage_MessageType_TypeRaP = 0,
+  RrcMessage_MessageType_TypeRaR = 1,
+  RrcMessage_MessageType_TypeRrcCRequest = 2,
+  RrcMessage_MessageType_TypeRrcCS = 3,
+  RrcMessage_MessageType_TypeRrcCSC = 4,
+  RrcMessage_MessageType_TypeSecurityMCommand = 5,
+  RrcMessage_MessageType_TypeSecurityMComplete = 6,
+  RrcMessage_MessageType_TypeUeCE = 7,
+  RrcMessage_MessageType_TypeUeCI = 8,
+  RrcMessage_MessageType_TypeRrcCReconfiguration = 9,
+  RrcMessage_MessageType_TypeRrcCRC = 10,
+  RrcMessage_MessageType_TypeRrcCReject = 11
 };
 bool RrcMessage_MessageType_IsValid(int value);
-const RrcMessage_MessageType RrcMessage_MessageType_MessageType_MIN = RrcMessage_MessageType_TypeRaPreamble;
-const RrcMessage_MessageType RrcMessage_MessageType_MessageType_MAX = RrcMessage_MessageType_TypeRaResponse;
+const RrcMessage_MessageType RrcMessage_MessageType_MessageType_MIN = RrcMessage_MessageType_TypeRaP;
+const RrcMessage_MessageType RrcMessage_MessageType_MessageType_MAX = RrcMessage_MessageType_TypeRrcCReject;
 const int RrcMessage_MessageType_MessageType_ARRAYSIZE = RrcMessage_MessageType_MessageType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* RrcMessage_MessageType_descriptor();
@@ -73,6 +95,28 @@ inline bool UeIdRntiType_Parse(
     const ::std::string& name, UeIdRntiType* value) {
   return ::google::protobuf::internal::ParseNamedEnum<UeIdRntiType>(
     UeIdRntiType_descriptor(), name, value);
+}
+enum RatType {
+  E_UTRA = 0,
+  UTRA = 1,
+  GERAN_CS = 2,
+  GERAN_PS = 3,
+  CDMA2000 = 4
+};
+bool RatType_IsValid(int value);
+const RatType RatType_MIN = E_UTRA;
+const RatType RatType_MAX = CDMA2000;
+const int RatType_ARRAYSIZE = RatType_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* RatType_descriptor();
+inline const ::std::string& RatType_Name(RatType value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    RatType_descriptor(), value);
+}
+inline bool RatType_Parse(
+    const ::std::string& name, RatType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<RatType>(
+    RatType_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -129,8 +173,18 @@ class RrcMessage : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
 
   typedef RrcMessage_MessageType MessageType;
-  static const MessageType TypeRaPreamble = RrcMessage_MessageType_TypeRaPreamble;
-  static const MessageType TypeRaResponse = RrcMessage_MessageType_TypeRaResponse;
+  static const MessageType TypeRaP = RrcMessage_MessageType_TypeRaP;
+  static const MessageType TypeRaR = RrcMessage_MessageType_TypeRaR;
+  static const MessageType TypeRrcCRequest = RrcMessage_MessageType_TypeRrcCRequest;
+  static const MessageType TypeRrcCS = RrcMessage_MessageType_TypeRrcCS;
+  static const MessageType TypeRrcCSC = RrcMessage_MessageType_TypeRrcCSC;
+  static const MessageType TypeSecurityMCommand = RrcMessage_MessageType_TypeSecurityMCommand;
+  static const MessageType TypeSecurityMComplete = RrcMessage_MessageType_TypeSecurityMComplete;
+  static const MessageType TypeUeCE = RrcMessage_MessageType_TypeUeCE;
+  static const MessageType TypeUeCI = RrcMessage_MessageType_TypeUeCI;
+  static const MessageType TypeRrcCReconfiguration = RrcMessage_MessageType_TypeRrcCReconfiguration;
+  static const MessageType TypeRrcCRC = RrcMessage_MessageType_TypeRrcCRC;
+  static const MessageType TypeRrcCReject = RrcMessage_MessageType_TypeRrcCReject;
   static inline bool MessageType_IsValid(int value) {
     return RrcMessage_MessageType_IsValid(value);
   }
@@ -179,6 +233,96 @@ class RrcMessage : public ::google::protobuf::Message {
   inline ::RaResponse* release_messagerar();
   inline void set_allocated_messagerar(::RaResponse* messagerar);
 
+  // optional .RrcConnectionRequest messageRrcCRequest = 4;
+  inline bool has_messagerrccrequest() const;
+  inline void clear_messagerrccrequest();
+  static const int kMessageRrcCRequestFieldNumber = 4;
+  inline const ::RrcConnectionRequest& messagerrccrequest() const;
+  inline ::RrcConnectionRequest* mutable_messagerrccrequest();
+  inline ::RrcConnectionRequest* release_messagerrccrequest();
+  inline void set_allocated_messagerrccrequest(::RrcConnectionRequest* messagerrccrequest);
+
+  // optional .RrcConnectionSetup messageRrcCS = 5;
+  inline bool has_messagerrccs() const;
+  inline void clear_messagerrccs();
+  static const int kMessageRrcCSFieldNumber = 5;
+  inline const ::RrcConnectionSetup& messagerrccs() const;
+  inline ::RrcConnectionSetup* mutable_messagerrccs();
+  inline ::RrcConnectionSetup* release_messagerrccs();
+  inline void set_allocated_messagerrccs(::RrcConnectionSetup* messagerrccs);
+
+  // optional .RrcConnectionSetupComplete messageRrcCSC = 6;
+  inline bool has_messagerrccsc() const;
+  inline void clear_messagerrccsc();
+  static const int kMessageRrcCSCFieldNumber = 6;
+  inline const ::RrcConnectionSetupComplete& messagerrccsc() const;
+  inline ::RrcConnectionSetupComplete* mutable_messagerrccsc();
+  inline ::RrcConnectionSetupComplete* release_messagerrccsc();
+  inline void set_allocated_messagerrccsc(::RrcConnectionSetupComplete* messagerrccsc);
+
+  // optional .SecurityModeCommand messageSecurityMCommand = 7;
+  inline bool has_messagesecuritymcommand() const;
+  inline void clear_messagesecuritymcommand();
+  static const int kMessageSecurityMCommandFieldNumber = 7;
+  inline const ::SecurityModeCommand& messagesecuritymcommand() const;
+  inline ::SecurityModeCommand* mutable_messagesecuritymcommand();
+  inline ::SecurityModeCommand* release_messagesecuritymcommand();
+  inline void set_allocated_messagesecuritymcommand(::SecurityModeCommand* messagesecuritymcommand);
+
+  // optional .SecurityModeComplete messageSecurityMComplete = 8;
+  inline bool has_messagesecuritymcomplete() const;
+  inline void clear_messagesecuritymcomplete();
+  static const int kMessageSecurityMCompleteFieldNumber = 8;
+  inline const ::SecurityModeComplete& messagesecuritymcomplete() const;
+  inline ::SecurityModeComplete* mutable_messagesecuritymcomplete();
+  inline ::SecurityModeComplete* release_messagesecuritymcomplete();
+  inline void set_allocated_messagesecuritymcomplete(::SecurityModeComplete* messagesecuritymcomplete);
+
+  // optional .UeCapabilityEnquiry messageUeCE = 9;
+  inline bool has_messageuece() const;
+  inline void clear_messageuece();
+  static const int kMessageUeCEFieldNumber = 9;
+  inline const ::UeCapabilityEnquiry& messageuece() const;
+  inline ::UeCapabilityEnquiry* mutable_messageuece();
+  inline ::UeCapabilityEnquiry* release_messageuece();
+  inline void set_allocated_messageuece(::UeCapabilityEnquiry* messageuece);
+
+  // optional .UeCapabilityInformation messageUeCI = 10;
+  inline bool has_messageueci() const;
+  inline void clear_messageueci();
+  static const int kMessageUeCIFieldNumber = 10;
+  inline const ::UeCapabilityInformation& messageueci() const;
+  inline ::UeCapabilityInformation* mutable_messageueci();
+  inline ::UeCapabilityInformation* release_messageueci();
+  inline void set_allocated_messageueci(::UeCapabilityInformation* messageueci);
+
+  // optional .RrcConnectionReconfiguration messageRrcCreconfiguration = 11;
+  inline bool has_messagerrccreconfiguration() const;
+  inline void clear_messagerrccreconfiguration();
+  static const int kMessageRrcCreconfigurationFieldNumber = 11;
+  inline const ::RrcConnectionReconfiguration& messagerrccreconfiguration() const;
+  inline ::RrcConnectionReconfiguration* mutable_messagerrccreconfiguration();
+  inline ::RrcConnectionReconfiguration* release_messagerrccreconfiguration();
+  inline void set_allocated_messagerrccreconfiguration(::RrcConnectionReconfiguration* messagerrccreconfiguration);
+
+  // optional .RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
+  inline bool has_messagerrrccrc() const;
+  inline void clear_messagerrrccrc();
+  static const int kMessageRrrcCRCFieldNumber = 12;
+  inline const ::RrcConnectionReconfigurationComplete& messagerrrccrc() const;
+  inline ::RrcConnectionReconfigurationComplete* mutable_messagerrrccrc();
+  inline ::RrcConnectionReconfigurationComplete* release_messagerrrccrc();
+  inline void set_allocated_messagerrrccrc(::RrcConnectionReconfigurationComplete* messagerrrccrc);
+
+  // optional .RrcConnectionReject messageRrcCReject = 13;
+  inline bool has_messagerrccreject() const;
+  inline void clear_messagerrccreject();
+  static const int kMessageRrcCRejectFieldNumber = 13;
+  inline const ::RrcConnectionReject& messagerrccreject() const;
+  inline ::RrcConnectionReject* mutable_messagerrccreject();
+  inline ::RrcConnectionReject* release_messagerrccreject();
+  inline void set_allocated_messagerrccreject(::RrcConnectionReject* messagerrccreject);
+
   // @@protoc_insertion_point(class_scope:RrcMessage)
  private:
   inline void set_has_messagetype();
@@ -187,15 +331,45 @@ class RrcMessage : public ::google::protobuf::Message {
   inline void clear_has_messagerap();
   inline void set_has_messagerar();
   inline void clear_has_messagerar();
+  inline void set_has_messagerrccrequest();
+  inline void clear_has_messagerrccrequest();
+  inline void set_has_messagerrccs();
+  inline void clear_has_messagerrccs();
+  inline void set_has_messagerrccsc();
+  inline void clear_has_messagerrccsc();
+  inline void set_has_messagesecuritymcommand();
+  inline void clear_has_messagesecuritymcommand();
+  inline void set_has_messagesecuritymcomplete();
+  inline void clear_has_messagesecuritymcomplete();
+  inline void set_has_messageuece();
+  inline void clear_has_messageuece();
+  inline void set_has_messageueci();
+  inline void clear_has_messageueci();
+  inline void set_has_messagerrccreconfiguration();
+  inline void clear_has_messagerrccreconfiguration();
+  inline void set_has_messagerrrccrc();
+  inline void clear_has_messagerrrccrc();
+  inline void set_has_messagerrccreject();
+  inline void clear_has_messagerrccreject();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::RaPreamble* messagerap_;
   ::RaResponse* messagerar_;
+  ::RrcConnectionRequest* messagerrccrequest_;
+  ::RrcConnectionSetup* messagerrccs_;
+  ::RrcConnectionSetupComplete* messagerrccsc_;
+  ::SecurityModeCommand* messagesecuritymcommand_;
+  ::SecurityModeComplete* messagesecuritymcomplete_;
+  ::UeCapabilityEnquiry* messageuece_;
+  ::UeCapabilityInformation* messageueci_;
+  ::RrcConnectionReconfiguration* messagerrccreconfiguration_;
+  ::RrcConnectionReconfigurationComplete* messagerrrccrc_;
+  ::RrcConnectionReject* messagerrccreject_;
   int messagetype_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(13 + 31) / 32];
 
   friend void  protobuf_AddDesc_RrcMessages_2eproto();
   friend void protobuf_AssignDesc_RrcMessages_2eproto();
@@ -398,6 +572,1182 @@ class RaResponse : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static RaResponse* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class RrcConnectionRequest : public ::google::protobuf::Message {
+ public:
+  RrcConnectionRequest();
+  virtual ~RrcConnectionRequest();
+
+  RrcConnectionRequest(const RrcConnectionRequest& from);
+
+  inline RrcConnectionRequest& operator=(const RrcConnectionRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RrcConnectionRequest& default_instance();
+
+  void Swap(RrcConnectionRequest* other);
+
+  // implements Message ----------------------------------------------
+
+  RrcConnectionRequest* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const RrcConnectionRequest& from);
+  void MergeFrom(const RrcConnectionRequest& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .UeIdRntiType ueIdRntiType = 1;
+  inline bool has_ueidrntitype() const;
+  inline void clear_ueidrntitype();
+  static const int kUeIdRntiTypeFieldNumber = 1;
+  inline ::UeIdRntiType ueidrntitype() const;
+  inline void set_ueidrntitype(::UeIdRntiType value);
+
+  // required int64 ueIdRntiValue = 2;
+  inline bool has_ueidrntivalue() const;
+  inline void clear_ueidrntivalue();
+  static const int kUeIdRntiValueFieldNumber = 2;
+  inline ::google::protobuf::int64 ueidrntivalue() const;
+  inline void set_ueidrntivalue(::google::protobuf::int64 value);
+
+  // required .Imsi_message ueIdentity = 3;
+  inline bool has_ueidentity() const;
+  inline void clear_ueidentity();
+  static const int kUeIdentityFieldNumber = 3;
+  inline const ::Imsi_message& ueidentity() const;
+  inline ::Imsi_message* mutable_ueidentity();
+  inline ::Imsi_message* release_ueidentity();
+  inline void set_allocated_ueidentity(::Imsi_message* ueidentity);
+
+  // @@protoc_insertion_point(class_scope:RrcConnectionRequest)
+ private:
+  inline void set_has_ueidrntitype();
+  inline void clear_has_ueidrntitype();
+  inline void set_has_ueidrntivalue();
+  inline void clear_has_ueidrntivalue();
+  inline void set_has_ueidentity();
+  inline void clear_has_ueidentity();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 ueidrntivalue_;
+  ::Imsi_message* ueidentity_;
+  int ueidrntitype_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static RrcConnectionRequest* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Imsi_message : public ::google::protobuf::Message {
+ public:
+  Imsi_message();
+  virtual ~Imsi_message();
+
+  Imsi_message(const Imsi_message& from);
+
+  inline Imsi_message& operator=(const Imsi_message& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Imsi_message& default_instance();
+
+  void Swap(Imsi_message* other);
+
+  // implements Message ----------------------------------------------
+
+  Imsi_message* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Imsi_message& from);
+  void MergeFrom(const Imsi_message& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string mcc = 1;
+  inline bool has_mcc() const;
+  inline void clear_mcc();
+  static const int kMccFieldNumber = 1;
+  inline const ::std::string& mcc() const;
+  inline void set_mcc(const ::std::string& value);
+  inline void set_mcc(const char* value);
+  inline void set_mcc(const char* value, size_t size);
+  inline ::std::string* mutable_mcc();
+  inline ::std::string* release_mcc();
+  inline void set_allocated_mcc(::std::string* mcc);
+
+  // required string mnc = 2;
+  inline bool has_mnc() const;
+  inline void clear_mnc();
+  static const int kMncFieldNumber = 2;
+  inline const ::std::string& mnc() const;
+  inline void set_mnc(const ::std::string& value);
+  inline void set_mnc(const char* value);
+  inline void set_mnc(const char* value, size_t size);
+  inline ::std::string* mutable_mnc();
+  inline ::std::string* release_mnc();
+  inline void set_allocated_mnc(::std::string* mnc);
+
+  // required string msin = 3;
+  inline bool has_msin() const;
+  inline void clear_msin();
+  static const int kMsinFieldNumber = 3;
+  inline const ::std::string& msin() const;
+  inline void set_msin(const ::std::string& value);
+  inline void set_msin(const char* value);
+  inline void set_msin(const char* value, size_t size);
+  inline ::std::string* mutable_msin();
+  inline ::std::string* release_msin();
+  inline void set_allocated_msin(::std::string* msin);
+
+  // @@protoc_insertion_point(class_scope:Imsi_message)
+ private:
+  inline void set_has_mcc();
+  inline void clear_has_mcc();
+  inline void set_has_mnc();
+  inline void clear_has_mnc();
+  inline void set_has_msin();
+  inline void clear_has_msin();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::std::string* mcc_;
+  ::std::string* mnc_;
+  ::std::string* msin_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static Imsi_message* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class RrcConnectionSetup : public ::google::protobuf::Message {
+ public:
+  RrcConnectionSetup();
+  virtual ~RrcConnectionSetup();
+
+  RrcConnectionSetup(const RrcConnectionSetup& from);
+
+  inline RrcConnectionSetup& operator=(const RrcConnectionSetup& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RrcConnectionSetup& default_instance();
+
+  void Swap(RrcConnectionSetup* other);
+
+  // implements Message ----------------------------------------------
+
+  RrcConnectionSetup* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const RrcConnectionSetup& from);
+  void MergeFrom(const RrcConnectionSetup& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .UeIdRntiType ueIdRntiType = 1;
+  inline bool has_ueidrntitype() const;
+  inline void clear_ueidrntitype();
+  static const int kUeIdRntiTypeFieldNumber = 1;
+  inline ::UeIdRntiType ueidrntitype() const;
+  inline void set_ueidrntitype(::UeIdRntiType value);
+
+  // required int64 ueIdRntiValue = 2;
+  inline bool has_ueidrntivalue() const;
+  inline void clear_ueidrntivalue();
+  static const int kUeIdRntiValueFieldNumber = 2;
+  inline ::google::protobuf::int64 ueidrntivalue() const;
+  inline void set_ueidrntivalue(::google::protobuf::int64 value);
+
+  // required string srbIdentity = 3;
+  inline bool has_srbidentity() const;
+  inline void clear_srbidentity();
+  static const int kSrbIdentityFieldNumber = 3;
+  inline const ::std::string& srbidentity() const;
+  inline void set_srbidentity(const ::std::string& value);
+  inline void set_srbidentity(const char* value);
+  inline void set_srbidentity(const char* value, size_t size);
+  inline ::std::string* mutable_srbidentity();
+  inline ::std::string* release_srbidentity();
+  inline void set_allocated_srbidentity(::std::string* srbidentity);
+
+  // @@protoc_insertion_point(class_scope:RrcConnectionSetup)
+ private:
+  inline void set_has_ueidrntitype();
+  inline void clear_has_ueidrntitype();
+  inline void set_has_ueidrntivalue();
+  inline void clear_has_ueidrntivalue();
+  inline void set_has_srbidentity();
+  inline void clear_has_srbidentity();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 ueidrntivalue_;
+  ::std::string* srbidentity_;
+  int ueidrntitype_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static RrcConnectionSetup* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class RrcConnectionSetupComplete : public ::google::protobuf::Message {
+ public:
+  RrcConnectionSetupComplete();
+  virtual ~RrcConnectionSetupComplete();
+
+  RrcConnectionSetupComplete(const RrcConnectionSetupComplete& from);
+
+  inline RrcConnectionSetupComplete& operator=(const RrcConnectionSetupComplete& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RrcConnectionSetupComplete& default_instance();
+
+  void Swap(RrcConnectionSetupComplete* other);
+
+  // implements Message ----------------------------------------------
+
+  RrcConnectionSetupComplete* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const RrcConnectionSetupComplete& from);
+  void MergeFrom(const RrcConnectionSetupComplete& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int64 ueCRnti = 1;
+  inline bool has_uecrnti() const;
+  inline void clear_uecrnti();
+  static const int kUeCRntiFieldNumber = 1;
+  inline ::google::protobuf::int64 uecrnti() const;
+  inline void set_uecrnti(::google::protobuf::int64 value);
+
+  // required string selectedPlmnIdentity = 2;
+  inline bool has_selectedplmnidentity() const;
+  inline void clear_selectedplmnidentity();
+  static const int kSelectedPlmnIdentityFieldNumber = 2;
+  inline const ::std::string& selectedplmnidentity() const;
+  inline void set_selectedplmnidentity(const ::std::string& value);
+  inline void set_selectedplmnidentity(const char* value);
+  inline void set_selectedplmnidentity(const char* value, size_t size);
+  inline ::std::string* mutable_selectedplmnidentity();
+  inline ::std::string* release_selectedplmnidentity();
+  inline void set_allocated_selectedplmnidentity(::std::string* selectedplmnidentity);
+
+  // @@protoc_insertion_point(class_scope:RrcConnectionSetupComplete)
+ private:
+  inline void set_has_uecrnti();
+  inline void clear_has_uecrnti();
+  inline void set_has_selectedplmnidentity();
+  inline void clear_has_selectedplmnidentity();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 uecrnti_;
+  ::std::string* selectedplmnidentity_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static RrcConnectionSetupComplete* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class SecurityModeCommand : public ::google::protobuf::Message {
+ public:
+  SecurityModeCommand();
+  virtual ~SecurityModeCommand();
+
+  SecurityModeCommand(const SecurityModeCommand& from);
+
+  inline SecurityModeCommand& operator=(const SecurityModeCommand& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const SecurityModeCommand& default_instance();
+
+  void Swap(SecurityModeCommand* other);
+
+  // implements Message ----------------------------------------------
+
+  SecurityModeCommand* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const SecurityModeCommand& from);
+  void MergeFrom(const SecurityModeCommand& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int64 ueCRnti = 1;
+  inline bool has_uecrnti() const;
+  inline void clear_uecrnti();
+  static const int kUeCRntiFieldNumber = 1;
+  inline ::google::protobuf::int64 uecrnti() const;
+  inline void set_uecrnti(::google::protobuf::int64 value);
+
+  // required string message_security = 2;
+  inline bool has_message_security() const;
+  inline void clear_message_security();
+  static const int kMessageSecurityFieldNumber = 2;
+  inline const ::std::string& message_security() const;
+  inline void set_message_security(const ::std::string& value);
+  inline void set_message_security(const char* value);
+  inline void set_message_security(const char* value, size_t size);
+  inline ::std::string* mutable_message_security();
+  inline ::std::string* release_message_security();
+  inline void set_allocated_message_security(::std::string* message_security);
+
+  // @@protoc_insertion_point(class_scope:SecurityModeCommand)
+ private:
+  inline void set_has_uecrnti();
+  inline void clear_has_uecrnti();
+  inline void set_has_message_security();
+  inline void clear_has_message_security();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 uecrnti_;
+  ::std::string* message_security_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static SecurityModeCommand* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class SecurityModeComplete : public ::google::protobuf::Message {
+ public:
+  SecurityModeComplete();
+  virtual ~SecurityModeComplete();
+
+  SecurityModeComplete(const SecurityModeComplete& from);
+
+  inline SecurityModeComplete& operator=(const SecurityModeComplete& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const SecurityModeComplete& default_instance();
+
+  void Swap(SecurityModeComplete* other);
+
+  // implements Message ----------------------------------------------
+
+  SecurityModeComplete* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const SecurityModeComplete& from);
+  void MergeFrom(const SecurityModeComplete& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int64 ueCRnti = 1;
+  inline bool has_uecrnti() const;
+  inline void clear_uecrnti();
+  static const int kUeCRntiFieldNumber = 1;
+  inline ::google::protobuf::int64 uecrnti() const;
+  inline void set_uecrnti(::google::protobuf::int64 value);
+
+  // required bool securityModeSuccess = 2;
+  inline bool has_securitymodesuccess() const;
+  inline void clear_securitymodesuccess();
+  static const int kSecurityModeSuccessFieldNumber = 2;
+  inline bool securitymodesuccess() const;
+  inline void set_securitymodesuccess(bool value);
+
+  // @@protoc_insertion_point(class_scope:SecurityModeComplete)
+ private:
+  inline void set_has_uecrnti();
+  inline void clear_has_uecrnti();
+  inline void set_has_securitymodesuccess();
+  inline void clear_has_securitymodesuccess();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 uecrnti_;
+  bool securitymodesuccess_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static SecurityModeComplete* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class UeCapabilityEnquiry : public ::google::protobuf::Message {
+ public:
+  UeCapabilityEnquiry();
+  virtual ~UeCapabilityEnquiry();
+
+  UeCapabilityEnquiry(const UeCapabilityEnquiry& from);
+
+  inline UeCapabilityEnquiry& operator=(const UeCapabilityEnquiry& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const UeCapabilityEnquiry& default_instance();
+
+  void Swap(UeCapabilityEnquiry* other);
+
+  // implements Message ----------------------------------------------
+
+  UeCapabilityEnquiry* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const UeCapabilityEnquiry& from);
+  void MergeFrom(const UeCapabilityEnquiry& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int64 ueCRnti = 1;
+  inline bool has_uecrnti() const;
+  inline void clear_uecrnti();
+  static const int kUeCRntiFieldNumber = 1;
+  inline ::google::protobuf::int64 uecrnti() const;
+  inline void set_uecrnti(::google::protobuf::int64 value);
+
+  // repeated .RatType ueCapabilityRequest = 2 [packed = true];
+  inline int uecapabilityrequest_size() const;
+  inline void clear_uecapabilityrequest();
+  static const int kUeCapabilityRequestFieldNumber = 2;
+  inline ::RatType uecapabilityrequest(int index) const;
+  inline void set_uecapabilityrequest(int index, ::RatType value);
+  inline void add_uecapabilityrequest(::RatType value);
+  inline const ::google::protobuf::RepeatedField<int>& uecapabilityrequest() const;
+  inline ::google::protobuf::RepeatedField<int>* mutable_uecapabilityrequest();
+
+  // @@protoc_insertion_point(class_scope:UeCapabilityEnquiry)
+ private:
+  inline void set_has_uecrnti();
+  inline void clear_has_uecrnti();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 uecrnti_;
+  ::google::protobuf::RepeatedField<int> uecapabilityrequest_;
+  mutable int _uecapabilityrequest_cached_byte_size_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static UeCapabilityEnquiry* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class UeCapabilityInformation : public ::google::protobuf::Message {
+ public:
+  UeCapabilityInformation();
+  virtual ~UeCapabilityInformation();
+
+  UeCapabilityInformation(const UeCapabilityInformation& from);
+
+  inline UeCapabilityInformation& operator=(const UeCapabilityInformation& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const UeCapabilityInformation& default_instance();
+
+  void Swap(UeCapabilityInformation* other);
+
+  // implements Message ----------------------------------------------
+
+  UeCapabilityInformation* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const UeCapabilityInformation& from);
+  void MergeFrom(const UeCapabilityInformation& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int64 ueCRnti = 1;
+  inline bool has_uecrnti() const;
+  inline void clear_uecrnti();
+  static const int kUeCRntiFieldNumber = 1;
+  inline ::google::protobuf::int64 uecrnti() const;
+  inline void set_uecrnti(::google::protobuf::int64 value);
+
+  // repeated .RatCapability ueCapabilityRatList = 2;
+  inline int uecapabilityratlist_size() const;
+  inline void clear_uecapabilityratlist();
+  static const int kUeCapabilityRatListFieldNumber = 2;
+  inline const ::RatCapability& uecapabilityratlist(int index) const;
+  inline ::RatCapability* mutable_uecapabilityratlist(int index);
+  inline ::RatCapability* add_uecapabilityratlist();
+  inline const ::google::protobuf::RepeatedPtrField< ::RatCapability >&
+      uecapabilityratlist() const;
+  inline ::google::protobuf::RepeatedPtrField< ::RatCapability >*
+      mutable_uecapabilityratlist();
+
+  // @@protoc_insertion_point(class_scope:UeCapabilityInformation)
+ private:
+  inline void set_has_uecrnti();
+  inline void clear_has_uecrnti();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 uecrnti_;
+  ::google::protobuf::RepeatedPtrField< ::RatCapability > uecapabilityratlist_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static UeCapabilityInformation* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class RatCapability : public ::google::protobuf::Message {
+ public:
+  RatCapability();
+  virtual ~RatCapability();
+
+  RatCapability(const RatCapability& from);
+
+  inline RatCapability& operator=(const RatCapability& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RatCapability& default_instance();
+
+  void Swap(RatCapability* other);
+
+  // implements Message ----------------------------------------------
+
+  RatCapability* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const RatCapability& from);
+  void MergeFrom(const RatCapability& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required .RatType rat = 1;
+  inline bool has_rat() const;
+  inline void clear_rat();
+  static const int kRatFieldNumber = 1;
+  inline ::RatType rat() const;
+  inline void set_rat(::RatType value);
+
+  // required bool isSupported = 2;
+  inline bool has_issupported() const;
+  inline void clear_issupported();
+  static const int kIsSupportedFieldNumber = 2;
+  inline bool issupported() const;
+  inline void set_issupported(bool value);
+
+  // @@protoc_insertion_point(class_scope:RatCapability)
+ private:
+  inline void set_has_rat();
+  inline void clear_has_rat();
+  inline void set_has_issupported();
+  inline void clear_has_issupported();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  int rat_;
+  bool issupported_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static RatCapability* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class RrcConnectionReconfiguration : public ::google::protobuf::Message {
+ public:
+  RrcConnectionReconfiguration();
+  virtual ~RrcConnectionReconfiguration();
+
+  RrcConnectionReconfiguration(const RrcConnectionReconfiguration& from);
+
+  inline RrcConnectionReconfiguration& operator=(const RrcConnectionReconfiguration& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RrcConnectionReconfiguration& default_instance();
+
+  void Swap(RrcConnectionReconfiguration* other);
+
+  // implements Message ----------------------------------------------
+
+  RrcConnectionReconfiguration* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const RrcConnectionReconfiguration& from);
+  void MergeFrom(const RrcConnectionReconfiguration& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int64 ueCRnti = 1;
+  inline bool has_uecrnti() const;
+  inline void clear_uecrnti();
+  static const int kUeCRntiFieldNumber = 1;
+  inline ::google::protobuf::int64 uecrnti() const;
+  inline void set_uecrnti(::google::protobuf::int64 value);
+
+  // required string epsRadioBearerIdentity = 2;
+  inline bool has_epsradiobeareridentity() const;
+  inline void clear_epsradiobeareridentity();
+  static const int kEpsRadioBearerIdentityFieldNumber = 2;
+  inline const ::std::string& epsradiobeareridentity() const;
+  inline void set_epsradiobeareridentity(const ::std::string& value);
+  inline void set_epsradiobeareridentity(const char* value);
+  inline void set_epsradiobeareridentity(const char* value, size_t size);
+  inline ::std::string* mutable_epsradiobeareridentity();
+  inline ::std::string* release_epsradiobeareridentity();
+  inline void set_allocated_epsradiobeareridentity(::std::string* epsradiobeareridentity);
+
+  // @@protoc_insertion_point(class_scope:RrcConnectionReconfiguration)
+ private:
+  inline void set_has_uecrnti();
+  inline void clear_has_uecrnti();
+  inline void set_has_epsradiobeareridentity();
+  inline void clear_has_epsradiobeareridentity();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 uecrnti_;
+  ::std::string* epsradiobeareridentity_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static RrcConnectionReconfiguration* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class RrcConnectionReconfigurationComplete : public ::google::protobuf::Message {
+ public:
+  RrcConnectionReconfigurationComplete();
+  virtual ~RrcConnectionReconfigurationComplete();
+
+  RrcConnectionReconfigurationComplete(const RrcConnectionReconfigurationComplete& from);
+
+  inline RrcConnectionReconfigurationComplete& operator=(const RrcConnectionReconfigurationComplete& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RrcConnectionReconfigurationComplete& default_instance();
+
+  void Swap(RrcConnectionReconfigurationComplete* other);
+
+  // implements Message ----------------------------------------------
+
+  RrcConnectionReconfigurationComplete* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const RrcConnectionReconfigurationComplete& from);
+  void MergeFrom(const RrcConnectionReconfigurationComplete& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int64 ueCRnti = 1;
+  inline bool has_uecrnti() const;
+  inline void clear_uecrnti();
+  static const int kUeCRntiFieldNumber = 1;
+  inline ::google::protobuf::int64 uecrnti() const;
+  inline void set_uecrnti(::google::protobuf::int64 value);
+
+  // required bool epsRadioBearerActivated = 2;
+  inline bool has_epsradiobeareractivated() const;
+  inline void clear_epsradiobeareractivated();
+  static const int kEpsRadioBearerActivatedFieldNumber = 2;
+  inline bool epsradiobeareractivated() const;
+  inline void set_epsradiobeareractivated(bool value);
+
+  // @@protoc_insertion_point(class_scope:RrcConnectionReconfigurationComplete)
+ private:
+  inline void set_has_uecrnti();
+  inline void clear_has_uecrnti();
+  inline void set_has_epsradiobeareractivated();
+  inline void clear_has_epsradiobeareractivated();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 uecrnti_;
+  bool epsradiobeareractivated_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static RrcConnectionReconfigurationComplete* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class RrcConnectionReject : public ::google::protobuf::Message {
+ public:
+  RrcConnectionReject();
+  virtual ~RrcConnectionReject();
+
+  RrcConnectionReject(const RrcConnectionReject& from);
+
+  inline RrcConnectionReject& operator=(const RrcConnectionReject& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RrcConnectionReject& default_instance();
+
+  void Swap(RrcConnectionReject* other);
+
+  // implements Message ----------------------------------------------
+
+  RrcConnectionReject* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const RrcConnectionReject& from);
+  void MergeFrom(const RrcConnectionReject& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int64 ueCRnti = 1;
+  inline bool has_uecrnti() const;
+  inline void clear_uecrnti();
+  static const int kUeCRntiFieldNumber = 1;
+  inline ::google::protobuf::int64 uecrnti() const;
+  inline void set_uecrnti(::google::protobuf::int64 value);
+
+  // required int32 waitingTime = 2;
+  inline bool has_waitingtime() const;
+  inline void clear_waitingtime();
+  static const int kWaitingTimeFieldNumber = 2;
+  inline ::google::protobuf::int32 waitingtime() const;
+  inline void set_waitingtime(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:RrcConnectionReject)
+ private:
+  inline void set_has_uecrnti();
+  inline void clear_has_uecrnti();
+  inline void set_has_waitingtime();
+  inline void clear_has_waitingtime();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 uecrnti_;
+  ::google::protobuf::int32 waitingtime_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static RrcConnectionReject* default_instance_;
+};
 // ===================================================================
 
 
@@ -501,6 +1851,386 @@ inline void RrcMessage::set_allocated_messagerar(::RaResponse* messagerar) {
     set_has_messagerar();
   } else {
     clear_has_messagerar();
+  }
+}
+
+// optional .RrcConnectionRequest messageRrcCRequest = 4;
+inline bool RrcMessage::has_messagerrccrequest() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void RrcMessage::set_has_messagerrccrequest() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void RrcMessage::clear_has_messagerrccrequest() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void RrcMessage::clear_messagerrccrequest() {
+  if (messagerrccrequest_ != NULL) messagerrccrequest_->::RrcConnectionRequest::Clear();
+  clear_has_messagerrccrequest();
+}
+inline const ::RrcConnectionRequest& RrcMessage::messagerrccrequest() const {
+  return messagerrccrequest_ != NULL ? *messagerrccrequest_ : *default_instance_->messagerrccrequest_;
+}
+inline ::RrcConnectionRequest* RrcMessage::mutable_messagerrccrequest() {
+  set_has_messagerrccrequest();
+  if (messagerrccrequest_ == NULL) messagerrccrequest_ = new ::RrcConnectionRequest;
+  return messagerrccrequest_;
+}
+inline ::RrcConnectionRequest* RrcMessage::release_messagerrccrequest() {
+  clear_has_messagerrccrequest();
+  ::RrcConnectionRequest* temp = messagerrccrequest_;
+  messagerrccrequest_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messagerrccrequest(::RrcConnectionRequest* messagerrccrequest) {
+  delete messagerrccrequest_;
+  messagerrccrequest_ = messagerrccrequest;
+  if (messagerrccrequest) {
+    set_has_messagerrccrequest();
+  } else {
+    clear_has_messagerrccrequest();
+  }
+}
+
+// optional .RrcConnectionSetup messageRrcCS = 5;
+inline bool RrcMessage::has_messagerrccs() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void RrcMessage::set_has_messagerrccs() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void RrcMessage::clear_has_messagerrccs() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void RrcMessage::clear_messagerrccs() {
+  if (messagerrccs_ != NULL) messagerrccs_->::RrcConnectionSetup::Clear();
+  clear_has_messagerrccs();
+}
+inline const ::RrcConnectionSetup& RrcMessage::messagerrccs() const {
+  return messagerrccs_ != NULL ? *messagerrccs_ : *default_instance_->messagerrccs_;
+}
+inline ::RrcConnectionSetup* RrcMessage::mutable_messagerrccs() {
+  set_has_messagerrccs();
+  if (messagerrccs_ == NULL) messagerrccs_ = new ::RrcConnectionSetup;
+  return messagerrccs_;
+}
+inline ::RrcConnectionSetup* RrcMessage::release_messagerrccs() {
+  clear_has_messagerrccs();
+  ::RrcConnectionSetup* temp = messagerrccs_;
+  messagerrccs_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messagerrccs(::RrcConnectionSetup* messagerrccs) {
+  delete messagerrccs_;
+  messagerrccs_ = messagerrccs;
+  if (messagerrccs) {
+    set_has_messagerrccs();
+  } else {
+    clear_has_messagerrccs();
+  }
+}
+
+// optional .RrcConnectionSetupComplete messageRrcCSC = 6;
+inline bool RrcMessage::has_messagerrccsc() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void RrcMessage::set_has_messagerrccsc() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void RrcMessage::clear_has_messagerrccsc() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void RrcMessage::clear_messagerrccsc() {
+  if (messagerrccsc_ != NULL) messagerrccsc_->::RrcConnectionSetupComplete::Clear();
+  clear_has_messagerrccsc();
+}
+inline const ::RrcConnectionSetupComplete& RrcMessage::messagerrccsc() const {
+  return messagerrccsc_ != NULL ? *messagerrccsc_ : *default_instance_->messagerrccsc_;
+}
+inline ::RrcConnectionSetupComplete* RrcMessage::mutable_messagerrccsc() {
+  set_has_messagerrccsc();
+  if (messagerrccsc_ == NULL) messagerrccsc_ = new ::RrcConnectionSetupComplete;
+  return messagerrccsc_;
+}
+inline ::RrcConnectionSetupComplete* RrcMessage::release_messagerrccsc() {
+  clear_has_messagerrccsc();
+  ::RrcConnectionSetupComplete* temp = messagerrccsc_;
+  messagerrccsc_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messagerrccsc(::RrcConnectionSetupComplete* messagerrccsc) {
+  delete messagerrccsc_;
+  messagerrccsc_ = messagerrccsc;
+  if (messagerrccsc) {
+    set_has_messagerrccsc();
+  } else {
+    clear_has_messagerrccsc();
+  }
+}
+
+// optional .SecurityModeCommand messageSecurityMCommand = 7;
+inline bool RrcMessage::has_messagesecuritymcommand() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void RrcMessage::set_has_messagesecuritymcommand() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void RrcMessage::clear_has_messagesecuritymcommand() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void RrcMessage::clear_messagesecuritymcommand() {
+  if (messagesecuritymcommand_ != NULL) messagesecuritymcommand_->::SecurityModeCommand::Clear();
+  clear_has_messagesecuritymcommand();
+}
+inline const ::SecurityModeCommand& RrcMessage::messagesecuritymcommand() const {
+  return messagesecuritymcommand_ != NULL ? *messagesecuritymcommand_ : *default_instance_->messagesecuritymcommand_;
+}
+inline ::SecurityModeCommand* RrcMessage::mutable_messagesecuritymcommand() {
+  set_has_messagesecuritymcommand();
+  if (messagesecuritymcommand_ == NULL) messagesecuritymcommand_ = new ::SecurityModeCommand;
+  return messagesecuritymcommand_;
+}
+inline ::SecurityModeCommand* RrcMessage::release_messagesecuritymcommand() {
+  clear_has_messagesecuritymcommand();
+  ::SecurityModeCommand* temp = messagesecuritymcommand_;
+  messagesecuritymcommand_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messagesecuritymcommand(::SecurityModeCommand* messagesecuritymcommand) {
+  delete messagesecuritymcommand_;
+  messagesecuritymcommand_ = messagesecuritymcommand;
+  if (messagesecuritymcommand) {
+    set_has_messagesecuritymcommand();
+  } else {
+    clear_has_messagesecuritymcommand();
+  }
+}
+
+// optional .SecurityModeComplete messageSecurityMComplete = 8;
+inline bool RrcMessage::has_messagesecuritymcomplete() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void RrcMessage::set_has_messagesecuritymcomplete() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void RrcMessage::clear_has_messagesecuritymcomplete() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void RrcMessage::clear_messagesecuritymcomplete() {
+  if (messagesecuritymcomplete_ != NULL) messagesecuritymcomplete_->::SecurityModeComplete::Clear();
+  clear_has_messagesecuritymcomplete();
+}
+inline const ::SecurityModeComplete& RrcMessage::messagesecuritymcomplete() const {
+  return messagesecuritymcomplete_ != NULL ? *messagesecuritymcomplete_ : *default_instance_->messagesecuritymcomplete_;
+}
+inline ::SecurityModeComplete* RrcMessage::mutable_messagesecuritymcomplete() {
+  set_has_messagesecuritymcomplete();
+  if (messagesecuritymcomplete_ == NULL) messagesecuritymcomplete_ = new ::SecurityModeComplete;
+  return messagesecuritymcomplete_;
+}
+inline ::SecurityModeComplete* RrcMessage::release_messagesecuritymcomplete() {
+  clear_has_messagesecuritymcomplete();
+  ::SecurityModeComplete* temp = messagesecuritymcomplete_;
+  messagesecuritymcomplete_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messagesecuritymcomplete(::SecurityModeComplete* messagesecuritymcomplete) {
+  delete messagesecuritymcomplete_;
+  messagesecuritymcomplete_ = messagesecuritymcomplete;
+  if (messagesecuritymcomplete) {
+    set_has_messagesecuritymcomplete();
+  } else {
+    clear_has_messagesecuritymcomplete();
+  }
+}
+
+// optional .UeCapabilityEnquiry messageUeCE = 9;
+inline bool RrcMessage::has_messageuece() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void RrcMessage::set_has_messageuece() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void RrcMessage::clear_has_messageuece() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void RrcMessage::clear_messageuece() {
+  if (messageuece_ != NULL) messageuece_->::UeCapabilityEnquiry::Clear();
+  clear_has_messageuece();
+}
+inline const ::UeCapabilityEnquiry& RrcMessage::messageuece() const {
+  return messageuece_ != NULL ? *messageuece_ : *default_instance_->messageuece_;
+}
+inline ::UeCapabilityEnquiry* RrcMessage::mutable_messageuece() {
+  set_has_messageuece();
+  if (messageuece_ == NULL) messageuece_ = new ::UeCapabilityEnquiry;
+  return messageuece_;
+}
+inline ::UeCapabilityEnquiry* RrcMessage::release_messageuece() {
+  clear_has_messageuece();
+  ::UeCapabilityEnquiry* temp = messageuece_;
+  messageuece_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messageuece(::UeCapabilityEnquiry* messageuece) {
+  delete messageuece_;
+  messageuece_ = messageuece;
+  if (messageuece) {
+    set_has_messageuece();
+  } else {
+    clear_has_messageuece();
+  }
+}
+
+// optional .UeCapabilityInformation messageUeCI = 10;
+inline bool RrcMessage::has_messageueci() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void RrcMessage::set_has_messageueci() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void RrcMessage::clear_has_messageueci() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void RrcMessage::clear_messageueci() {
+  if (messageueci_ != NULL) messageueci_->::UeCapabilityInformation::Clear();
+  clear_has_messageueci();
+}
+inline const ::UeCapabilityInformation& RrcMessage::messageueci() const {
+  return messageueci_ != NULL ? *messageueci_ : *default_instance_->messageueci_;
+}
+inline ::UeCapabilityInformation* RrcMessage::mutable_messageueci() {
+  set_has_messageueci();
+  if (messageueci_ == NULL) messageueci_ = new ::UeCapabilityInformation;
+  return messageueci_;
+}
+inline ::UeCapabilityInformation* RrcMessage::release_messageueci() {
+  clear_has_messageueci();
+  ::UeCapabilityInformation* temp = messageueci_;
+  messageueci_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messageueci(::UeCapabilityInformation* messageueci) {
+  delete messageueci_;
+  messageueci_ = messageueci;
+  if (messageueci) {
+    set_has_messageueci();
+  } else {
+    clear_has_messageueci();
+  }
+}
+
+// optional .RrcConnectionReconfiguration messageRrcCreconfiguration = 11;
+inline bool RrcMessage::has_messagerrccreconfiguration() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void RrcMessage::set_has_messagerrccreconfiguration() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void RrcMessage::clear_has_messagerrccreconfiguration() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void RrcMessage::clear_messagerrccreconfiguration() {
+  if (messagerrccreconfiguration_ != NULL) messagerrccreconfiguration_->::RrcConnectionReconfiguration::Clear();
+  clear_has_messagerrccreconfiguration();
+}
+inline const ::RrcConnectionReconfiguration& RrcMessage::messagerrccreconfiguration() const {
+  return messagerrccreconfiguration_ != NULL ? *messagerrccreconfiguration_ : *default_instance_->messagerrccreconfiguration_;
+}
+inline ::RrcConnectionReconfiguration* RrcMessage::mutable_messagerrccreconfiguration() {
+  set_has_messagerrccreconfiguration();
+  if (messagerrccreconfiguration_ == NULL) messagerrccreconfiguration_ = new ::RrcConnectionReconfiguration;
+  return messagerrccreconfiguration_;
+}
+inline ::RrcConnectionReconfiguration* RrcMessage::release_messagerrccreconfiguration() {
+  clear_has_messagerrccreconfiguration();
+  ::RrcConnectionReconfiguration* temp = messagerrccreconfiguration_;
+  messagerrccreconfiguration_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messagerrccreconfiguration(::RrcConnectionReconfiguration* messagerrccreconfiguration) {
+  delete messagerrccreconfiguration_;
+  messagerrccreconfiguration_ = messagerrccreconfiguration;
+  if (messagerrccreconfiguration) {
+    set_has_messagerrccreconfiguration();
+  } else {
+    clear_has_messagerrccreconfiguration();
+  }
+}
+
+// optional .RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
+inline bool RrcMessage::has_messagerrrccrc() const {
+  return (_has_bits_[0] & 0x00000800u) != 0;
+}
+inline void RrcMessage::set_has_messagerrrccrc() {
+  _has_bits_[0] |= 0x00000800u;
+}
+inline void RrcMessage::clear_has_messagerrrccrc() {
+  _has_bits_[0] &= ~0x00000800u;
+}
+inline void RrcMessage::clear_messagerrrccrc() {
+  if (messagerrrccrc_ != NULL) messagerrrccrc_->::RrcConnectionReconfigurationComplete::Clear();
+  clear_has_messagerrrccrc();
+}
+inline const ::RrcConnectionReconfigurationComplete& RrcMessage::messagerrrccrc() const {
+  return messagerrrccrc_ != NULL ? *messagerrrccrc_ : *default_instance_->messagerrrccrc_;
+}
+inline ::RrcConnectionReconfigurationComplete* RrcMessage::mutable_messagerrrccrc() {
+  set_has_messagerrrccrc();
+  if (messagerrrccrc_ == NULL) messagerrrccrc_ = new ::RrcConnectionReconfigurationComplete;
+  return messagerrrccrc_;
+}
+inline ::RrcConnectionReconfigurationComplete* RrcMessage::release_messagerrrccrc() {
+  clear_has_messagerrrccrc();
+  ::RrcConnectionReconfigurationComplete* temp = messagerrrccrc_;
+  messagerrrccrc_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messagerrrccrc(::RrcConnectionReconfigurationComplete* messagerrrccrc) {
+  delete messagerrrccrc_;
+  messagerrrccrc_ = messagerrrccrc;
+  if (messagerrrccrc) {
+    set_has_messagerrrccrc();
+  } else {
+    clear_has_messagerrrccrc();
+  }
+}
+
+// optional .RrcConnectionReject messageRrcCReject = 13;
+inline bool RrcMessage::has_messagerrccreject() const {
+  return (_has_bits_[0] & 0x00001000u) != 0;
+}
+inline void RrcMessage::set_has_messagerrccreject() {
+  _has_bits_[0] |= 0x00001000u;
+}
+inline void RrcMessage::clear_has_messagerrccreject() {
+  _has_bits_[0] &= ~0x00001000u;
+}
+inline void RrcMessage::clear_messagerrccreject() {
+  if (messagerrccreject_ != NULL) messagerrccreject_->::RrcConnectionReject::Clear();
+  clear_has_messagerrccreject();
+}
+inline const ::RrcConnectionReject& RrcMessage::messagerrccreject() const {
+  return messagerrccreject_ != NULL ? *messagerrccreject_ : *default_instance_->messagerrccreject_;
+}
+inline ::RrcConnectionReject* RrcMessage::mutable_messagerrccreject() {
+  set_has_messagerrccreject();
+  if (messagerrccreject_ == NULL) messagerrccreject_ = new ::RrcConnectionReject;
+  return messagerrccreject_;
+}
+inline ::RrcConnectionReject* RrcMessage::release_messagerrccreject() {
+  clear_has_messagerrccreject();
+  ::RrcConnectionReject* temp = messagerrccreject_;
+  messagerrccreject_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messagerrccreject(::RrcConnectionReject* messagerrccreject) {
+  delete messagerrccreject_;
+  messagerrccreject_ = messagerrccreject;
+  if (messagerrccreject) {
+    set_has_messagerrccreject();
+  } else {
+    clear_has_messagerrccreject();
   }
 }
 
@@ -624,6 +2354,1011 @@ inline void RaResponse::set_ueidcrnti(::google::protobuf::int64 value) {
   ueidcrnti_ = value;
 }
 
+// -------------------------------------------------------------------
+
+// RrcConnectionRequest
+
+// required .UeIdRntiType ueIdRntiType = 1;
+inline bool RrcConnectionRequest::has_ueidrntitype() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void RrcConnectionRequest::set_has_ueidrntitype() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void RrcConnectionRequest::clear_has_ueidrntitype() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void RrcConnectionRequest::clear_ueidrntitype() {
+  ueidrntitype_ = 0;
+  clear_has_ueidrntitype();
+}
+inline ::UeIdRntiType RrcConnectionRequest::ueidrntitype() const {
+  return static_cast< ::UeIdRntiType >(ueidrntitype_);
+}
+inline void RrcConnectionRequest::set_ueidrntitype(::UeIdRntiType value) {
+  assert(::UeIdRntiType_IsValid(value));
+  set_has_ueidrntitype();
+  ueidrntitype_ = value;
+}
+
+// required int64 ueIdRntiValue = 2;
+inline bool RrcConnectionRequest::has_ueidrntivalue() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void RrcConnectionRequest::set_has_ueidrntivalue() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void RrcConnectionRequest::clear_has_ueidrntivalue() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void RrcConnectionRequest::clear_ueidrntivalue() {
+  ueidrntivalue_ = GOOGLE_LONGLONG(0);
+  clear_has_ueidrntivalue();
+}
+inline ::google::protobuf::int64 RrcConnectionRequest::ueidrntivalue() const {
+  return ueidrntivalue_;
+}
+inline void RrcConnectionRequest::set_ueidrntivalue(::google::protobuf::int64 value) {
+  set_has_ueidrntivalue();
+  ueidrntivalue_ = value;
+}
+
+// required .Imsi_message ueIdentity = 3;
+inline bool RrcConnectionRequest::has_ueidentity() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void RrcConnectionRequest::set_has_ueidentity() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void RrcConnectionRequest::clear_has_ueidentity() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void RrcConnectionRequest::clear_ueidentity() {
+  if (ueidentity_ != NULL) ueidentity_->::Imsi_message::Clear();
+  clear_has_ueidentity();
+}
+inline const ::Imsi_message& RrcConnectionRequest::ueidentity() const {
+  return ueidentity_ != NULL ? *ueidentity_ : *default_instance_->ueidentity_;
+}
+inline ::Imsi_message* RrcConnectionRequest::mutable_ueidentity() {
+  set_has_ueidentity();
+  if (ueidentity_ == NULL) ueidentity_ = new ::Imsi_message;
+  return ueidentity_;
+}
+inline ::Imsi_message* RrcConnectionRequest::release_ueidentity() {
+  clear_has_ueidentity();
+  ::Imsi_message* temp = ueidentity_;
+  ueidentity_ = NULL;
+  return temp;
+}
+inline void RrcConnectionRequest::set_allocated_ueidentity(::Imsi_message* ueidentity) {
+  delete ueidentity_;
+  ueidentity_ = ueidentity;
+  if (ueidentity) {
+    set_has_ueidentity();
+  } else {
+    clear_has_ueidentity();
+  }
+}
+
+// -------------------------------------------------------------------
+
+// Imsi_message
+
+// required string mcc = 1;
+inline bool Imsi_message::has_mcc() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Imsi_message::set_has_mcc() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Imsi_message::clear_has_mcc() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Imsi_message::clear_mcc() {
+  if (mcc_ != &::google::protobuf::internal::kEmptyString) {
+    mcc_->clear();
+  }
+  clear_has_mcc();
+}
+inline const ::std::string& Imsi_message::mcc() const {
+  return *mcc_;
+}
+inline void Imsi_message::set_mcc(const ::std::string& value) {
+  set_has_mcc();
+  if (mcc_ == &::google::protobuf::internal::kEmptyString) {
+    mcc_ = new ::std::string;
+  }
+  mcc_->assign(value);
+}
+inline void Imsi_message::set_mcc(const char* value) {
+  set_has_mcc();
+  if (mcc_ == &::google::protobuf::internal::kEmptyString) {
+    mcc_ = new ::std::string;
+  }
+  mcc_->assign(value);
+}
+inline void Imsi_message::set_mcc(const char* value, size_t size) {
+  set_has_mcc();
+  if (mcc_ == &::google::protobuf::internal::kEmptyString) {
+    mcc_ = new ::std::string;
+  }
+  mcc_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Imsi_message::mutable_mcc() {
+  set_has_mcc();
+  if (mcc_ == &::google::protobuf::internal::kEmptyString) {
+    mcc_ = new ::std::string;
+  }
+  return mcc_;
+}
+inline ::std::string* Imsi_message::release_mcc() {
+  clear_has_mcc();
+  if (mcc_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = mcc_;
+    mcc_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Imsi_message::set_allocated_mcc(::std::string* mcc) {
+  if (mcc_ != &::google::protobuf::internal::kEmptyString) {
+    delete mcc_;
+  }
+  if (mcc) {
+    set_has_mcc();
+    mcc_ = mcc;
+  } else {
+    clear_has_mcc();
+    mcc_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// required string mnc = 2;
+inline bool Imsi_message::has_mnc() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Imsi_message::set_has_mnc() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Imsi_message::clear_has_mnc() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Imsi_message::clear_mnc() {
+  if (mnc_ != &::google::protobuf::internal::kEmptyString) {
+    mnc_->clear();
+  }
+  clear_has_mnc();
+}
+inline const ::std::string& Imsi_message::mnc() const {
+  return *mnc_;
+}
+inline void Imsi_message::set_mnc(const ::std::string& value) {
+  set_has_mnc();
+  if (mnc_ == &::google::protobuf::internal::kEmptyString) {
+    mnc_ = new ::std::string;
+  }
+  mnc_->assign(value);
+}
+inline void Imsi_message::set_mnc(const char* value) {
+  set_has_mnc();
+  if (mnc_ == &::google::protobuf::internal::kEmptyString) {
+    mnc_ = new ::std::string;
+  }
+  mnc_->assign(value);
+}
+inline void Imsi_message::set_mnc(const char* value, size_t size) {
+  set_has_mnc();
+  if (mnc_ == &::google::protobuf::internal::kEmptyString) {
+    mnc_ = new ::std::string;
+  }
+  mnc_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Imsi_message::mutable_mnc() {
+  set_has_mnc();
+  if (mnc_ == &::google::protobuf::internal::kEmptyString) {
+    mnc_ = new ::std::string;
+  }
+  return mnc_;
+}
+inline ::std::string* Imsi_message::release_mnc() {
+  clear_has_mnc();
+  if (mnc_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = mnc_;
+    mnc_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Imsi_message::set_allocated_mnc(::std::string* mnc) {
+  if (mnc_ != &::google::protobuf::internal::kEmptyString) {
+    delete mnc_;
+  }
+  if (mnc) {
+    set_has_mnc();
+    mnc_ = mnc;
+  } else {
+    clear_has_mnc();
+    mnc_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// required string msin = 3;
+inline bool Imsi_message::has_msin() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Imsi_message::set_has_msin() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Imsi_message::clear_has_msin() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Imsi_message::clear_msin() {
+  if (msin_ != &::google::protobuf::internal::kEmptyString) {
+    msin_->clear();
+  }
+  clear_has_msin();
+}
+inline const ::std::string& Imsi_message::msin() const {
+  return *msin_;
+}
+inline void Imsi_message::set_msin(const ::std::string& value) {
+  set_has_msin();
+  if (msin_ == &::google::protobuf::internal::kEmptyString) {
+    msin_ = new ::std::string;
+  }
+  msin_->assign(value);
+}
+inline void Imsi_message::set_msin(const char* value) {
+  set_has_msin();
+  if (msin_ == &::google::protobuf::internal::kEmptyString) {
+    msin_ = new ::std::string;
+  }
+  msin_->assign(value);
+}
+inline void Imsi_message::set_msin(const char* value, size_t size) {
+  set_has_msin();
+  if (msin_ == &::google::protobuf::internal::kEmptyString) {
+    msin_ = new ::std::string;
+  }
+  msin_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Imsi_message::mutable_msin() {
+  set_has_msin();
+  if (msin_ == &::google::protobuf::internal::kEmptyString) {
+    msin_ = new ::std::string;
+  }
+  return msin_;
+}
+inline ::std::string* Imsi_message::release_msin() {
+  clear_has_msin();
+  if (msin_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = msin_;
+    msin_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Imsi_message::set_allocated_msin(::std::string* msin) {
+  if (msin_ != &::google::protobuf::internal::kEmptyString) {
+    delete msin_;
+  }
+  if (msin) {
+    set_has_msin();
+    msin_ = msin;
+  } else {
+    clear_has_msin();
+    msin_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
+// RrcConnectionSetup
+
+// required .UeIdRntiType ueIdRntiType = 1;
+inline bool RrcConnectionSetup::has_ueidrntitype() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void RrcConnectionSetup::set_has_ueidrntitype() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void RrcConnectionSetup::clear_has_ueidrntitype() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void RrcConnectionSetup::clear_ueidrntitype() {
+  ueidrntitype_ = 0;
+  clear_has_ueidrntitype();
+}
+inline ::UeIdRntiType RrcConnectionSetup::ueidrntitype() const {
+  return static_cast< ::UeIdRntiType >(ueidrntitype_);
+}
+inline void RrcConnectionSetup::set_ueidrntitype(::UeIdRntiType value) {
+  assert(::UeIdRntiType_IsValid(value));
+  set_has_ueidrntitype();
+  ueidrntitype_ = value;
+}
+
+// required int64 ueIdRntiValue = 2;
+inline bool RrcConnectionSetup::has_ueidrntivalue() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void RrcConnectionSetup::set_has_ueidrntivalue() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void RrcConnectionSetup::clear_has_ueidrntivalue() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void RrcConnectionSetup::clear_ueidrntivalue() {
+  ueidrntivalue_ = GOOGLE_LONGLONG(0);
+  clear_has_ueidrntivalue();
+}
+inline ::google::protobuf::int64 RrcConnectionSetup::ueidrntivalue() const {
+  return ueidrntivalue_;
+}
+inline void RrcConnectionSetup::set_ueidrntivalue(::google::protobuf::int64 value) {
+  set_has_ueidrntivalue();
+  ueidrntivalue_ = value;
+}
+
+// required string srbIdentity = 3;
+inline bool RrcConnectionSetup::has_srbidentity() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void RrcConnectionSetup::set_has_srbidentity() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void RrcConnectionSetup::clear_has_srbidentity() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void RrcConnectionSetup::clear_srbidentity() {
+  if (srbidentity_ != &::google::protobuf::internal::kEmptyString) {
+    srbidentity_->clear();
+  }
+  clear_has_srbidentity();
+}
+inline const ::std::string& RrcConnectionSetup::srbidentity() const {
+  return *srbidentity_;
+}
+inline void RrcConnectionSetup::set_srbidentity(const ::std::string& value) {
+  set_has_srbidentity();
+  if (srbidentity_ == &::google::protobuf::internal::kEmptyString) {
+    srbidentity_ = new ::std::string;
+  }
+  srbidentity_->assign(value);
+}
+inline void RrcConnectionSetup::set_srbidentity(const char* value) {
+  set_has_srbidentity();
+  if (srbidentity_ == &::google::protobuf::internal::kEmptyString) {
+    srbidentity_ = new ::std::string;
+  }
+  srbidentity_->assign(value);
+}
+inline void RrcConnectionSetup::set_srbidentity(const char* value, size_t size) {
+  set_has_srbidentity();
+  if (srbidentity_ == &::google::protobuf::internal::kEmptyString) {
+    srbidentity_ = new ::std::string;
+  }
+  srbidentity_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* RrcConnectionSetup::mutable_srbidentity() {
+  set_has_srbidentity();
+  if (srbidentity_ == &::google::protobuf::internal::kEmptyString) {
+    srbidentity_ = new ::std::string;
+  }
+  return srbidentity_;
+}
+inline ::std::string* RrcConnectionSetup::release_srbidentity() {
+  clear_has_srbidentity();
+  if (srbidentity_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = srbidentity_;
+    srbidentity_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void RrcConnectionSetup::set_allocated_srbidentity(::std::string* srbidentity) {
+  if (srbidentity_ != &::google::protobuf::internal::kEmptyString) {
+    delete srbidentity_;
+  }
+  if (srbidentity) {
+    set_has_srbidentity();
+    srbidentity_ = srbidentity;
+  } else {
+    clear_has_srbidentity();
+    srbidentity_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
+// RrcConnectionSetupComplete
+
+// required int64 ueCRnti = 1;
+inline bool RrcConnectionSetupComplete::has_uecrnti() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void RrcConnectionSetupComplete::set_has_uecrnti() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void RrcConnectionSetupComplete::clear_has_uecrnti() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void RrcConnectionSetupComplete::clear_uecrnti() {
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  clear_has_uecrnti();
+}
+inline ::google::protobuf::int64 RrcConnectionSetupComplete::uecrnti() const {
+  return uecrnti_;
+}
+inline void RrcConnectionSetupComplete::set_uecrnti(::google::protobuf::int64 value) {
+  set_has_uecrnti();
+  uecrnti_ = value;
+}
+
+// required string selectedPlmnIdentity = 2;
+inline bool RrcConnectionSetupComplete::has_selectedplmnidentity() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void RrcConnectionSetupComplete::set_has_selectedplmnidentity() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void RrcConnectionSetupComplete::clear_has_selectedplmnidentity() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void RrcConnectionSetupComplete::clear_selectedplmnidentity() {
+  if (selectedplmnidentity_ != &::google::protobuf::internal::kEmptyString) {
+    selectedplmnidentity_->clear();
+  }
+  clear_has_selectedplmnidentity();
+}
+inline const ::std::string& RrcConnectionSetupComplete::selectedplmnidentity() const {
+  return *selectedplmnidentity_;
+}
+inline void RrcConnectionSetupComplete::set_selectedplmnidentity(const ::std::string& value) {
+  set_has_selectedplmnidentity();
+  if (selectedplmnidentity_ == &::google::protobuf::internal::kEmptyString) {
+    selectedplmnidentity_ = new ::std::string;
+  }
+  selectedplmnidentity_->assign(value);
+}
+inline void RrcConnectionSetupComplete::set_selectedplmnidentity(const char* value) {
+  set_has_selectedplmnidentity();
+  if (selectedplmnidentity_ == &::google::protobuf::internal::kEmptyString) {
+    selectedplmnidentity_ = new ::std::string;
+  }
+  selectedplmnidentity_->assign(value);
+}
+inline void RrcConnectionSetupComplete::set_selectedplmnidentity(const char* value, size_t size) {
+  set_has_selectedplmnidentity();
+  if (selectedplmnidentity_ == &::google::protobuf::internal::kEmptyString) {
+    selectedplmnidentity_ = new ::std::string;
+  }
+  selectedplmnidentity_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* RrcConnectionSetupComplete::mutable_selectedplmnidentity() {
+  set_has_selectedplmnidentity();
+  if (selectedplmnidentity_ == &::google::protobuf::internal::kEmptyString) {
+    selectedplmnidentity_ = new ::std::string;
+  }
+  return selectedplmnidentity_;
+}
+inline ::std::string* RrcConnectionSetupComplete::release_selectedplmnidentity() {
+  clear_has_selectedplmnidentity();
+  if (selectedplmnidentity_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = selectedplmnidentity_;
+    selectedplmnidentity_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void RrcConnectionSetupComplete::set_allocated_selectedplmnidentity(::std::string* selectedplmnidentity) {
+  if (selectedplmnidentity_ != &::google::protobuf::internal::kEmptyString) {
+    delete selectedplmnidentity_;
+  }
+  if (selectedplmnidentity) {
+    set_has_selectedplmnidentity();
+    selectedplmnidentity_ = selectedplmnidentity;
+  } else {
+    clear_has_selectedplmnidentity();
+    selectedplmnidentity_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
+// SecurityModeCommand
+
+// required int64 ueCRnti = 1;
+inline bool SecurityModeCommand::has_uecrnti() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void SecurityModeCommand::set_has_uecrnti() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void SecurityModeCommand::clear_has_uecrnti() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void SecurityModeCommand::clear_uecrnti() {
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  clear_has_uecrnti();
+}
+inline ::google::protobuf::int64 SecurityModeCommand::uecrnti() const {
+  return uecrnti_;
+}
+inline void SecurityModeCommand::set_uecrnti(::google::protobuf::int64 value) {
+  set_has_uecrnti();
+  uecrnti_ = value;
+}
+
+// required string message_security = 2;
+inline bool SecurityModeCommand::has_message_security() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void SecurityModeCommand::set_has_message_security() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void SecurityModeCommand::clear_has_message_security() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void SecurityModeCommand::clear_message_security() {
+  if (message_security_ != &::google::protobuf::internal::kEmptyString) {
+    message_security_->clear();
+  }
+  clear_has_message_security();
+}
+inline const ::std::string& SecurityModeCommand::message_security() const {
+  return *message_security_;
+}
+inline void SecurityModeCommand::set_message_security(const ::std::string& value) {
+  set_has_message_security();
+  if (message_security_ == &::google::protobuf::internal::kEmptyString) {
+    message_security_ = new ::std::string;
+  }
+  message_security_->assign(value);
+}
+inline void SecurityModeCommand::set_message_security(const char* value) {
+  set_has_message_security();
+  if (message_security_ == &::google::protobuf::internal::kEmptyString) {
+    message_security_ = new ::std::string;
+  }
+  message_security_->assign(value);
+}
+inline void SecurityModeCommand::set_message_security(const char* value, size_t size) {
+  set_has_message_security();
+  if (message_security_ == &::google::protobuf::internal::kEmptyString) {
+    message_security_ = new ::std::string;
+  }
+  message_security_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* SecurityModeCommand::mutable_message_security() {
+  set_has_message_security();
+  if (message_security_ == &::google::protobuf::internal::kEmptyString) {
+    message_security_ = new ::std::string;
+  }
+  return message_security_;
+}
+inline ::std::string* SecurityModeCommand::release_message_security() {
+  clear_has_message_security();
+  if (message_security_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = message_security_;
+    message_security_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void SecurityModeCommand::set_allocated_message_security(::std::string* message_security) {
+  if (message_security_ != &::google::protobuf::internal::kEmptyString) {
+    delete message_security_;
+  }
+  if (message_security) {
+    set_has_message_security();
+    message_security_ = message_security;
+  } else {
+    clear_has_message_security();
+    message_security_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
+// SecurityModeComplete
+
+// required int64 ueCRnti = 1;
+inline bool SecurityModeComplete::has_uecrnti() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void SecurityModeComplete::set_has_uecrnti() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void SecurityModeComplete::clear_has_uecrnti() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void SecurityModeComplete::clear_uecrnti() {
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  clear_has_uecrnti();
+}
+inline ::google::protobuf::int64 SecurityModeComplete::uecrnti() const {
+  return uecrnti_;
+}
+inline void SecurityModeComplete::set_uecrnti(::google::protobuf::int64 value) {
+  set_has_uecrnti();
+  uecrnti_ = value;
+}
+
+// required bool securityModeSuccess = 2;
+inline bool SecurityModeComplete::has_securitymodesuccess() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void SecurityModeComplete::set_has_securitymodesuccess() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void SecurityModeComplete::clear_has_securitymodesuccess() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void SecurityModeComplete::clear_securitymodesuccess() {
+  securitymodesuccess_ = false;
+  clear_has_securitymodesuccess();
+}
+inline bool SecurityModeComplete::securitymodesuccess() const {
+  return securitymodesuccess_;
+}
+inline void SecurityModeComplete::set_securitymodesuccess(bool value) {
+  set_has_securitymodesuccess();
+  securitymodesuccess_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// UeCapabilityEnquiry
+
+// required int64 ueCRnti = 1;
+inline bool UeCapabilityEnquiry::has_uecrnti() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void UeCapabilityEnquiry::set_has_uecrnti() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void UeCapabilityEnquiry::clear_has_uecrnti() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void UeCapabilityEnquiry::clear_uecrnti() {
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  clear_has_uecrnti();
+}
+inline ::google::protobuf::int64 UeCapabilityEnquiry::uecrnti() const {
+  return uecrnti_;
+}
+inline void UeCapabilityEnquiry::set_uecrnti(::google::protobuf::int64 value) {
+  set_has_uecrnti();
+  uecrnti_ = value;
+}
+
+// repeated .RatType ueCapabilityRequest = 2 [packed = true];
+inline int UeCapabilityEnquiry::uecapabilityrequest_size() const {
+  return uecapabilityrequest_.size();
+}
+inline void UeCapabilityEnquiry::clear_uecapabilityrequest() {
+  uecapabilityrequest_.Clear();
+}
+inline ::RatType UeCapabilityEnquiry::uecapabilityrequest(int index) const {
+  return static_cast< ::RatType >(uecapabilityrequest_.Get(index));
+}
+inline void UeCapabilityEnquiry::set_uecapabilityrequest(int index, ::RatType value) {
+  assert(::RatType_IsValid(value));
+  uecapabilityrequest_.Set(index, value);
+}
+inline void UeCapabilityEnquiry::add_uecapabilityrequest(::RatType value) {
+  assert(::RatType_IsValid(value));
+  uecapabilityrequest_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField<int>&
+UeCapabilityEnquiry::uecapabilityrequest() const {
+  return uecapabilityrequest_;
+}
+inline ::google::protobuf::RepeatedField<int>*
+UeCapabilityEnquiry::mutable_uecapabilityrequest() {
+  return &uecapabilityrequest_;
+}
+
+// -------------------------------------------------------------------
+
+// UeCapabilityInformation
+
+// required int64 ueCRnti = 1;
+inline bool UeCapabilityInformation::has_uecrnti() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void UeCapabilityInformation::set_has_uecrnti() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void UeCapabilityInformation::clear_has_uecrnti() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void UeCapabilityInformation::clear_uecrnti() {
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  clear_has_uecrnti();
+}
+inline ::google::protobuf::int64 UeCapabilityInformation::uecrnti() const {
+  return uecrnti_;
+}
+inline void UeCapabilityInformation::set_uecrnti(::google::protobuf::int64 value) {
+  set_has_uecrnti();
+  uecrnti_ = value;
+}
+
+// repeated .RatCapability ueCapabilityRatList = 2;
+inline int UeCapabilityInformation::uecapabilityratlist_size() const {
+  return uecapabilityratlist_.size();
+}
+inline void UeCapabilityInformation::clear_uecapabilityratlist() {
+  uecapabilityratlist_.Clear();
+}
+inline const ::RatCapability& UeCapabilityInformation::uecapabilityratlist(int index) const {
+  return uecapabilityratlist_.Get(index);
+}
+inline ::RatCapability* UeCapabilityInformation::mutable_uecapabilityratlist(int index) {
+  return uecapabilityratlist_.Mutable(index);
+}
+inline ::RatCapability* UeCapabilityInformation::add_uecapabilityratlist() {
+  return uecapabilityratlist_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::RatCapability >&
+UeCapabilityInformation::uecapabilityratlist() const {
+  return uecapabilityratlist_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::RatCapability >*
+UeCapabilityInformation::mutable_uecapabilityratlist() {
+  return &uecapabilityratlist_;
+}
+
+// -------------------------------------------------------------------
+
+// RatCapability
+
+// required .RatType rat = 1;
+inline bool RatCapability::has_rat() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void RatCapability::set_has_rat() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void RatCapability::clear_has_rat() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void RatCapability::clear_rat() {
+  rat_ = 0;
+  clear_has_rat();
+}
+inline ::RatType RatCapability::rat() const {
+  return static_cast< ::RatType >(rat_);
+}
+inline void RatCapability::set_rat(::RatType value) {
+  assert(::RatType_IsValid(value));
+  set_has_rat();
+  rat_ = value;
+}
+
+// required bool isSupported = 2;
+inline bool RatCapability::has_issupported() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void RatCapability::set_has_issupported() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void RatCapability::clear_has_issupported() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void RatCapability::clear_issupported() {
+  issupported_ = false;
+  clear_has_issupported();
+}
+inline bool RatCapability::issupported() const {
+  return issupported_;
+}
+inline void RatCapability::set_issupported(bool value) {
+  set_has_issupported();
+  issupported_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// RrcConnectionReconfiguration
+
+// required int64 ueCRnti = 1;
+inline bool RrcConnectionReconfiguration::has_uecrnti() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void RrcConnectionReconfiguration::set_has_uecrnti() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void RrcConnectionReconfiguration::clear_has_uecrnti() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void RrcConnectionReconfiguration::clear_uecrnti() {
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  clear_has_uecrnti();
+}
+inline ::google::protobuf::int64 RrcConnectionReconfiguration::uecrnti() const {
+  return uecrnti_;
+}
+inline void RrcConnectionReconfiguration::set_uecrnti(::google::protobuf::int64 value) {
+  set_has_uecrnti();
+  uecrnti_ = value;
+}
+
+// required string epsRadioBearerIdentity = 2;
+inline bool RrcConnectionReconfiguration::has_epsradiobeareridentity() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void RrcConnectionReconfiguration::set_has_epsradiobeareridentity() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void RrcConnectionReconfiguration::clear_has_epsradiobeareridentity() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void RrcConnectionReconfiguration::clear_epsradiobeareridentity() {
+  if (epsradiobeareridentity_ != &::google::protobuf::internal::kEmptyString) {
+    epsradiobeareridentity_->clear();
+  }
+  clear_has_epsradiobeareridentity();
+}
+inline const ::std::string& RrcConnectionReconfiguration::epsradiobeareridentity() const {
+  return *epsradiobeareridentity_;
+}
+inline void RrcConnectionReconfiguration::set_epsradiobeareridentity(const ::std::string& value) {
+  set_has_epsradiobeareridentity();
+  if (epsradiobeareridentity_ == &::google::protobuf::internal::kEmptyString) {
+    epsradiobeareridentity_ = new ::std::string;
+  }
+  epsradiobeareridentity_->assign(value);
+}
+inline void RrcConnectionReconfiguration::set_epsradiobeareridentity(const char* value) {
+  set_has_epsradiobeareridentity();
+  if (epsradiobeareridentity_ == &::google::protobuf::internal::kEmptyString) {
+    epsradiobeareridentity_ = new ::std::string;
+  }
+  epsradiobeareridentity_->assign(value);
+}
+inline void RrcConnectionReconfiguration::set_epsradiobeareridentity(const char* value, size_t size) {
+  set_has_epsradiobeareridentity();
+  if (epsradiobeareridentity_ == &::google::protobuf::internal::kEmptyString) {
+    epsradiobeareridentity_ = new ::std::string;
+  }
+  epsradiobeareridentity_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* RrcConnectionReconfiguration::mutable_epsradiobeareridentity() {
+  set_has_epsradiobeareridentity();
+  if (epsradiobeareridentity_ == &::google::protobuf::internal::kEmptyString) {
+    epsradiobeareridentity_ = new ::std::string;
+  }
+  return epsradiobeareridentity_;
+}
+inline ::std::string* RrcConnectionReconfiguration::release_epsradiobeareridentity() {
+  clear_has_epsradiobeareridentity();
+  if (epsradiobeareridentity_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = epsradiobeareridentity_;
+    epsradiobeareridentity_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void RrcConnectionReconfiguration::set_allocated_epsradiobeareridentity(::std::string* epsradiobeareridentity) {
+  if (epsradiobeareridentity_ != &::google::protobuf::internal::kEmptyString) {
+    delete epsradiobeareridentity_;
+  }
+  if (epsradiobeareridentity) {
+    set_has_epsradiobeareridentity();
+    epsradiobeareridentity_ = epsradiobeareridentity;
+  } else {
+    clear_has_epsradiobeareridentity();
+    epsradiobeareridentity_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
+// RrcConnectionReconfigurationComplete
+
+// required int64 ueCRnti = 1;
+inline bool RrcConnectionReconfigurationComplete::has_uecrnti() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void RrcConnectionReconfigurationComplete::set_has_uecrnti() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void RrcConnectionReconfigurationComplete::clear_has_uecrnti() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void RrcConnectionReconfigurationComplete::clear_uecrnti() {
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  clear_has_uecrnti();
+}
+inline ::google::protobuf::int64 RrcConnectionReconfigurationComplete::uecrnti() const {
+  return uecrnti_;
+}
+inline void RrcConnectionReconfigurationComplete::set_uecrnti(::google::protobuf::int64 value) {
+  set_has_uecrnti();
+  uecrnti_ = value;
+}
+
+// required bool epsRadioBearerActivated = 2;
+inline bool RrcConnectionReconfigurationComplete::has_epsradiobeareractivated() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void RrcConnectionReconfigurationComplete::set_has_epsradiobeareractivated() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void RrcConnectionReconfigurationComplete::clear_has_epsradiobeareractivated() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void RrcConnectionReconfigurationComplete::clear_epsradiobeareractivated() {
+  epsradiobeareractivated_ = false;
+  clear_has_epsradiobeareractivated();
+}
+inline bool RrcConnectionReconfigurationComplete::epsradiobeareractivated() const {
+  return epsradiobeareractivated_;
+}
+inline void RrcConnectionReconfigurationComplete::set_epsradiobeareractivated(bool value) {
+  set_has_epsradiobeareractivated();
+  epsradiobeareractivated_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// RrcConnectionReject
+
+// required int64 ueCRnti = 1;
+inline bool RrcConnectionReject::has_uecrnti() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void RrcConnectionReject::set_has_uecrnti() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void RrcConnectionReject::clear_has_uecrnti() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void RrcConnectionReject::clear_uecrnti() {
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  clear_has_uecrnti();
+}
+inline ::google::protobuf::int64 RrcConnectionReject::uecrnti() const {
+  return uecrnti_;
+}
+inline void RrcConnectionReject::set_uecrnti(::google::protobuf::int64 value) {
+  set_has_uecrnti();
+  uecrnti_ = value;
+}
+
+// required int32 waitingTime = 2;
+inline bool RrcConnectionReject::has_waitingtime() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void RrcConnectionReject::set_has_waitingtime() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void RrcConnectionReject::clear_has_waitingtime() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void RrcConnectionReject::clear_waitingtime() {
+  waitingtime_ = 0;
+  clear_has_waitingtime();
+}
+inline ::google::protobuf::int32 RrcConnectionReject::waitingtime() const {
+  return waitingtime_;
+}
+inline void RrcConnectionReject::set_waitingtime(::google::protobuf::int32 value) {
+  set_has_waitingtime();
+  waitingtime_ = value;
+}
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -638,6 +3373,10 @@ inline const EnumDescriptor* GetEnumDescriptor< ::RrcMessage_MessageType>() {
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::UeIdRntiType>() {
   return ::UeIdRntiType_descriptor();
+}
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::RatType>() {
+  return ::RatType_descriptor();
 }
 
 }  // namespace google

@@ -94,7 +94,7 @@ enum RatType {
 
 message UeCapabilityInformation {
 	required int64 ueCRnti = 1;
-	repeated RatCapability ueCapabilityRatList = 2 [packed=true];
+	repeated RatCapability ueCapabilityRatList = 2;
 }
 
 message RatCapability {
