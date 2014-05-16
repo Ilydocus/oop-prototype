@@ -4,21 +4,15 @@
 #include <iostream>
 #include <string>
 #include "RrcMessages.pb.h"
-#include "Identifiers.h"
 
 using namespace std;
 
 enum RrcState {RRC_Idle, RRC_Connected};
 
-struct RatCapability{
-  Rat rat;
-  bool isSupported;
-};
-
 struct UeContext_enb{
   RrcState rrcState;
   int c_rnti;
-  Imsi imsi;
+  Imsi_message imsi;
   string srbIdentity;
   int enbUeS1ApId;
   RatCapability ratCapabilities[5];

@@ -133,10 +133,16 @@ void  eventLoop (int listen_sock) {
 		     //Switch on the message type
 		     switch (rrcMessage.messagetype()){
 		     case 0 : //RaPreamble
-		       RaPreamble rapreamble;
+		       {RaPreamble rapreamble;
 		       rapreamble = rrcMessage.messagerap();
-		       ueContext.handleRaPreamble(rrcMessage.messagerap());
-		       cout << "Handling RaP done " << endl;
+		       ueContext.handleRaPreamble(rapreamble);
+		       cout << "Handling RaP done " << endl;}
+		       break;
+		     case 2 : //RrcConnectionRequest
+		       {RrcConnectionRequest rrcCRequest;
+		       rrcCRequest = rrcMessage.messagerrccrequest();
+		       ueContext.handleRrcConnectionRequest(rrcCRequest);}
+		       break;
 		     }
 		     		     
 		     

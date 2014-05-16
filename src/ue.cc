@@ -1,11 +1,11 @@
-#include <string>
 #include <iostream>
-#include "RrcMessages.pb.h"
+#include "ue.h"
 #include <cstring> //for memset
 #include <sys/socket.h>
 #include <netdb.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -16,12 +16,7 @@ void CreateRaPreamble (RaPreamble *rapreamble, int ueId) {
 
 }
 
-void *powerOn (void * ueId_void){
-
-GOOGLE_PROTOBUF_VERIFY_VERSION;
- int ueId = *((int *) ueId_void);
- free (ueId_void);
-  //Create the RaPreamble
+void sendRaPreamble (int socketfd, int ueId){
   RaPreamble *rapreamble = new RaPreamble;
   CreateRaPreamble (rapreamble, ueId);
   std::cout << "Ra_rnti is : " << rapreamble->ueidrntivalue() << std::endl;
@@ -37,22 +32,7 @@ GOOGLE_PROTOBUF_VERIFY_VERSION;
   const char * ser_message;
   ser_message = message.c_str();
   //Socket code
-  int status;
-  struct addrinfo host_info;
-  struct addrinfo *host_info_list;
-
-  memset(&host_info, 0, sizeof host_info);
-  host_info.ai_family = AF_UNSPEC;
-  host_info.ai_socktype = SOCK_STREAM;
-
-  status = getaddrinfo("127.0.0.1","43000",&host_info, &host_info_list);
-  //status != 0 -error
-  int socketfd;
-  socketfd = socket(host_info_list->ai_family, host_info_list->ai_socktype, host_info_list->ai_protocol);
-  //use first one in the list
-  //socket == 1 -error
-
-  status = connect (socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
+  
   //status ==-1 error
   int len;
   ssize_t bytes_sent;
@@ -66,8 +46,11 @@ GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   std::cout << "Message RAPreamble sent" << std::endl;
   std::cout << "Bytes sent: "<<bytes_sent << std::endl; 
+}
 
-  ssize_t bytes_recieved;
+void handleRaResponse (int socketfd, UeContext_ue *ue_state) {
+  //Part 1: Recieve the message
+ssize_t bytes_recieved;
 		     char incoming_data_buffer[1000];
 		     bytes_recieved = recv(socketfd, incoming_data_buffer,1000, 0);
 		      // If no data arrives, the program will just wait here until some data arrives.
@@ -90,44 +73,127 @@ GOOGLE_PROTOBUF_VERIFY_VERSION;
 		     RaResponse raResponse;
 		       raResponse = rrcMessage.messagerar();
 		     cout << "Type of rnti is : " << raResponse.ueidrntitype() << endl;
-  cout << "Value of rnti is : " << raResponse.ueidrntivalue() << endl;}
+  cout << "Value of rnti is : " << raResponse.ueidrntivalue() << endl;
 
-  //Test: is deserialization working?
-    /*RaPreamble test;
-    test.ParseFromString(message);
-    std::cout << "Ra_rnti is : " << test.ueidrntivalue() << std::endl;
-    std::cout << "Type of rnti is : " << test.ueidrntitype() << std::endl;*/
+		     //Part 2: Send Response
+RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
+  rrcConnectionRequest->set_ueidrntitype(C_RNTI);
+  rrcConnectionRequest->set_ueidrntivalue(raResponse.ueidrntivalue());
+  Imsi_message *tempImsi = new Imsi_message(ue_state->imsi);
+  //tempImsi = ue_state->imsi;
+  rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
+  std::cout << "C_rnti is : " << rrcConnectionRequest->ueidrntivalue() << std::endl;
+  //Pack it into a RrcMessage
+  RrcMessage rrcMessage_o;
+  rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
+  rrcMessage_o.set_allocated_messagerrccrequest(rrcConnectionRequest);
+  //Serialize the message
+  std::string message;
+  rrcMessage_o.SerializeToString(&message);
+  std::cout << "Serialization completed " << std::endl;
 
+  ssize_t bytes_sent;
+  bytes_sent = send (socketfd, message.c_str(), 
+		     message.length(), 0);
 
-  //For freeing memory
+  std::cout << "Message RrcConnectionRequest sent" << std::endl;
+  std::cout << "Bytes sent: "<<bytes_sent << std::endl;
+		     }
+		     
+}
+
+void *powerOn (void * ueId_void){
+
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  int ueId = *((int *) ueId_void);
+  //free (ueId_void);
+
+  //Create a socket and connect it
+  int status;
+  struct addrinfo host_info;
+  struct addrinfo *host_info_list;
+
+  memset(&host_info, 0, sizeof host_info);
+  host_info.ai_family = AF_UNSPEC;
+  host_info.ai_socktype = SOCK_STREAM;
+
+  status = getaddrinfo("127.0.0.1","43000",&host_info, &host_info_list);
+  //status != 0 -error
+  int socketfd;
+  socketfd = socket(host_info_list->ai_family, host_info_list->ai_socktype, host_info_list->ai_protocol);
+  //use first one in the list
+  //socket == 1 -error
+
+  status = connect (socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
+
+  //Initialize the UE state
+  UeContext_ue * ue_state= new UeContext_ue;
+  Imsi_message * temp_imsi = new Imsi_message;
+  genImsi(temp_imsi);
+  ue_state->imsi = *temp_imsi;
+  ue_state->securityKey = ueId * 18;
+
+  //Connection setup procedure
+  sendRaPreamble (socketfd, ueId);
+  //handleRaResponse (socketfd, ue_state);
+ 
+
+  
+
+  //Termination of the procedure
   google::protobuf::ShutdownProtobufLibrary();
   std::cout << "Stopping server..." << std::endl;
   freeaddrinfo(host_info_list);
   close(socketfd);
+  
+  pthread_exit(NULL);
 }
 
 
 int main () {
 
-  pthread_t t1;
+  const int nbOfUes = 1;
+  pthread_t thread[nbOfUes];
+  int temp_arg[nbOfUes];
   //Aim:powerOn several UEs in different threads
-  for (int i = 1; i<=2;i++){
-
-    int *arg =(int *)malloc(sizeof(*arg));
-    if (arg == NULL){
-      //error
-      exit(EXIT_FAILURE);
-    }
+  for (int i = 1; i<nbOfUes+1;i++){
     
-    *arg = i;
-    
-    pthread_create (&t1, NULL, powerOn,arg);
+    temp_arg[i-1]= i;
+    pthread_create (&thread[i -1], NULL, powerOn,static_cast<void*>(&temp_arg[i-1]));
     
   }
   //Wait
-  sleep(5);
+  for (int i = 1; i<=nbOfUes;i++){
+
+    pthread_join(thread[i-1],NULL);
+  }
+  //sleep(5); //should not be needed
 
   return 0;
 }
 
+void genImsi(Imsi_message *imsi){
+  //All the imsi are Swedish ones
+  string *randomId_mnc= new string;
+  string *randomId_msin= new string;
+  genRandId(randomId_mnc,2);
+  genRandId(randomId_msin,10);
+  //randomId = genRandId(12);
+  string *temp_mcc = new string("260");//p-e pas besoin
+  imsi->set_mcc(*temp_mcc);
+  imsi->set_mnc(*randomId_mnc);//randomId.substr(0,2));
+  imsi->set_msin(*randomId_msin);//randomId.substr(2,10));
+}
+
+void genRandId(string * id,const int len){
+  char temp[len];
+  static const char num[11] = "0123456789";
+  for (int i = 0; i<len; ++i){
+    temp[i] = num[(int)((double)rand() / ((double)RAND_MAX + 1)*(sizeof(num)-1))];
+  }
+  temp[len]=0;
+  string s(temp);
+  *id = s;
+}
 

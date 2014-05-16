@@ -40,6 +40,12 @@ void UeContext::handleRaPreamble(RaPreamble message)
 }
 
 void UeContext::handleRrcConnectionRequest(RrcConnectionRequest message){
+
+  //Print message
+  cout << "Message RRC Connection Request received " << endl;
+  cout << "Type of rnti is : " << message.ueidrntitype() << endl;
+  cout << "Value of rnti is : " << message.ueidrntivalue() << endl;
+  cout << "UE identity is : " << (message.ueidentity()).mcc()<< (message.ueidentity()).mnc() << (message.ueidentity()).msin() << endl;
 }
 
 void UeContext::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message){
@@ -47,7 +53,7 @@ void UeContext::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete mess
 }
 
 //void UeContext::handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest){
-}
+//}
 
 void UeContext::handleSecurityModeComplete(SecurityModeComplete message){
 }
