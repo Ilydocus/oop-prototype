@@ -136,7 +136,7 @@ void *powerOn (void * ueId_void){
 
   //Connection setup procedure
   sendRaPreamble (socketfd, ueId);
-  //handleRaResponse (socketfd, ue_state);
+  handleRaResponse (socketfd, ue_state);
  
 
   

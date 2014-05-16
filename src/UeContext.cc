@@ -45,7 +45,7 @@ void UeContext::handleRrcConnectionRequest(RrcConnectionRequest message){
   cout << "Message RRC Connection Request received " << endl;
   cout << "Type of rnti is : " << message.ueidrntitype() << endl;
   cout << "Value of rnti is : " << message.ueidrntivalue() << endl;
-  cout << "UE identity is : " << (message.ueidentity()).mcc()<< (message.ueidentity()).mnc() << (message.ueidentity()).msin() << endl;
+  cout << "UE identity is : " << (message.ueidentity()).mcc()<<"-"<< (message.ueidentity()).mnc() << "-"<< (message.ueidentity()).msin() << endl;
 }
 
 void UeContext::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message){
