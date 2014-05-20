@@ -6,6 +6,7 @@ using namespace std;
 
 UeContext::UeContext(int ueSocket, int mmeSocket):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket)
 {
+  //TODO: initialize the m_state to default values
 }
 
 void UeContext::handleRaPreamble(RaPreamble message)
@@ -96,7 +97,10 @@ void UeContext::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete mess
   cout << "Message RRC Connection Setup Complete received " << endl;
   cout << "Value of c-rnti is : " << message.uecrnti() << endl;
   cout << "Plmn identity is : " << message.selectedplmnidentity() << endl;
-
+  //Change state
+  m_state.rrcState = RRC_Connected;
+  m_state.enbUeS1ApId = 17 * message.uecrnti();
+  //Send response to the MME
 }
 
 //void UeContext::handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest){
