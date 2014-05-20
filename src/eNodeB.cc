@@ -143,7 +143,14 @@ void  eventLoop (int listen_sock) {
 		       rrcCRequest = rrcMessage.messagerrccrequest();
 		       ueContext.handleRrcConnectionRequest(rrcCRequest);}
 		       break;
+		     case 4 : //RrcConnectionSetupComplete
+		       {RrcConnectionSetupComplete rrcConnectionSetupComplete;
+		       rrcConnectionSetupComplete = rrcMessage.messagerrccsc();
+		       ueContext.handleRrcConnectionSetupComplete(rrcConnectionSetupComplete);
+		       cout << "Handling RrcCSC done " << endl;}
+		       break;
 		     }
+		    
 		     		     
 		     
 		     }

@@ -92,6 +92,11 @@ void UeContext::handleRrcConnectionRequest(RrcConnectionRequest message){
 
 void UeContext::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message){
 
+  //Print message
+  cout << "Message RRC Connection Setup Complete received " << endl;
+  cout << "Value of c-rnti is : " << message.uecrnti() << endl;
+  cout << "Plmn identity is : " << message.selectedplmnidentity() << endl;
+
 }
 
 //void UeContext::handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest){
