@@ -2,13 +2,14 @@
 #define DEF_UECONTEXTMME
 
 #include "S1Messages.pb.h"
+#include "UeContext"
 
 struct UeStateMme{
   int mmeUeS1ApId;
   int securityKey_mme;
 };
 
-class UeContextMme 
+class UeContextMme : public UeContext
 {
  public:
 

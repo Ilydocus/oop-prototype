@@ -1,6 +1,8 @@
-#include "Identifiers.hh"
+#include "UeContext.hh"
 
-void genRandId(string * id,const int len){
+#include <cstdlib>
+
+void UeContext::genRandId(string * id,const int len){
   char temp[len];
   static const char num[11] = "0123456789";
   for (int i = 0; i<len; ++i){

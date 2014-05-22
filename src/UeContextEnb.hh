@@ -5,7 +5,7 @@
 #include <string>
 #include "RrcMessages.pb.h"
 #include "S1Messages.pb.h"
-#include "Identifiers.hh"
+#include "UeContext.hh"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ struct UeStateEnb{
   string epsBearerId; 
 };
 
-class UeContextEnb 
+class UeContextEnb : public UeContext
 {
  public:
 
