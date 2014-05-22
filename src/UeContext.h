@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include "RrcMessages.pb.h"
+#include "S1Messages.pb.h"
 #include "Identifiers.h"
 
 using namespace std;
@@ -19,6 +20,11 @@ struct UeContext_enb{
   RatCapability ratCapabilities[5];
   int securityKey;
   string epsBearerId; 
+};
+
+struct UeContext_Mme{
+  int mmeUeS1ApId;
+  int securityKey_mme;
 };
 
 
@@ -39,7 +45,22 @@ class UeContext
 
   int m_ueSocket;
   int m_mmeSocket;
-  UeContext_enb m_state;//struct needed?
+  UeContext_enb m_state;
+
+};
+
+class UeContext_mme 
+{
+ public:
+
+  UeContext_mme(int enbSocket);
+  void handleS1ApInitialUeMessage(S1ApInitialUeMessage message); 
+  void handleS1ApInitialContextSetupResponse(S1ApInitialContextSetupResponse message); 
+
+ private:
+
+  int m_enbSocket;
+  UeContext_Mme m_state;
 
 };
 

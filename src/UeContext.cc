@@ -114,3 +114,15 @@ void UeContext::handleUeCapabilityInformation(UeCapabilityInformation message){
 
 void UeContext::handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message){
 }
+
+//MME
+UeContext_mme::UeContext_mme(int enbSocket):m_enbSocket(enbSocket)
+{
+  //TODO: initialize the m_state to default values
+} 
+
+void UeContext_mme::handleS1ApInitialUeMessage(S1ApInitialUeMessage message){
+}
+ 
+void UeContext_mme::handleS1ApInitialContextSetupResponse(S1ApInitialContextSetupResponse message){
+}

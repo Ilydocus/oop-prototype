@@ -9,13 +9,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <utility>
-#include "RrcMessages.pb.h"
+#include "S1Messages.pb.h"
 #include "UeContext.h"
 
 #define MAX_EVENTS 10 //for EventLoop
 
 using namespace std;
 
+//Est utilise plusieurs fois -> mettre ailleurs
 static int make_socket_non_blocking (int sfd)
 {
   int flags, s;
@@ -46,10 +47,7 @@ void  eventLoop (int listen_sock) {
   int conn_sock, nfds, epollfd;
 
   //"database" for the UeContext
-  map<int,UeContext> ueContexts;
-
-  /* Set up listening socket, 'listen_sock' (socket(),
-              bind(), listen()) *///Done in main or other function?
+  map<int,UeContext_mme> ueContexts;
 
   epollfd = epoll_create(10);//create an epoll instance
   if (epollfd == -1) {
@@ -79,9 +77,7 @@ void  eventLoop (int listen_sock) {
 		     struct sockaddr_storage their_addr;
 		     socklen_t addr_size = sizeof(their_addr);
 		     conn_sock = accept(listen_sock, (struct sockaddr *)&their_addr, &addr_size);
-		     //conn_sock = accept(listen_sock,
-		     //                (struct sockaddr *) &local, &addrlen);
-                       if (conn_sock == -1) {
+		     if (conn_sock == -1) {
                            perror("accept");
                            exit(EXIT_FAILURE);
                        }
@@ -93,12 +89,8 @@ void  eventLoop (int listen_sock) {
                            perror("epoll_ctl: conn_sock");
                            exit(EXIT_FAILURE);
                        }
-		       //Connection to the MME
-		       // TO BE ADDED
-		       int mme_sock;
-		       mme_sock = 0;
 		       //Creation of an object to handle this UE
-		       UeContext *ueContext = new UeContext(conn_sock,mme_sock);
+		       UeContext_mme *ueContext = new UeContext_mme(conn_sock);
 		       //Store this object in a map
 		       ueContexts.insert(pair<int,UeContext>(conn_sock,*ueContext));
                    } else {
@@ -120,34 +112,28 @@ void  eventLoop (int listen_sock) {
 		     //The message is serialized, we need to deserialize it
 		     GOOGLE_PROTOBUF_VERIFY_VERSION;
     
-		     RrcMessage rrcMessage;
+		     S1Message s1Message;
 		     //const string str_message;
 		     string str_message(incoming_data_buffer, bytes_recieved);
-		     rrcMessage.ParseFromString(str_message);
+		     s1Message.ParseFromString(str_message);
 		     cout << "Message deserialized " << endl;
 
 		     //Get the object handler in the map
-		     map<int,UeContext>::iterator temp_it = ueContexts.find(events[n].data.fd);		    
-		     UeContext ueContext = temp_it->second;
+		     map<int,UeContext_mme>::iterator temp_it = ueContexts.find(events[n].data.fd);		    
+		     UeContext_mme ueContext = temp_it->second;
 		     
 		     //Switch on the message type
-		     switch (rrcMessage.messagetype()){
-		     case 0 : //RaPreamble
-		       {RaPreamble rapreamble;
-		       rapreamble = rrcMessage.messagerap();
-		       ueContext.handleRaPreamble(rapreamble);
-		       cout << "Handling RaP done " << endl;}
+		     switch (s1Message.messagetype()){
+		     case 0 : //Initial Ue Message
+		       {S1APInitialUeMessage initialUeMessage;
+		       initialUeMessage = s1Message.messages1apiuem();
+		       ueContext.handleS1ApInitialUeMessage(initialUeMessage);
+		       cout << "Handling Initial Ue Message done " << endl;}
 		       break;
-		     case 2 : //RrcConnectionRequest
-		       {RrcConnectionRequest rrcCRequest;
-		       rrcCRequest = rrcMessage.messagerrccrequest();
-		       ueContext.handleRrcConnectionRequest(rrcCRequest);}
-		       break;
-		     case 4 : //RrcConnectionSetupComplete
-		       {RrcConnectionSetupComplete rrcConnectionSetupComplete;
-		       rrcConnectionSetupComplete = rrcMessage.messagerrccsc();
-		       ueContext.handleRrcConnectionSetupComplete(rrcConnectionSetupComplete);
-		       cout << "Handling RrcCSC done " << endl;}
+		     case 2 : //Initial Context Setup Response
+		       {S1APInitialContextSetupResponse initialCSResponse;
+		       initialCSResponse = s1Message.messages1apicsresponse();
+		       ueContext.handleS1APInitialContextSetupResponse(initialCSResponse);}
 		       break;
 		     }
 		    
@@ -162,21 +148,20 @@ void  eventLoop (int listen_sock) {
 
 
 int main () {
-  
 
-int status;
-    struct addrinfo host_info;      
-    struct addrinfo *host_info_list; 
+  int status;
+  struct addrinfo host_info;      
+  struct addrinfo *host_info_list; 
 
-    memset(&host_info, 0, sizeof host_info);
+  memset(&host_info, 0, sizeof host_info);
 
-    std::cout << "Setting up the structs..."  << std::endl;
+  std::cout << "Setting up the structs..."  << std::endl;
 
-    host_info.ai_family = AF_UNSPEC;     
-    host_info.ai_socktype = SOCK_STREAM; 
-    host_info.ai_flags = AI_PASSIVE;    
+  host_info.ai_family = AF_UNSPEC;     
+  host_info.ai_socktype = SOCK_STREAM; 
+  host_info.ai_flags = AI_PASSIVE;    
 
-     status = getaddrinfo(NULL, "43000", &host_info, &host_info_list);
+     status = getaddrinfo(NULL, "43001", &host_info, &host_info_list);
     
      //if (status != 0)  std::cout << "getaddrinfo error" << gai_strerror(status) ;
 
@@ -194,70 +179,12 @@ int status;
     status = bind(socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
     if (status == -1)  std::cout << "bind error" << std::endl ;
 
-    std::cout << "Listen()ing for connections..."  << std::endl;
-    status =  listen(socketfd, 5);//5 is the number of "on hold"
+    std::cout << "Listening for connections..."  << std::endl;
+    status = listen(socketfd, 2);//2 is the number of "on hold"
     if (status == -1)  std::cout << "listen error" << std::endl ;
 
 
     eventLoop(socketfd);
 
-
-    /*int new_sd;
-    struct sockaddr_storage their_addr;
-    socklen_t addr_size = sizeof(their_addr);
-    new_sd = accept(socketfd, (struct sockaddr *)&their_addr, &addr_size);
-    if (new_sd == -1)
-    {
-        std::cout << "listen error" << std::endl ;
-    }
-    else
-    {
-        std::cout << "Connection accepted. Using new socketfd : "  <<  new_sd << std::endl;
-	}*/
-
-
-    /*std::cout << "Waiting to recieve data..."  << std::endl;
-    ssize_t bytes_recieved;
-    char incoming_data_buffer[1000];
-    bytes_recieved = recv(new_sd, incoming_data_buffer,1000, 0);
-    // If no data arrives, the program will just wait here until some data arrives.
-    if (bytes_recieved == 0) std::cout << "host shut down." << std::endl ;
-    if (bytes_recieved == -1)std::cout << "recieve error!" << std::endl ;
-    std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
-    incoming_data_buffer[bytes_recieved] = '\0';
-    //std::cout << incoming_data_buffer << std::endl;
-
-    //The message is serialized, we need to deserialize it
-    GOOGLE_PROTOBUF_VERIFY_VERSION;
-    
-    RaPreamble rapreamble;
-    //const string str_message;
-    string str_message(incoming_data_buffer, bytes_recieved);
-    std::cout << "Length: " << str_message.length() 
-	      << std::endl;
-    rapreamble.ParseFromString(str_message);
-    std::cout << "Ra_rnti is : " << rapreamble.ueidrntivalue() << std::endl;
-    std::cout << "Type of rnti is : " << rapreamble.ueidrntitype() << std::endl;*/
-
-
-    /*std::cout << "send()ing back a message..."  << std::endl;
-    char *msg = "thank you.";
-    int len;
-    ssize_t bytes_sent;
-    len = strlen(msg);
-    bytes_sent = send(new_sd, msg, len, 0);
-
-    std::cout << "Stopping server..." << std::endl;
-    freeaddrinfo(host_info_list);
-    close(new_sd);
-    close(socketfd);*/
-
-  
-
-
-
   return 0;
 }
-
-
-

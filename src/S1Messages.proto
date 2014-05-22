@@ -1,0 +1,40 @@
+import "RrcMessages.proto"; //for the imsi
+message S1Message {
+	required MessageType messageType = 1;
+
+	enum MessageType {
+	TypeS1ApIUeM = 0;
+	TypeS1ApICSRequest = 1;
+	TypeS1ApICSResponse = 2;
+	}
+
+	optional S1ApInitialUeMessage messageS1ApIUeM = 2;
+	optional S1ApInitialContextSetupRequest messageS1ApICSRequest = 3;
+	optional S1ApInitialContextSetupResponse messageS1ApICSResponse = 4;
+}
+
+message S1ApInitialUeMessage {
+	required int64 enb_Ue_S1Ap_Id = 1;
+	required EpsAttachType epsAttachType = 2;
+	required Imsi_message identity = 3;
+}
+
+enum EpsAttachType {
+     EpsAttach = 0;
+     EpsOther = 1;
+}
+
+message S1ApInitialContextSetupRequest {
+	required int64 mme_Ue_S1Ap_Id = 1;
+	required int64 enb_Ue_S1Ap_Id = 2;
+	required int64 securityKey = 3;
+	required string epsBearerId = 4;
+}
+
+message S1ApInitialContextSetupResponse {
+	required int64 enb_Ue_S1Ap_Id = 1;
+	required string eRabId = 2;
+}
+
+
+
