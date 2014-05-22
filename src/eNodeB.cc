@@ -46,7 +46,7 @@ void  eventLoop (int listen_sock) {
   int conn_sock, nfds, epollfd;
 
   //"database" for the UeContext
-  map<int,UeContext> ueContexts;
+  map<int,UeContextEnb> ueContexts;
 
   /* Set up listening socket, 'listen_sock' (socket(),
               bind(), listen()) *///Done in main or other function?
@@ -98,9 +98,9 @@ void  eventLoop (int listen_sock) {
 		       int mme_sock;
 		       mme_sock = 0;
 		       //Creation of an object to handle this UE
-		       UeContext *ueContext = new UeContext(conn_sock,mme_sock);
+		       UeContextEnb *ueContext = new UeContextEnb(conn_sock,mme_sock);
 		       //Store this object in a map
-		       ueContexts.insert(pair<int,UeContext>(conn_sock,*ueContext));
+		       ueContexts.insert(pair<int,UeContextEnb>(conn_sock,*ueContext));
                    } else {
 		    
 		     //do_use_fd(events[n].data.fd);
@@ -127,8 +127,8 @@ void  eventLoop (int listen_sock) {
 		     cout << "Message deserialized " << endl;
 
 		     //Get the object handler in the map
-		     map<int,UeContext>::iterator temp_it = ueContexts.find(events[n].data.fd);		    
-		     UeContext ueContext = temp_it->second;
+		     map<int,UeContextEnb>::iterator temp_it = ueContexts.find(events[n].data.fd);		    
+		     UeContextEnb ueContext = temp_it->second;
 		     
 		     //Switch on the message type
 		     switch (rrcMessage.messagetype()){

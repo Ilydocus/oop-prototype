@@ -1,5 +1,5 @@
-#ifndef DEF_UECONTEXT
-#define DEF_UECONTEXT
+#ifndef DEF_UECONTEXTENB
+#define DEF_UECONTEXTENB
 
 #include <iostream>
 #include <string>
@@ -11,7 +11,7 @@ using namespace std;
 
 enum RrcState {RRC_Idle, RRC_Connected};
 
-struct UeContext_enb{
+struct UeStateEnb{
   RrcState rrcState;
   int c_rnti;
   Imsi_message imsi;
@@ -22,17 +22,11 @@ struct UeContext_enb{
   string epsBearerId; 
 };
 
-struct UeContext_Mme{
-  int mmeUeS1ApId;
-  int securityKey_mme;
-};
-
-
-class UeContext 
+class UeContextEnb 
 {
  public:
 
-  UeContext(int ueSocket, int mmeSocket);
+  UeContextEnb(int ueSocket, int mmeSocket);
   void handleRaPreamble(RaPreamble message);
   void handleRrcConnectionRequest(RrcConnectionRequest message);
   void handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message);
@@ -45,24 +39,11 @@ class UeContext
 
   int m_ueSocket;
   int m_mmeSocket;
-  UeContext_enb m_state;
+  UeStateEnb m_state;
 
 };
 
-class UeContext_mme 
-{
- public:
 
-  UeContext_mme(int enbSocket);
-  void handleS1ApInitialUeMessage(S1ApInitialUeMessage message); 
-  void handleS1ApInitialContextSetupResponse(S1ApInitialContextSetupResponse message); 
-
- private:
-
-  int m_enbSocket;
-  UeContext_Mme m_state;
-
-};
 
 
 #endif

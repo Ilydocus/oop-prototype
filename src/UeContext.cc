@@ -4,12 +4,12 @@
 
 using namespace std;
 
-UeContext::UeContext(int ueSocket, int mmeSocket):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket)
+UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket)
 {
   //TODO: initialize the m_state to default values
 }
 
-void UeContext::handleRaPreamble(RaPreamble message)
+void UeContextEnb::handleRaPreamble(RaPreamble message)
 {
   //Print message
   cout << "Message RA Preamble received " << endl;
@@ -40,7 +40,7 @@ void UeContext::handleRaPreamble(RaPreamble message)
   
 }
 
-void UeContext::handleRrcConnectionRequest(RrcConnectionRequest message){
+void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
 
   //Print message
   cout << "Message RRC Connection Request received " << endl;
@@ -91,7 +91,7 @@ void UeContext::handleRrcConnectionRequest(RrcConnectionRequest message){
   
 }
 
-void UeContext::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message){
+void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message){
 
   //Print message
   cout << "Message RRC Connection Setup Complete received " << endl;
@@ -106,23 +106,12 @@ void UeContext::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete mess
 //void UeContext::handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest){
 //}
 
-void UeContext::handleSecurityModeComplete(SecurityModeComplete message){
+void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
 }
 
-void UeContext::handleUeCapabilityInformation(UeCapabilityInformation message){
+void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message){
 }
 
-void UeContext::handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message){
+void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message){
 }
 
-//MME
-UeContext_mme::UeContext_mme(int enbSocket):m_enbSocket(enbSocket)
-{
-  //TODO: initialize the m_state to default values
-} 
-
-void UeContext_mme::handleS1ApInitialUeMessage(S1ApInitialUeMessage message){
-}
- 
-void UeContext_mme::handleS1ApInitialContextSetupResponse(S1ApInitialContextSetupResponse message){
-}
