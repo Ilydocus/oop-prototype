@@ -42,6 +42,8 @@ void UeEventHandler::run(){
   bool reject = m_ueContext->handleRrcConnectionSetup();
   if (!reject){
     m_ueContext->handleSecurityModeCommand();
+    std::cout << "Poufpouf..." << std::endl;
+    bool reject_2 = m_ueContext->handleUeCapabilityEnquiry();
   }
 }
 

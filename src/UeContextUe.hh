@@ -23,6 +23,7 @@ class UeContextUe : public UeContext {
   void handleRaResponse ();
   bool handleRrcConnectionSetup ();
   void handleSecurityModeCommand ();  
+  bool handleUeCapabilityEnquiry();
 
  private:
 

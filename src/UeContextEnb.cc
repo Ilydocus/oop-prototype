@@ -109,7 +109,8 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
   S1ApInitialUeMessage *initialUeMessage = new S1ApInitialUeMessage;
   initialUeMessage->set_enb_ue_s1ap_id(17 * message.uecrnti());
   initialUeMessage->set_epsattachtype(EpsAttach);
-  Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
+  Imsi_message *tempImsi = new Imsi_message();
+  *tempImsi = m_state.imsi;
   initialUeMessage->set_allocated_identity(tempImsi);
   //delete tempImsi?
   //Pack it into a S1Message
@@ -201,28 +202,41 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
 void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
   //Print message
   cout << "Message SecurityModeComplete received " << endl;
-  //Create response
-  /*RaResponse *raResponse = new RaResponse;
-  raResponse->set_ueidrntitype(RA_RNTI);
-  raResponse->set_ueidrntivalue(message.ueidrntivalue());
-  raResponse->set_ueidcrnti(message.ueidrntivalue());
-  //Pack it into a RrcMessage
   RrcMessage rrcMessage;
-  rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRaR);
-  rrcMessage.set_allocated_messagerar(raResponse);
+  if(message.securitymodesuccess()){
+    //Success
+    UeCapabilityEnquiry *ueCE = new UeCapabilityEnquiry;
+    ueCE->set_uecrnti(message.uecrnti());
+    ueCE->add_uecapabilityrequest(E_UTRA);
+    ueCE->add_uecapabilityrequest(UTRA);
+    ueCE->add_uecapabilityrequest(GERAN_CS);
+    ueCE->add_uecapabilityrequest(GERAN_PS);
+    ueCE->add_uecapabilityrequest(CDMA2000);
+    //Pack it
+    rrcMessage.set_messagetype(RrcMessage_MessageType_TypeUeCE);
+    rrcMessage.set_allocated_messageuece(ueCE);
+  }
+  else {
+    RrcConnectionReject *rrcCReject = new RrcConnectionReject;
+    rrcCReject->set_uecrnti(message.uecrnti());
+    rrcCReject->set_waitingtime((message.uecrnti() % 15)+1);
+    //Pack it
+    rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReject);
+    rrcMessage.set_allocated_messagerrccreject(rrcCReject);
+    //Change state back to idle
+    m_state.rrcState = RRC_Idle;
+  }
   //Serialize message
   string output_message;
   rrcMessage.SerializeToString(&output_message);
-  //Modify state
-  m_state.c_rnti = message.ueidrntivalue();
-  cout << "State is : " << m_state.c_rnti << endl;
   //Send Response
   int len;
   ssize_t bytes_sent;
 
   bytes_sent = send (m_ueSocket, output_message.c_str(), 
 		     output_message.length(), 0);
-		     cout << "RA Response sent " << endl;*/
+  cout << "UeCapabilityEnquiry or Reject sent " << endl;
+  cout << bytes_sent << " bytes sent " << endl;
 }
 
 void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message){
