@@ -194,5 +194,11 @@ void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueCont
       ueContext.handleRrcConnectionSetupComplete(rrcConnectionSetupComplete);
       cout << "Handling RrcCSC done " << endl;}
       break;
+    case 6 : //SecurityModeComplete
+      {SecurityModeComplete securityModeComplete;
+      securityModeComplete = rrcMessage.messagesecuritymcomplete();
+      ueContext.handleSecurityModeComplete(securityModeComplete);
+      cout << "Handling securityMComplete done " << endl;}
+      break;
   }
 }

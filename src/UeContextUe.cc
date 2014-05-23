@@ -224,30 +224,26 @@ void UeContextUe::handleSecurityModeCommand () {
     securityModeSuccess = decryptedMessage.compare("ciphered");
     cout << "Decryption Result : " << decryptedMessage << endl;
     cout << "Decryption Result : " << securityModeSuccess << endl;
+
     //Part 2: Send Response
-    /*RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
-      rrcConnectionRequest->set_ueidrntitype(C_RNTI);
-      rrcConnectionRequest->set_ueidrntivalue(raResponse.ueidrntivalue());
-      Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
-      //tempImsi = ue_state->imsi;
-      rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
-      //delete tempImsi;?
-      std::cout << "C_rnti is : " << rrcConnectionRequest->ueidrntivalue() << std::endl;
-      //Pack it into a RrcMessage
-      RrcMessage rrcMessage_o;
-      rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
-      rrcMessage_o.set_allocated_messagerrccrequest(rrcConnectionRequest);
-      //Serialize the message
-      std::string message;
-      rrcMessage_o.SerializeToString(&message);
-      std::cout << "Serialization completed " << std::endl;
+    SecurityModeComplete *securityMComplete = new SecurityModeComplete;
+    securityMComplete->set_uecrnti(securityMCommand.uecrnti());
+    securityMComplete->set_securitymodesuccess(securityModeSuccess);
+    //Pack it into a RrcMessage
+    RrcMessage rrcMessage_o;
+    rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeSecurityMComplete);
+    rrcMessage_o.set_allocated_messagesecuritymcomplete(securityMComplete);
+    //Serialize the message
+    std::string message;
+    rrcMessage_o.SerializeToString(&message);
+    std::cout << "Serialization completed " << std::endl;
       
-      ssize_t bytes_sent;
-      bytes_sent = send (m_enbSocket, message.c_str(), 
-      message.length(), 0);
-      
-      std::cout << "Message RrcConnectionRequest sent" << std::endl;
-      std::cout << "Bytes sent: "<<bytes_sent << std::endl;*/
+    ssize_t bytes_sent;
+    bytes_sent = send (m_enbSocket, message.c_str(), 
+    message.length(), 0);
+     
+    std::cout << "Message SecurityModeComplete sent" << std::endl;
+    std::cout << "Bytes sent: "<<bytes_sent << std::endl;
   }
   
 }
