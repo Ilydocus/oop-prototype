@@ -2,6 +2,10 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
+#include "crypto++/modes.h"
+#include "crypto++/aes.h"
+#include "crypto++/filters.h"
+
 using namespace std;
 
 UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket)
@@ -148,7 +152,43 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
     S1ApInitialContextSetupRequest initialCSRequest;
     initialCSRequest = s1Message.messages1apicsrequest();
     cout << "InitialContextSetupRequest received " << endl;
-    cout << "Value of id is : " << message.enb_ue_s1ap_id() << endl;
+    cout << "Value of id is : " << initialCSRequest.enb_ue_s1ap_id() << endl;
+
+    //Need to send the SecurityModeCommand
+    //Encrypt message
+    string plainMessage = "ciphered";
+    string encryptedMessage;
+    
+    byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
+    memset (key,initialCSRequest.securitykey(),CryptoPP::AES::DEFAULT_KEYLENGTH);
+    memset (iv,0x00,CryptoPP::AES::BLOCKSIZE);
+
+    CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
+    CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption (aesEncryption, iv);
+    CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink(encryptedMessage));
+    stfEncryptor.Put(reinterpret_cast<const unsigned char*>(plainMessage.c_str()),plainMessage.length()+1);
+    stfEncryptor.MessageEnd();
+    
+    
+
+ //Create response
+  SecurityModeCommand *securityMCommand = new SecurityModeCommand;
+  securityMCommand->set_uecrnti(initialCSRequest.enb_ue_s1ap_id()/17);
+  securityMCommand->set_message_security(encryptedMessage);
+  //Pack it into a RrcMessage
+  RrcMessage rrcMessage;
+  rrcMessage.set_messagetype(RrcMessage_MessageType_TypeSecurityMCommand);
+  rrcMessage.set_allocated_messagesecuritymcommand(securityMCommand);
+  //Serialize message
+  string output_message;
+  rrcMessage.SerializeToString(&output_message);
+  //Send Response
+  int len;
+  ssize_t bytes_sent;
+
+  bytes_sent = send (m_ueSocket, output_message.c_str(), 
+		     output_message.length(), 0);
+  cout << "Security Mode Command sent " << endl;
   }
 }
 

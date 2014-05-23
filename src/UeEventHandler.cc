@@ -40,6 +40,9 @@ void UeEventHandler::run(){
   m_ueContext->sendRaPreamble();
   m_ueContext->handleRaResponse();
   bool reject = m_ueContext->handleRrcConnectionSetup();
+  if (!reject){
+    m_ueContext->handleSecurityModeCommand();
+  }
 }
 
 UeEventHandler::~UeEventHandler(){

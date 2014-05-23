@@ -1060,14 +1060,14 @@ class SecurityModeCommand : public ::google::protobuf::Message {
   inline ::google::protobuf::int64 uecrnti() const;
   inline void set_uecrnti(::google::protobuf::int64 value);
 
-  // required string message_security = 2;
+  // required bytes message_security = 2;
   inline bool has_message_security() const;
   inline void clear_message_security();
   static const int kMessageSecurityFieldNumber = 2;
   inline const ::std::string& message_security() const;
   inline void set_message_security(const ::std::string& value);
   inline void set_message_security(const char* value);
-  inline void set_message_security(const char* value, size_t size);
+  inline void set_message_security(const void* value, size_t size);
   inline ::std::string* mutable_message_security();
   inline ::std::string* release_message_security();
   inline void set_allocated_message_security(::std::string* message_security);
@@ -2896,7 +2896,7 @@ inline void SecurityModeCommand::set_uecrnti(::google::protobuf::int64 value) {
   uecrnti_ = value;
 }
 
-// required string message_security = 2;
+// required bytes message_security = 2;
 inline bool SecurityModeCommand::has_message_security() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -2929,7 +2929,7 @@ inline void SecurityModeCommand::set_message_security(const char* value) {
   }
   message_security_->assign(value);
 }
-inline void SecurityModeCommand::set_message_security(const char* value, size_t size) {
+inline void SecurityModeCommand::set_message_security(const void* value, size_t size) {
   set_has_message_security();
   if (message_security_ == &::google::protobuf::internal::kEmptyString) {
     message_security_ = new ::std::string;

@@ -19,12 +19,10 @@ class UeContextUe : public UeContext {
  public:
 
   UeContextUe(int ueId,int enbSocket);
-  //handlemessages
   void sendRaPreamble ();
   void handleRaResponse ();
   bool handleRrcConnectionSetup ();
-
-  
+  void handleSecurityModeCommand ();  
 
  private:
 

@@ -71,7 +71,7 @@ message RrcConnectionSetupComplete {
 
 message SecurityModeCommand {
 	required int64 ueCRnti = 1;
-	required string message_security = 2; //To change if encryption - type bytes exists in protobuff
+	required bytes message_security = 2; //To change if encryption - type bytes exists in protobuff
 }
 
 message SecurityModeComplete {

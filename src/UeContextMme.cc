@@ -14,14 +14,17 @@ void UeContextMme::handleS1ApInitialUeMessage(S1ApInitialUeMessage message){
 //Print message
   cout << "Message Initial UE message received " << endl;
   cout << "Id is : " << message.enb_ue_s1ap_id() << endl;
+  //Update state
+  m_state.mmeUeS1ApId = message.enb_ue_s1ap_id() - 4;
+  m_state.securityKey_mme = (message.enb_ue_s1ap_id() / 17 )*18;
   //Create Eps bearer id
   string * epsBearerId = new string;
   genRandId(epsBearerId, 8);
   //Send response
   S1ApInitialContextSetupRequest *initialCSRequest = new S1ApInitialContextSetupRequest;
-  initialCSRequest->set_mme_ue_s1ap_id(message.enb_ue_s1ap_id() - 4);
+  initialCSRequest->set_mme_ue_s1ap_id(m_state.mmeUeS1ApId);
   initialCSRequest->set_enb_ue_s1ap_id(message.enb_ue_s1ap_id());
-  initialCSRequest->set_securitykey((message.enb_ue_s1ap_id() / 17 )*18);
+  initialCSRequest->set_securitykey(m_state.securityKey_mme);
   initialCSRequest->set_epsbearerid(*epsBearerId);
    //delete epsBearerId?
   //Pack it into a S1Message
@@ -39,6 +42,7 @@ void UeContextMme::handleS1ApInitialUeMessage(S1ApInitialUeMessage message){
   bytes_sent = send (m_enbSocket, output_message.c_str(), 
 		     output_message.length(), 0);
   cout << "S1Ap Initial Context Request sent to ENodeB " << endl;
+  
 
 }
  

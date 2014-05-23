@@ -457,7 +457,7 @@ void protobuf_AddDesc_RrcMessages_2eproto() {
     "\n\032RrcConnectionSetupComplete\022\017\n\007ueCRnti\030"
     "\001 \002(\003\022\034\n\024selectedPlmnIdentity\030\002 \002(\t\"@\n\023S"
     "ecurityModeCommand\022\017\n\007ueCRnti\030\001 \002(\003\022\030\n\020m"
-    "essage_security\030\002 \002(\t\"D\n\024SecurityModeCom"
+    "essage_security\030\002 \002(\014\"D\n\024SecurityModeCom"
     "plete\022\017\n\007ueCRnti\030\001 \002(\003\022\033\n\023securityModeSu"
     "ccess\030\002 \002(\010\"Q\n\023UeCapabilityEnquiry\022\017\n\007ue"
     "CRnti\030\001 \002(\003\022)\n\023ueCapabilityRequest\030\002 \003(\016"
@@ -3251,16 +3251,13 @@ bool SecurityModeCommand::MergePartialFromCodedStream(
         break;
       }
 
-      // required string message_security = 2;
+      // required bytes message_security = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_message_security:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_message_security()));
-          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->message_security().data(), this->message_security().length(),
-            ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
         }
@@ -3291,12 +3288,9 @@ void SecurityModeCommand::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt64(1, this->uecrnti(), output);
   }
 
-  // required string message_security = 2;
+  // required bytes message_security = 2;
   if (has_message_security()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->message_security().data(), this->message_security().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
-    ::google::protobuf::internal::WireFormatLite::WriteString(
+    ::google::protobuf::internal::WireFormatLite::WriteBytes(
       2, this->message_security(), output);
   }
 
@@ -3313,13 +3307,10 @@ void SecurityModeCommand::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(1, this->uecrnti(), target);
   }
 
-  // required string message_security = 2;
+  // required bytes message_security = 2;
   if (has_message_security()) {
-    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->message_security().data(), this->message_security().length(),
-      ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
         2, this->message_security(), target);
   }
 
@@ -3341,10 +3332,10 @@ int SecurityModeCommand::ByteSize() const {
           this->uecrnti());
     }
 
-    // required string message_security = 2;
+    // required bytes message_security = 2;
     if (has_message_security()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
           this->message_security());
     }
 
