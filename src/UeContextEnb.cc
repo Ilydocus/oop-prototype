@@ -123,10 +123,40 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
   bytes_sent = send (m_mmeSocket, output_message.c_str(), 
 		     output_message.length(), 0);
   cout << "S1Ap Initial Ue Message sent to Mme " << endl;
+
+  //Wait for the response : voir comment ca va se passer avec plusieurs UEs
+  ssize_t bytes_recieved;
+  char incoming_data_buffer[1000];
+  bytes_recieved = recv(m_mmeSocket, incoming_data_buffer,1000, 0);
+  // If no data arrives, the program will just wait here until some data arrives.
+  if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
+  //return;}
+  if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}//return;}
+  std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
+  if (bytes_recieved != -1 && bytes_recieved != 0){
+    incoming_data_buffer[bytes_recieved] = '\0';
+    //std::cout << incoming_data_buffer << std::endl;
+    
+    //The message is serialized, we need to deserialize it
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+    
+    S1Message s1Message;
+    //const string str_message;
+    string str_message(incoming_data_buffer, bytes_recieved);
+    s1Message.ParseFromString(str_message);
+    std::cout << "Message deserialized " << endl;
+    S1ApInitialContextSetupRequest initialCSRequest;
+    initialCSRequest = s1Message.messages1apicsrequest();
+    cout << "InitialContextSetupRequest received " << endl;
+    cout << "Value of id is : " << message.enb_ue_s1ap_id() << endl;
+  }
 }
 
-//void UeContext::handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest){
-//}
+  /*void UeContextEnb::handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest message){
+  //Print message
+  cout << "Message S1Ap Initial Context Setup Request received " << endl;
+  cout << "Value of id is : " << message.enb_ue_s1ap_id() << endl;
+  }*/
 
 void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
 }

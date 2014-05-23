@@ -30,7 +30,7 @@ class UeContextEnb : public UeContext
   void handleRaPreamble(RaPreamble message);
   void handleRrcConnectionRequest(RrcConnectionRequest message);
   void handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message);
-  //void handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest); 
+  //void handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest message); 
   void handleSecurityModeComplete(SecurityModeComplete message);
   void handleUeCapabilityInformation(UeCapabilityInformation message);
   void handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message);
