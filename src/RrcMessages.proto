@@ -26,7 +26,7 @@ message RrcMessage {
 	optional UeCapabilityEnquiry messageUeCE = 9;
 	optional UeCapabilityInformation messageUeCI = 10;
 	optional RrcConnectionReconfiguration messageRrcCreconfiguration = 11;
-	optional RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
+	optional RrcConnectionReconfigurationComplete messageRrcCRC = 12;
 	optional RrcConnectionReject messageRrcCReject = 13;
 }
 

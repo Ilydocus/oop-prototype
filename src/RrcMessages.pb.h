@@ -305,14 +305,14 @@ class RrcMessage : public ::google::protobuf::Message {
   inline ::RrcConnectionReconfiguration* release_messagerrccreconfiguration();
   inline void set_allocated_messagerrccreconfiguration(::RrcConnectionReconfiguration* messagerrccreconfiguration);
 
-  // optional .RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
-  inline bool has_messagerrrccrc() const;
-  inline void clear_messagerrrccrc();
-  static const int kMessageRrrcCRCFieldNumber = 12;
-  inline const ::RrcConnectionReconfigurationComplete& messagerrrccrc() const;
-  inline ::RrcConnectionReconfigurationComplete* mutable_messagerrrccrc();
-  inline ::RrcConnectionReconfigurationComplete* release_messagerrrccrc();
-  inline void set_allocated_messagerrrccrc(::RrcConnectionReconfigurationComplete* messagerrrccrc);
+  // optional .RrcConnectionReconfigurationComplete messageRrcCRC = 12;
+  inline bool has_messagerrccrc() const;
+  inline void clear_messagerrccrc();
+  static const int kMessageRrcCRCFieldNumber = 12;
+  inline const ::RrcConnectionReconfigurationComplete& messagerrccrc() const;
+  inline ::RrcConnectionReconfigurationComplete* mutable_messagerrccrc();
+  inline ::RrcConnectionReconfigurationComplete* release_messagerrccrc();
+  inline void set_allocated_messagerrccrc(::RrcConnectionReconfigurationComplete* messagerrccrc);
 
   // optional .RrcConnectionReject messageRrcCReject = 13;
   inline bool has_messagerrccreject() const;
@@ -347,8 +347,8 @@ class RrcMessage : public ::google::protobuf::Message {
   inline void clear_has_messageueci();
   inline void set_has_messagerrccreconfiguration();
   inline void clear_has_messagerrccreconfiguration();
-  inline void set_has_messagerrrccrc();
-  inline void clear_has_messagerrrccrc();
+  inline void set_has_messagerrccrc();
+  inline void clear_has_messagerrccrc();
   inline void set_has_messagerrccreject();
   inline void clear_has_messagerrccreject();
 
@@ -364,7 +364,7 @@ class RrcMessage : public ::google::protobuf::Message {
   ::UeCapabilityEnquiry* messageuece_;
   ::UeCapabilityInformation* messageueci_;
   ::RrcConnectionReconfiguration* messagerrccreconfiguration_;
-  ::RrcConnectionReconfigurationComplete* messagerrrccrc_;
+  ::RrcConnectionReconfigurationComplete* messagerrccrc_;
   ::RrcConnectionReject* messagerrccreject_;
   int messagetype_;
 
@@ -2158,41 +2158,41 @@ inline void RrcMessage::set_allocated_messagerrccreconfiguration(::RrcConnection
   }
 }
 
-// optional .RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
-inline bool RrcMessage::has_messagerrrccrc() const {
+// optional .RrcConnectionReconfigurationComplete messageRrcCRC = 12;
+inline bool RrcMessage::has_messagerrccrc() const {
   return (_has_bits_[0] & 0x00000800u) != 0;
 }
-inline void RrcMessage::set_has_messagerrrccrc() {
+inline void RrcMessage::set_has_messagerrccrc() {
   _has_bits_[0] |= 0x00000800u;
 }
-inline void RrcMessage::clear_has_messagerrrccrc() {
+inline void RrcMessage::clear_has_messagerrccrc() {
   _has_bits_[0] &= ~0x00000800u;
 }
-inline void RrcMessage::clear_messagerrrccrc() {
-  if (messagerrrccrc_ != NULL) messagerrrccrc_->::RrcConnectionReconfigurationComplete::Clear();
-  clear_has_messagerrrccrc();
+inline void RrcMessage::clear_messagerrccrc() {
+  if (messagerrccrc_ != NULL) messagerrccrc_->::RrcConnectionReconfigurationComplete::Clear();
+  clear_has_messagerrccrc();
 }
-inline const ::RrcConnectionReconfigurationComplete& RrcMessage::messagerrrccrc() const {
-  return messagerrrccrc_ != NULL ? *messagerrrccrc_ : *default_instance_->messagerrrccrc_;
+inline const ::RrcConnectionReconfigurationComplete& RrcMessage::messagerrccrc() const {
+  return messagerrccrc_ != NULL ? *messagerrccrc_ : *default_instance_->messagerrccrc_;
 }
-inline ::RrcConnectionReconfigurationComplete* RrcMessage::mutable_messagerrrccrc() {
-  set_has_messagerrrccrc();
-  if (messagerrrccrc_ == NULL) messagerrrccrc_ = new ::RrcConnectionReconfigurationComplete;
-  return messagerrrccrc_;
+inline ::RrcConnectionReconfigurationComplete* RrcMessage::mutable_messagerrccrc() {
+  set_has_messagerrccrc();
+  if (messagerrccrc_ == NULL) messagerrccrc_ = new ::RrcConnectionReconfigurationComplete;
+  return messagerrccrc_;
 }
-inline ::RrcConnectionReconfigurationComplete* RrcMessage::release_messagerrrccrc() {
-  clear_has_messagerrrccrc();
-  ::RrcConnectionReconfigurationComplete* temp = messagerrrccrc_;
-  messagerrrccrc_ = NULL;
+inline ::RrcConnectionReconfigurationComplete* RrcMessage::release_messagerrccrc() {
+  clear_has_messagerrccrc();
+  ::RrcConnectionReconfigurationComplete* temp = messagerrccrc_;
+  messagerrccrc_ = NULL;
   return temp;
 }
-inline void RrcMessage::set_allocated_messagerrrccrc(::RrcConnectionReconfigurationComplete* messagerrrccrc) {
-  delete messagerrrccrc_;
-  messagerrrccrc_ = messagerrrccrc;
-  if (messagerrrccrc) {
-    set_has_messagerrrccrc();
+inline void RrcMessage::set_allocated_messagerrccrc(::RrcConnectionReconfigurationComplete* messagerrccrc) {
+  delete messagerrccrc_;
+  messagerrccrc_ = messagerrccrc;
+  if (messagerrccrc) {
+    set_has_messagerrccrc();
   } else {
-    clear_has_messagerrrccrc();
+    clear_has_messagerrccrc();
   }
 }
 

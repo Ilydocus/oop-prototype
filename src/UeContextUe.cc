@@ -276,14 +276,21 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
       ueCE = rrcMessage.messageuece();
       cout << "Capability Enquiry:  C-rnti is : " << ueCE.uecrnti() << endl;
 
-      /*//Send Response
-      RrcConnectionSetupComplete *rrcCSC = new RrcConnectionSetupComplete;
-      rrcCSC->set_uecrnti(rrcConnectionSetup.ueidrntivalue());
-      rrcCSC->set_selectedplmnidentity((m_state.imsi).mcc() + (m_state.imsi).mnc());
+      //Send Response
+      UeCapabilityInformation *ueCI = new UeCapabilityInformation;
+      ueCI->set_uecrnti(ueCE.uecrnti());
+      //recup les differente sRAT
+      srand(ueCE.uecrnti() *6);
+      for (int i = 0; i < ueCE.uecapabilityrequest_size(); i++){
+	RatCapability *ratCap = ueCI->add_uecapabilityratlist();
+	ratCap->set_rat(ueCE.uecapabilityrequest(i));
+	ratCap->set_issupported(rand() % 2);
+	
+      }
       //Pack it into a RrcMessage
       RrcMessage rrcMessage_o;
-      rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCSC);
-      rrcMessage_o.set_allocated_messagerrccsc(rrcCSC);
+      rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeUeCI);
+      rrcMessage_o.set_allocated_messageueci(ueCI);
       //Serialize the message
       std::string message;
       rrcMessage_o.SerializeToString(&message);
@@ -293,8 +300,8 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
       bytes_sent = send (m_enbSocket, message.c_str(), 
 			 message.length(), 0);
 
-      std::cout << "Message RrcConnectionSetupComplete sent" << std::endl;
-      std::cout << "Bytes sent: "<<bytes_sent << std::endl;*/
+      std::cout << "Message UeCI sent" << std::endl;
+      std::cout << "Bytes sent: "<< bytes_sent << std::endl;
 
       //Not rejected
       return false;}
@@ -309,4 +316,8 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
     };
   }
   
+}
+
+ void UeContextUe::handleRrcConnectionReconfiguration(){
+
 }

@@ -200,5 +200,17 @@ void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueCont
       ueContext.handleSecurityModeComplete(securityModeComplete);
       cout << "Handling securityMComplete done " << endl;}
       break;
+    case 8 : //UeCapabilityInformation
+      {UeCapabilityInformation ueCI;
+      ueCI = rrcMessage.messageueci();
+      ueContext.handleUeCapabilityInformation(ueCI);
+      cout << "Handling ueCI done " << endl;}
+      break;
+    case 10 : //RrcConnectionReconfigurationComplete
+      {RrcConnectionReconfigurationComplete rrcCRC;
+      rrcCRC = rrcMessage.messagerrccrc();
+      ueContext.handleRrcConnectionReconfigurationComplete(rrcCRC);
+      cout << "Handling rrcCRC done " << endl;}
+      break;
   }
 }

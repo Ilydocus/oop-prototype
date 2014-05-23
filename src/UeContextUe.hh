@@ -24,6 +24,7 @@ class UeContextUe : public UeContext {
   bool handleRrcConnectionSetup ();
   void handleSecurityModeCommand ();  
   bool handleUeCapabilityEnquiry();
+  void handleRrcConnectionReconfiguration();
 
  private:
 

@@ -240,6 +240,8 @@ void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
 }
 
 void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message){
+  //Print message
+  cout << "Message UeCI received " << endl;
 }
 
 void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message){

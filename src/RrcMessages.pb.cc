@@ -89,7 +89,7 @@ void protobuf_AssignDesc_RrcMessages_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messageuece_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messageueci_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerrccreconfiguration_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerrrccrc_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerrccrc_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerrccreject_),
   };
   RrcMessage_reflection_ =
@@ -420,7 +420,7 @@ void protobuf_AddDesc_RrcMessages_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\021RrcMessages.proto\"\373\006\n\nRrcMessage\022,\n\013me"
+    "\n\021RrcMessages.proto\"\372\006\n\nRrcMessage\022,\n\013me"
     "ssageType\030\001 \002(\0162\027.RrcMessage.MessageType"
     "\022\037\n\nmessageRaP\030\002 \001(\0132\013.RaPreamble\022\037\n\nmes"
     "sageRaR\030\003 \001(\0132\013.RaResponse\0221\n\022messageRrc"
@@ -434,46 +434,46 @@ void protobuf_AddDesc_RrcMessages_2eproto() {
     "Enquiry\022-\n\013messageUeCI\030\n \001(\0132\030.UeCapabil"
     "ityInformation\022A\n\032messageRrcCreconfigura"
     "tion\030\013 \001(\0132\035.RrcConnectionReconfiguratio"
-    "n\022=\n\016messageRrrcCRC\030\014 \001(\0132%.RrcConnectio"
-    "nReconfigurationComplete\022/\n\021messageRrcCR"
-    "eject\030\r \001(\0132\024.RrcConnectionReject\"\355\001\n\013Me"
-    "ssageType\022\013\n\007TypeRaP\020\000\022\013\n\007TypeRaR\020\001\022\023\n\017T"
-    "ypeRrcCRequest\020\002\022\r\n\tTypeRrcCS\020\003\022\016\n\nTypeR"
-    "rcCSC\020\004\022\030\n\024TypeSecurityMCommand\020\005\022\031\n\025Typ"
-    "eSecurityMComplete\020\006\022\014\n\010TypeUeCE\020\007\022\014\n\010Ty"
-    "peUeCI\020\010\022\033\n\027TypeRrcCReconfiguration\020\t\022\016\n"
-    "\nTypeRrcCRC\020\n\022\022\n\016TypeRrcCReject\020\013\"H\n\nRaP"
-    "reamble\022#\n\014ueIdRntiType\030\001 \002(\0162\r.UeIdRnti"
-    "Type\022\025\n\rueIdRntiValue\030\002 \002(\003\"[\n\nRaRespons"
-    "e\022#\n\014ueIdRntiType\030\001 \002(\0162\r.UeIdRntiType\022\025"
-    "\n\rueIdRntiValue\030\002 \002(\003\022\021\n\tueIdCRnti\030\003 \002(\003"
-    "\"u\n\024RrcConnectionRequest\022#\n\014ueIdRntiType"
-    "\030\001 \002(\0162\r.UeIdRntiType\022\025\n\rueIdRntiValue\030\002"
-    " \002(\003\022!\n\nueIdentity\030\003 \002(\0132\r.Imsi_message\""
-    "6\n\014Imsi_message\022\013\n\003mcc\030\001 \002(\t\022\013\n\003mnc\030\002 \002("
-    "\t\022\014\n\004msin\030\003 \002(\t\"e\n\022RrcConnectionSetup\022#\n"
-    "\014ueIdRntiType\030\001 \002(\0162\r.UeIdRntiType\022\025\n\rue"
-    "IdRntiValue\030\002 \002(\003\022\023\n\013srbIdentity\030\003 \002(\t\"K"
-    "\n\032RrcConnectionSetupComplete\022\017\n\007ueCRnti\030"
-    "\001 \002(\003\022\034\n\024selectedPlmnIdentity\030\002 \002(\t\"@\n\023S"
-    "ecurityModeCommand\022\017\n\007ueCRnti\030\001 \002(\003\022\030\n\020m"
-    "essage_security\030\002 \002(\014\"D\n\024SecurityModeCom"
-    "plete\022\017\n\007ueCRnti\030\001 \002(\003\022\033\n\023securityModeSu"
-    "ccess\030\002 \002(\010\"Q\n\023UeCapabilityEnquiry\022\017\n\007ue"
-    "CRnti\030\001 \002(\003\022)\n\023ueCapabilityRequest\030\002 \003(\016"
-    "2\010.RatTypeB\002\020\001\"W\n\027UeCapabilityInformatio"
-    "n\022\017\n\007ueCRnti\030\001 \002(\003\022+\n\023ueCapabilityRatLis"
-    "t\030\002 \003(\0132\016.RatCapability\";\n\rRatCapability"
-    "\022\025\n\003rat\030\001 \002(\0162\010.RatType\022\023\n\013isSupported\030\002"
-    " \002(\010\"O\n\034RrcConnectionReconfiguration\022\017\n\007"
-    "ueCRnti\030\001 \002(\003\022\036\n\026epsRadioBearerIdentity\030"
-    "\002 \002(\t\"X\n$RrcConnectionReconfigurationCom"
-    "plete\022\017\n\007ueCRnti\030\001 \002(\003\022\037\n\027epsRadioBearer"
-    "Activated\030\002 \002(\010\";\n\023RrcConnectionReject\022\017"
-    "\n\007ueCRnti\030\001 \002(\003\022\023\n\013waitingTime\030\002 \002(\005*\'\n\014"
-    "UeIdRntiType\022\013\n\007RA_RNTI\020\000\022\n\n\006C_RNTI\020\001*I\n"
-    "\007RatType\022\n\n\006E_UTRA\020\000\022\010\n\004UTRA\020\001\022\014\n\010GERAN_"
-    "CS\020\002\022\014\n\010GERAN_PS\020\003\022\014\n\010CDMA2000\020\004", 2152);
+    "n\022<\n\rmessageRrcCRC\030\014 \001(\0132%.RrcConnection"
+    "ReconfigurationComplete\022/\n\021messageRrcCRe"
+    "ject\030\r \001(\0132\024.RrcConnectionReject\"\355\001\n\013Mes"
+    "sageType\022\013\n\007TypeRaP\020\000\022\013\n\007TypeRaR\020\001\022\023\n\017Ty"
+    "peRrcCRequest\020\002\022\r\n\tTypeRrcCS\020\003\022\016\n\nTypeRr"
+    "cCSC\020\004\022\030\n\024TypeSecurityMCommand\020\005\022\031\n\025Type"
+    "SecurityMComplete\020\006\022\014\n\010TypeUeCE\020\007\022\014\n\010Typ"
+    "eUeCI\020\010\022\033\n\027TypeRrcCReconfiguration\020\t\022\016\n\n"
+    "TypeRrcCRC\020\n\022\022\n\016TypeRrcCReject\020\013\"H\n\nRaPr"
+    "eamble\022#\n\014ueIdRntiType\030\001 \002(\0162\r.UeIdRntiT"
+    "ype\022\025\n\rueIdRntiValue\030\002 \002(\003\"[\n\nRaResponse"
+    "\022#\n\014ueIdRntiType\030\001 \002(\0162\r.UeIdRntiType\022\025\n"
+    "\rueIdRntiValue\030\002 \002(\003\022\021\n\tueIdCRnti\030\003 \002(\003\""
+    "u\n\024RrcConnectionRequest\022#\n\014ueIdRntiType\030"
+    "\001 \002(\0162\r.UeIdRntiType\022\025\n\rueIdRntiValue\030\002 "
+    "\002(\003\022!\n\nueIdentity\030\003 \002(\0132\r.Imsi_message\"6"
+    "\n\014Imsi_message\022\013\n\003mcc\030\001 \002(\t\022\013\n\003mnc\030\002 \002(\t"
+    "\022\014\n\004msin\030\003 \002(\t\"e\n\022RrcConnectionSetup\022#\n\014"
+    "ueIdRntiType\030\001 \002(\0162\r.UeIdRntiType\022\025\n\rueI"
+    "dRntiValue\030\002 \002(\003\022\023\n\013srbIdentity\030\003 \002(\t\"K\n"
+    "\032RrcConnectionSetupComplete\022\017\n\007ueCRnti\030\001"
+    " \002(\003\022\034\n\024selectedPlmnIdentity\030\002 \002(\t\"@\n\023Se"
+    "curityModeCommand\022\017\n\007ueCRnti\030\001 \002(\003\022\030\n\020me"
+    "ssage_security\030\002 \002(\014\"D\n\024SecurityModeComp"
+    "lete\022\017\n\007ueCRnti\030\001 \002(\003\022\033\n\023securityModeSuc"
+    "cess\030\002 \002(\010\"Q\n\023UeCapabilityEnquiry\022\017\n\007ueC"
+    "Rnti\030\001 \002(\003\022)\n\023ueCapabilityRequest\030\002 \003(\0162"
+    "\010.RatTypeB\002\020\001\"W\n\027UeCapabilityInformation"
+    "\022\017\n\007ueCRnti\030\001 \002(\003\022+\n\023ueCapabilityRatList"
+    "\030\002 \003(\0132\016.RatCapability\";\n\rRatCapability\022"
+    "\025\n\003rat\030\001 \002(\0162\010.RatType\022\023\n\013isSupported\030\002 "
+    "\002(\010\"O\n\034RrcConnectionReconfiguration\022\017\n\007u"
+    "eCRnti\030\001 \002(\003\022\036\n\026epsRadioBearerIdentity\030\002"
+    " \002(\t\"X\n$RrcConnectionReconfigurationComp"
+    "lete\022\017\n\007ueCRnti\030\001 \002(\003\022\037\n\027epsRadioBearerA"
+    "ctivated\030\002 \002(\010\";\n\023RrcConnectionReject\022\017\n"
+    "\007ueCRnti\030\001 \002(\003\022\023\n\013waitingTime\030\002 \002(\005*\'\n\014U"
+    "eIdRntiType\022\013\n\007RA_RNTI\020\000\022\n\n\006C_RNTI\020\001*I\n\007"
+    "RatType\022\n\n\006E_UTRA\020\000\022\010\n\004UTRA\020\001\022\014\n\010GERAN_C"
+    "S\020\002\022\014\n\010GERAN_PS\020\003\022\014\n\010CDMA2000\020\004", 2151);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "RrcMessages.proto", &protobuf_RegisterTypes);
   RrcMessage::default_instance_ = new RrcMessage();
@@ -602,7 +602,7 @@ const int RrcMessage::kMessageSecurityMCompleteFieldNumber;
 const int RrcMessage::kMessageUeCEFieldNumber;
 const int RrcMessage::kMessageUeCIFieldNumber;
 const int RrcMessage::kMessageRrcCreconfigurationFieldNumber;
-const int RrcMessage::kMessageRrrcCRCFieldNumber;
+const int RrcMessage::kMessageRrcCRCFieldNumber;
 const int RrcMessage::kMessageRrcCRejectFieldNumber;
 #endif  // !_MSC_VER
 
@@ -622,7 +622,7 @@ void RrcMessage::InitAsDefaultInstance() {
   messageuece_ = const_cast< ::UeCapabilityEnquiry*>(&::UeCapabilityEnquiry::default_instance());
   messageueci_ = const_cast< ::UeCapabilityInformation*>(&::UeCapabilityInformation::default_instance());
   messagerrccreconfiguration_ = const_cast< ::RrcConnectionReconfiguration*>(&::RrcConnectionReconfiguration::default_instance());
-  messagerrrccrc_ = const_cast< ::RrcConnectionReconfigurationComplete*>(&::RrcConnectionReconfigurationComplete::default_instance());
+  messagerrccrc_ = const_cast< ::RrcConnectionReconfigurationComplete*>(&::RrcConnectionReconfigurationComplete::default_instance());
   messagerrccreject_ = const_cast< ::RrcConnectionReject*>(&::RrcConnectionReject::default_instance());
 }
 
@@ -645,7 +645,7 @@ void RrcMessage::SharedCtor() {
   messageuece_ = NULL;
   messageueci_ = NULL;
   messagerrccreconfiguration_ = NULL;
-  messagerrrccrc_ = NULL;
+  messagerrccrc_ = NULL;
   messagerrccreject_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -666,7 +666,7 @@ void RrcMessage::SharedDtor() {
     delete messageuece_;
     delete messageueci_;
     delete messagerrccreconfiguration_;
-    delete messagerrrccrc_;
+    delete messagerrccrc_;
     delete messagerrccreject_;
   }
 }
@@ -727,8 +727,8 @@ void RrcMessage::Clear() {
     if (has_messagerrccreconfiguration()) {
       if (messagerrccreconfiguration_ != NULL) messagerrccreconfiguration_->::RrcConnectionReconfiguration::Clear();
     }
-    if (has_messagerrrccrc()) {
-      if (messagerrrccrc_ != NULL) messagerrrccrc_->::RrcConnectionReconfigurationComplete::Clear();
+    if (has_messagerrccrc()) {
+      if (messagerrccrc_ != NULL) messagerrccrc_->::RrcConnectionReconfigurationComplete::Clear();
     }
     if (has_messagerrccreject()) {
       if (messagerrccreject_ != NULL) messagerrccreject_->::RrcConnectionReject::Clear();
@@ -900,17 +900,17 @@ bool RrcMessage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(98)) goto parse_messageRrrcCRC;
+        if (input->ExpectTag(98)) goto parse_messageRrcCRC;
         break;
       }
 
-      // optional .RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
+      // optional .RrcConnectionReconfigurationComplete messageRrcCRC = 12;
       case 12: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_messageRrrcCRC:
+         parse_messageRrcCRC:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_messagerrrccrc()));
+               input, mutable_messagerrccrc()));
         } else {
           goto handle_uninterpreted;
         }
@@ -1016,10 +1016,10 @@ void RrcMessage::SerializeWithCachedSizes(
       11, this->messagerrccreconfiguration(), output);
   }
 
-  // optional .RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
-  if (has_messagerrrccrc()) {
+  // optional .RrcConnectionReconfigurationComplete messageRrcCRC = 12;
+  if (has_messagerrccrc()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      12, this->messagerrrccrc(), output);
+      12, this->messagerrccrc(), output);
   }
 
   // optional .RrcConnectionReject messageRrcCReject = 13;
@@ -1112,11 +1112,11 @@ void RrcMessage::SerializeWithCachedSizes(
         11, this->messagerrccreconfiguration(), target);
   }
 
-  // optional .RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
-  if (has_messagerrrccrc()) {
+  // optional .RrcConnectionReconfigurationComplete messageRrcCRC = 12;
+  if (has_messagerrccrc()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        12, this->messagerrrccrc(), target);
+        12, this->messagerrccrc(), target);
   }
 
   // optional .RrcConnectionReject messageRrcCReject = 13;
@@ -1215,11 +1215,11 @@ int RrcMessage::ByteSize() const {
           this->messagerrccreconfiguration());
     }
 
-    // optional .RrcConnectionReconfigurationComplete messageRrrcCRC = 12;
-    if (has_messagerrrccrc()) {
+    // optional .RrcConnectionReconfigurationComplete messageRrcCRC = 12;
+    if (has_messagerrccrc()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->messagerrrccrc());
+          this->messagerrccrc());
     }
 
     // optional .RrcConnectionReject messageRrcCReject = 13;
@@ -1291,8 +1291,8 @@ void RrcMessage::MergeFrom(const RrcMessage& from) {
     if (from.has_messagerrccreconfiguration()) {
       mutable_messagerrccreconfiguration()->::RrcConnectionReconfiguration::MergeFrom(from.messagerrccreconfiguration());
     }
-    if (from.has_messagerrrccrc()) {
-      mutable_messagerrrccrc()->::RrcConnectionReconfigurationComplete::MergeFrom(from.messagerrrccrc());
+    if (from.has_messagerrccrc()) {
+      mutable_messagerrccrc()->::RrcConnectionReconfigurationComplete::MergeFrom(from.messagerrccrc());
     }
     if (from.has_messagerrccreject()) {
       mutable_messagerrccreject()->::RrcConnectionReject::MergeFrom(from.messagerrccreject());
@@ -1346,8 +1346,8 @@ bool RrcMessage::IsInitialized() const {
   if (has_messagerrccreconfiguration()) {
     if (!this->messagerrccreconfiguration().IsInitialized()) return false;
   }
-  if (has_messagerrrccrc()) {
-    if (!this->messagerrrccrc().IsInitialized()) return false;
+  if (has_messagerrccrc()) {
+    if (!this->messagerrccrc().IsInitialized()) return false;
   }
   if (has_messagerrccreject()) {
     if (!this->messagerrccreject().IsInitialized()) return false;
@@ -1368,7 +1368,7 @@ void RrcMessage::Swap(RrcMessage* other) {
     std::swap(messageuece_, other->messageuece_);
     std::swap(messageueci_, other->messageueci_);
     std::swap(messagerrccreconfiguration_, other->messagerrccreconfiguration_);
-    std::swap(messagerrrccrc_, other->messagerrrccrc_);
+    std::swap(messagerrccrc_, other->messagerrccrc_);
     std::swap(messagerrccreject_, other->messagerrccreject_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
