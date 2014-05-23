@@ -98,6 +98,7 @@ RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
   Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
   //tempImsi = ue_state->imsi;
   rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
+  //delete tempImsi;?
   std::cout << "C_rnti is : " << rrcConnectionRequest->ueidrntivalue() << std::endl;
   //Pack it into a RrcMessage
   RrcMessage rrcMessage_o;

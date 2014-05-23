@@ -101,6 +101,28 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
   m_state.rrcState = RRC_Connected;
   m_state.enbUeS1ApId = 17 * message.uecrnti();
   //Send response to the MME
+  //Create response
+  S1ApInitialUeMessage *initialUeMessage = new S1ApInitialUeMessage;
+  initialUeMessage->set_enb_ue_s1ap_id(17 * message.uecrnti());
+  initialUeMessage->set_epsattachtype(EpsAttach);
+  Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
+  initialUeMessage->set_allocated_identity(tempImsi);
+  //delete tempImsi?
+  //Pack it into a S1Message
+  S1Message s1Message;
+  s1Message.set_messagetype(S1Message_MessageType_TypeS1ApIUeM);
+  s1Message.set_allocated_messages1apiuem(initialUeMessage);
+  //Serialize message
+  string output_message;
+  s1Message.SerializeToString(&output_message);
+
+  //Send Response
+  int len;
+  ssize_t bytes_sent;
+
+  bytes_sent = send (m_mmeSocket, output_message.c_str(), 
+		     output_message.length(), 0);
+  cout << "S1Ap Initial Ue Message sent to Mme " << endl;
 }
 
 //void UeContext::handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest){

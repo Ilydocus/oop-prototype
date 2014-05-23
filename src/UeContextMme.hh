@@ -2,7 +2,7 @@
 #define DEF_UECONTEXTMME
 
 #include "S1Messages.pb.h"
-#include "UeContext"
+#include "UeContext.hh"
 
 struct UeStateMme{
   int mmeUeS1ApId;

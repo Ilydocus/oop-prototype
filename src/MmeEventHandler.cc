@@ -1,4 +1,4 @@
-#include "EnbEventHandler.hh"
+#include "MmeEventHandler.hh"
 
 #include <string>
 #include <iostream>
@@ -15,12 +15,12 @@
 
 using namespace std;
 
-EnbEventHandler::EnbEventHandler(){
+MmeEventHandler::MmeEventHandler(){
     
-  //create the server
-  int status;
-  struct addrinfo host_info;      
-  struct addrinfo *host_info_list; 
+
+int status;
+    struct addrinfo host_info;      
+    struct addrinfo *host_info_list; 
 
     memset(&host_info, 0, sizeof host_info);
 
@@ -30,7 +30,7 @@ EnbEventHandler::EnbEventHandler(){
     host_info.ai_socktype = SOCK_STREAM; 
     host_info.ai_flags = AI_PASSIVE;    
 
-     status = getaddrinfo(NULL, "43000", &host_info, &host_info_list);
+     status = getaddrinfo(NULL, "43001", &host_info, &host_info_list);
     
      //if (status != 0)  std::cout << "getaddrinfo error" << gai_strerror(status) ;
 
@@ -48,38 +48,14 @@ EnbEventHandler::EnbEventHandler(){
     status = bind(socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
     if (status == -1)  std::cout << "bind error" << std::endl ;
 
-    std::cout << "Listen()ing for connections..."  << std::endl;
+    std::cout << "Listening for connections..."  << std::endl;
     status =  listen(socketfd, 5);//5 is the number of "on hold"
     if (status == -1)  std::cout << "listen error" << std::endl ;
 
     m_listenSocket = socketfd;
-    //create the connection to the Mme
-    //Create a socket and connect it
-  int status_mme;
-  struct addrinfo host_info_mme;
-  struct addrinfo *host_info_list_mme;
-
-  memset(&host_info_mme, 0, sizeof host_info_mme);
-  host_info_mme.ai_family = AF_UNSPEC;
-  host_info_mme.ai_socktype = SOCK_STREAM;
-
-  status_mme = getaddrinfo("127.0.0.1","43001",&host_info_mme, &host_info_list_mme);
-  //status_mme != 0 -error
-  int socketMme;
-  socketMme = socket(host_info_list_mme->ai_family, host_info_list_mme->ai_socktype, host_info_list_mme->ai_protocol);
-  //use first one in the list
-  //socketMme == 1 -error
-
-  status_mme = connect (socketMme, host_info_list_mme->ai_addr, host_info_list_mme->ai_addrlen);
-
-  //Initialize the UE state
-  m_mmeSocket = socketMme;
-  
-
-  freeaddrinfo(host_info_list_mme);
 }
 
-void EnbEventHandler::run () {    
+void MmeEventHandler::run () {    
 
   struct epoll_event ev, events[MAX_EVENTS];
   //int m_listenSocket, conn_sock, nfds, epollfd;
@@ -148,18 +124,18 @@ void EnbEventHandler::run () {
 		     //The message is serialized, we need to deserialize it
 		     GOOGLE_PROTOBUF_VERIFY_VERSION;
     
-		     RrcMessage rrcMessage;
+		     S1Message s1Message;
 		     //const string str_message;
 		     string str_message(incoming_data_buffer, bytes_recieved);
-		     rrcMessage.ParseFromString(str_message);
+		     s1Message.ParseFromString(str_message);
 		     cout << "Message deserialized " << endl;
 
 		     //Get the object handler in the map
-		     map<int,UeContextEnb>::iterator temp_it = m_ueContexts.find(events[n].data.fd);		    
-		     UeContextEnb ueContext = temp_it->second;
+		     map<int,UeContextMme>::iterator temp_it = m_ueContexts.find(events[n].data.fd);		    
+		     UeContextMme ueContext = temp_it->second;
 		     
 		     //Switch on the message type
-		     handleUeMessage(rrcMessage, ueContext);		     
+		     handleUeMessage(s1Message, ueContext);		     
 		     
 		     }
                    }
@@ -167,32 +143,26 @@ void EnbEventHandler::run () {
            }
 }
 
-void EnbEventHandler::handleNewUe(int conn_sock){
+void MmeEventHandler::handleNewUe(int conn_sock){
 
   //Creation of an object to handle this UE
-  UeContextEnb *ueContext = new UeContextEnb(conn_sock,m_mmeSocket);
+  UeContextMme *ueContext = new UeContextMme(conn_sock);
   //Store this object in a map
-  m_ueContexts.insert(pair<int,UeContextEnb>(conn_sock,*ueContext));
+  m_ueContexts.insert(pair<int,UeContextMme>(conn_sock,*ueContext));
 } 
 
-void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueContext){
-  switch (rrcMessage.messagetype()){
-    case 0 : //RaPreamble
-      {RaPreamble rapreamble;
-      rapreamble = rrcMessage.messagerap();
-      ueContext.handleRaPreamble(rapreamble);
-      cout << "Handling RaP done " << endl;}
+void MmeEventHandler::handleUeMessage(S1Message s1Message, UeContextMme ueContext){
+  switch (s1Message.messagetype()){
+    case 0 : //S1ApInitialUeMessage
+      {S1ApInitialUeMessage initialUeMessage;
+      initialUeMessage = s1Message.messages1apiuem();
+      ueContext.handleS1ApInitialUeMessage(initialUeMessage);
+      cout << "Handling InitialUeMessage done " << endl;}
       break;
-    case 2 : //RrcConnectionRequest
-      {RrcConnectionRequest rrcCRequest;
-      rrcCRequest = rrcMessage.messagerrccrequest();
-      ueContext.handleRrcConnectionRequest(rrcCRequest);}
-      break;
-    case 4 : //RrcConnectionSetupComplete
-      {RrcConnectionSetupComplete rrcConnectionSetupComplete;
-      rrcConnectionSetupComplete = rrcMessage.messagerrccsc();
-      ueContext.handleRrcConnectionSetupComplete(rrcConnectionSetupComplete);
-      cout << "Handling RrcCSC done " << endl;}
+    case 2 : //S1ApInitialContextSetupResponse
+      {S1ApInitialContextSetupResponse initialCSResponse;
+      initialCSResponse = s1Message.messages1apicsresponse();
+      ueContext.handleS1ApInitialContextSetupResponse(initialCSResponse);}
       break;
   }
 }
