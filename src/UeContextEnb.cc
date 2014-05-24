@@ -268,5 +268,7 @@ void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message
 }
 
 void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message){
+  //Print message
+  cout << "Message RrcCRC received " << endl;
 }
 

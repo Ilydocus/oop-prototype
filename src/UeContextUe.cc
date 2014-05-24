@@ -343,21 +343,21 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 		     RrcConnectionReconfiguration rrcCReconfiguration;
 		       rrcCReconfiguration = rrcMessage.messagerrccreconfiguration();
 		     cout << "RrcReconfiguration C-Rnti : " << rrcCReconfiguration.uecrnti() << endl;
- 
+		     //Activate the radioBeareri
+		     bool epsBearerActivated;
+		     string epsBearer = rrcCReconfiguration.epsradiobeareridentity();
+		     int len = (int)epsBearer.length();
+		     if ((epsBearer[0]== epsBearer[len]) == '9'){ epsBearerActivated = false;}
+		     else {epsBearerActivated = true;}
 
 		     //Part 2: Send Response
-  /*RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
-  rrcConnectionRequest->set_ueidrntitype(C_RNTI);
-  rrcConnectionRequest->set_ueidrntivalue(raResponse.ueidrntivalue());
-  Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
-  //tempImsi = ue_state->imsi;
-  rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
-  //delete tempImsi;?
-  std::cout << "C_rnti is : " << rrcConnectionRequest->ueidrntivalue() << std::endl;
+  RrcConnectionReconfigurationComplete *rrcCRC = new RrcConnectionReconfigurationComplete;
+  rrcCRC->set_uecrnti(rrcCReconfiguration.uecrnti());
+  rrcCRC->set_epsradiobeareractivated(epsBearerActivated);
   //Pack it into a RrcMessage
   RrcMessage rrcMessage_o;
-  rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
-  rrcMessage_o.set_allocated_messagerrccrequest(rrcConnectionRequest);
+  rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRC);
+  rrcMessage_o.set_allocated_messagerrccrc(rrcCRC);
   //Serialize the message
   std::string message;
   rrcMessage_o.SerializeToString(&message);
@@ -368,7 +368,7 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 		     message.length(), 0);
 
   std::cout << "Message RrcConnectionReconfigurationComplete sent" << std::endl;
-  std::cout << "Bytes sent: "<<bytes_sent << std::endl;*/
+  std::cout << "Bytes sent: "<<bytes_sent << std::endl;
 		     }
 		     
 
