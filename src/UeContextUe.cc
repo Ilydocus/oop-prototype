@@ -319,5 +319,57 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 }
 
  void UeContextUe::handleRrcConnectionReconfiguration(){
+   //Part 1: Recieve the message
+   ssize_t bytes_recieved;
+   char incoming_data_buffer[1000];
+		     bytes_recieved = recv(m_enbSocket, incoming_data_buffer,1000, 0);
+		      // If no data arrives, the program will just wait here until some data arrives.
+		     if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
+		       //return;}
+		     if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}//return;}
+		     std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
+		     if (bytes_recieved != -1 && bytes_recieved != 0){
+		     incoming_data_buffer[bytes_recieved] = '\0';
+		     //std::cout << incoming_data_buffer << std::endl;
+
+		     //The message is serialized, we need to deserialize it
+		     GOOGLE_PROTOBUF_VERIFY_VERSION;
+    
+		     RrcMessage rrcMessage;
+		     //const string str_message;
+		     string str_message(incoming_data_buffer, bytes_recieved);
+		     rrcMessage.ParseFromString(str_message);
+		     std::cout << "Message deserialized " << endl;
+		     RrcConnectionReconfiguration rrcCReconfiguration;
+		       rrcCReconfiguration = rrcMessage.messagerrccreconfiguration();
+		     cout << "RrcReconfiguration C-Rnti : " << rrcCReconfiguration.uecrnti() << endl;
+ 
+
+		     //Part 2: Send Response
+  /*RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
+  rrcConnectionRequest->set_ueidrntitype(C_RNTI);
+  rrcConnectionRequest->set_ueidrntivalue(raResponse.ueidrntivalue());
+  Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
+  //tempImsi = ue_state->imsi;
+  rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
+  //delete tempImsi;?
+  std::cout << "C_rnti is : " << rrcConnectionRequest->ueidrntivalue() << std::endl;
+  //Pack it into a RrcMessage
+  RrcMessage rrcMessage_o;
+  rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
+  rrcMessage_o.set_allocated_messagerrccrequest(rrcConnectionRequest);
+  //Serialize the message
+  std::string message;
+  rrcMessage_o.SerializeToString(&message);
+  std::cout << "Serialization completed " << std::endl;
+
+  ssize_t bytes_sent;
+  bytes_sent = send (m_enbSocket, message.c_str(), 
+		     message.length(), 0);
+
+  std::cout << "Message RrcConnectionReconfigurationComplete sent" << std::endl;
+  std::cout << "Bytes sent: "<<bytes_sent << std::endl;*/
+		     }
+		     
 
 }

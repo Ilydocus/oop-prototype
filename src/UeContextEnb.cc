@@ -152,6 +152,11 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
     std::cout << "Message deserialized " << endl;
     S1ApInitialContextSetupRequest initialCSRequest;
     initialCSRequest = s1Message.messages1apicsrequest();
+
+    //Modify the state
+    m_state.securityKey = initialCSRequest.securitykey();
+    m_state.epsBearerId = initialCSRequest.epsbearerid();
+
     cout << "InitialContextSetupRequest received " << endl;
     cout << "Value of id is : " << initialCSRequest.enb_ue_s1ap_id() << endl;
 
@@ -161,7 +166,7 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
     string encryptedMessage;
     
     byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
-    memset (key,initialCSRequest.securitykey(),CryptoPP::AES::DEFAULT_KEYLENGTH);
+    memset (key,m_state.securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
     memset (iv,0x00,CryptoPP::AES::BLOCKSIZE);
 
     CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
@@ -242,6 +247,24 @@ void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
 void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message){
   //Print message
   cout << "Message UeCI received " << endl;
+  //Create response
+  RrcConnectionReconfiguration *rrcCReconfiguration = new RrcConnectionReconfiguration;
+  rrcCReconfiguration->set_uecrnti(message.uecrnti());
+  rrcCReconfiguration->set_epsradiobeareridentity(m_state.epsBearerId);
+  //Pack it into a RrcMessage
+  RrcMessage rrcMessage;
+  rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReconfiguration);
+  rrcMessage.set_allocated_messagerrccreconfiguration(rrcCReconfiguration);
+  //Serialize message
+  string output_message;
+  rrcMessage.SerializeToString(&output_message);
+  //Send Response
+  int len;
+  ssize_t bytes_sent;
+
+  bytes_sent = send (m_ueSocket, output_message.c_str(), 
+		     output_message.length(), 0);
+  cout << "RrcConnectionReconfiguration sent " << endl;
 }
 
 void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message){
