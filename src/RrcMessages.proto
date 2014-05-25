@@ -13,7 +13,8 @@ message RrcMessage {
 	TypeUeCI = 8;
 	TypeRrcCReconfiguration = 9;
 	TypeRrcCRC = 10;
-	TypeRrcCReject = 11;	
+	TypeRrcCReject = 11;
+	TypeRrcCA = 12;	
 	}
 
 	optional RaPreamble messageRaP = 2;
@@ -28,6 +29,7 @@ message RrcMessage {
 	optional RrcConnectionReconfiguration messageRrcCreconfiguration = 11;
 	optional RrcConnectionReconfigurationComplete messageRrcCRC = 12;
 	optional RrcConnectionReject messageRrcCReject = 13;
+	optional RrcConnectionAccept messageRrcCA = 14;
 }
 
 message RaPreamble {
@@ -90,6 +92,7 @@ enum RatType {
      GERAN_CS = 2;
      GERAN_PS = 3;
      CDMA2000 = 4;
+     NO_RAT = 5;
 }
 
 message UeCapabilityInformation {
@@ -115,4 +118,8 @@ message RrcConnectionReconfigurationComplete {
 message RrcConnectionReject {
 	required int64 ueCRnti = 1;
 	required int32 waitingTime = 2;
+}
+
+message RrcConnectionAccept {
+	required int64 ueCRnti = 1;
 }

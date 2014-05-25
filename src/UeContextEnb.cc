@@ -8,9 +8,23 @@
 
 using namespace std;
 
-UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket)
-{
-  //TODO: initialize the m_state to default values
+UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket){
+  m_state = new UeStateEnb;
+  //Initialize the state
+  m_state->rrcState=RRC_Idle;
+  m_state->c_rnti=-1;
+  (m_state->imsi).set_mcc("-1");
+  (m_state->imsi).set_mnc("-1");
+  (m_state->imsi).set_msin("-1");
+  m_state->srbIdentity="-1";
+  m_state->enbUeS1ApId=-1;
+  for (int i = 0;i<NB_RAT;i++){
+    (m_state->ratCapabilities[i]).set_rat(NO_RAT);
+    (m_state->ratCapabilities[i]).set_issupported(false);
+  }
+  m_state->securityKey=-1;
+  m_state->epsBearerId="-1";
+  std::cout << "Initializing context"  << std::endl;
 }
 
 void UeContextEnb::handleRaPreamble(RaPreamble message)
@@ -32,8 +46,8 @@ void UeContextEnb::handleRaPreamble(RaPreamble message)
   string output_message;
   rrcMessage.SerializeToString(&output_message);
   //Modify state
-  m_state.c_rnti = message.ueidrntivalue();
-  cout << "State is : " << m_state.c_rnti << endl;
+  m_state->c_rnti = message.ueidrntivalue();
+  cout << "State is : " << m_state->c_rnti << endl;
   //Send Response
   int len;
   ssize_t bytes_sent;
@@ -41,18 +55,20 @@ void UeContextEnb::handleRaPreamble(RaPreamble message)
   bytes_sent = send (m_ueSocket, output_message.c_str(), 
 		     output_message.length(), 0);
   cout << "RA Response sent " << endl;
+  cout << "M_state crnti : "<<  m_state->c_rnti << endl;
   
 }
 
 void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
 
   //Print message
+  cout << "M_state crnti : "<<  m_state->c_rnti << endl;
   cout << "Message RRC Connection Request received " << endl;
   cout << "Type of rnti is : " << message.ueidrntitype() << endl;
   cout << "Value of rnti is : " << message.ueidrntivalue() << endl;
   cout << "UE identity is : " << (message.ueidentity()).mcc()<<"-"<< (message.ueidentity()).mnc() << "-"<< (message.ueidentity()).msin() << endl;
   //store Imsi
-  m_state.imsi = message.ueidentity();
+  m_state->imsi = message.ueidentity();
   //Decide if reject or accept connection
   RrcMessage rrcMessage;
   bool reject;
@@ -77,7 +93,7 @@ void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
     rrcCS->set_ueidrntivalue(message.ueidrntivalue());
     rrcCS->set_srbidentity(*srbId);
     //Store SRB
-    m_state.srbIdentity = *srbId;
+    m_state->srbIdentity = *srbId;
     //Pack it
     rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCS);
     rrcMessage.set_allocated_messagerrccs(rrcCS);
@@ -92,7 +108,7 @@ void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
   bytes_sent = send (m_ueSocket, output_message.c_str(), 
 		     output_message.length(), 0);
   cout << "RRC Connection Setup or Reject sent " << endl;
-  
+  cout << "M_state crnti : "<<  m_state->c_rnti << endl;
 }
 
 void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message){
@@ -102,15 +118,17 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
   cout << "Value of c-rnti is : " << message.uecrnti() << endl;
   cout << "Plmn identity is : " << message.selectedplmnidentity() << endl;
   //Change state
-  m_state.rrcState = RRC_Connected;
-  m_state.enbUeS1ApId = 17 * message.uecrnti();
+  m_state->rrcState = RRC_Connected;
+  m_state->enbUeS1ApId = 17 * message.uecrnti();
+  cout << "M_state enb : "<<  m_state->enbUeS1ApId << endl;
+  
   //Send response to the MME
   //Create response
   S1ApInitialUeMessage *initialUeMessage = new S1ApInitialUeMessage;
   initialUeMessage->set_enb_ue_s1ap_id(17 * message.uecrnti());
   initialUeMessage->set_epsattachtype(EpsAttach);
   Imsi_message *tempImsi = new Imsi_message();
-  *tempImsi = m_state.imsi;
+  *tempImsi = m_state->imsi;
   initialUeMessage->set_allocated_identity(tempImsi);
   //delete tempImsi?
   //Pack it into a S1Message
@@ -154,8 +172,8 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
     initialCSRequest = s1Message.messages1apicsrequest();
 
     //Modify the state
-    m_state.securityKey = initialCSRequest.securitykey();
-    m_state.epsBearerId = initialCSRequest.epsbearerid();
+    m_state->securityKey = initialCSRequest.securitykey();
+    m_state->epsBearerId = initialCSRequest.epsbearerid();
 
     cout << "InitialContextSetupRequest received " << endl;
     cout << "Value of id is : " << initialCSRequest.enb_ue_s1ap_id() << endl;
@@ -166,7 +184,7 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
     string encryptedMessage;
     
     byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
-    memset (key,m_state.securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
+    memset (key,m_state->securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
     memset (iv,0x00,CryptoPP::AES::BLOCKSIZE);
 
     CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
@@ -229,7 +247,7 @@ void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
     rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReject);
     rrcMessage.set_allocated_messagerrccreject(rrcCReject);
     //Change state back to idle
-    m_state.rrcState = RRC_Idle;
+    m_state->rrcState = RRC_Idle;
   }
   //Serialize message
   string output_message;
@@ -242,6 +260,7 @@ void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
 		     output_message.length(), 0);
   cout << "UeCapabilityEnquiry or Reject sent " << endl;
   cout << bytes_sent << " bytes sent " << endl;
+  cout << "M_state crnti : "<<  m_state->c_rnti << endl;
 }
 
 void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message){
@@ -250,7 +269,7 @@ void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message
   //Create response
   RrcConnectionReconfiguration *rrcCReconfiguration = new RrcConnectionReconfiguration;
   rrcCReconfiguration->set_uecrnti(message.uecrnti());
-  rrcCReconfiguration->set_epsradiobeareridentity(m_state.epsBearerId);
+  rrcCReconfiguration->set_epsradiobeareridentity(m_state->epsBearerId);
   //Pack it into a RrcMessage
   RrcMessage rrcMessage;
   rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReconfiguration);
@@ -265,10 +284,77 @@ void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message
   bytes_sent = send (m_ueSocket, output_message.c_str(), 
 		     output_message.length(), 0);
   cout << "RrcConnectionReconfiguration sent " << endl;
+  cout << "M_state crnti : "<<  m_state->c_rnti << endl;
 }
 
 void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message){
   //Print message
   cout << "Message RrcCRC received " << endl;
+  
+  if(message.epsradiobeareractivated()){
+    //Success
+    S1Message s1Message;
+    S1ApInitialContextSetupResponse *iCSResponse = new S1ApInitialContextSetupResponse;
+    iCSResponse->set_enb_ue_s1ap_id(m_state->enbUeS1ApId);
+    cout << "M_state enb2 : "<<  m_state->enbUeS1ApId << endl;
+    cout << "M_state crnti : "<<  m_state->c_rnti << endl;
+    string *erabId = new string;
+    genRandId(erabId,5);
+    iCSResponse->set_allocated_erabid(erabId);
+    //Pack it
+    s1Message.set_messagetype(S1Message_MessageType_TypeS1ApICSResponse);
+    s1Message.set_allocated_messages1apicsresponse(iCSResponse);
+    string output_message;
+  s1Message.SerializeToString(&output_message);
+
+  //Send Response
+  int len;
+  ssize_t bytes_sent;
+
+  bytes_sent = send (m_mmeSocket, output_message.c_str(), 
+		     output_message.length(), 0);
+  cout << "To MME sent " << endl;
+  cout << bytes_sent << " bytes sent " << endl;
+  RrcMessage rrcMessage;
+    RrcConnectionAccept *rrcCA = new RrcConnectionAccept;
+    rrcCA->set_uecrnti(message.uecrnti());
+     //Pack it
+    rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCA);
+    rrcMessage.set_allocated_messagerrcca(rrcCA);
+    rrcMessage.SerializeToString(&output_message);
+  
+  //Send Response
+  //int len;
+  //ssize_t bytes_sent;
+
+  bytes_sent = send (m_ueSocket, output_message.c_str(), 
+		     output_message.length(), 0);
+  cout << "Accept sent " << endl;
+  cout << bytes_sent << " bytes sent " << endl;
+  }
+  else {
+    RrcMessage rrcMessage;
+    RrcConnectionReject *rrcCReject = new RrcConnectionReject;
+    rrcCReject->set_uecrnti(message.uecrnti());
+    rrcCReject->set_waitingtime((message.uecrnti() % 15)+1);
+    //Pack it
+    rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReject);
+    rrcMessage.set_allocated_messagerrccreject(rrcCReject);
+    //Change state back to idle
+    m_state->rrcState = RRC_Idle;
+    string output_message;
+    rrcMessage.SerializeToString(&output_message);
+
+  //Serialize message
+  
+  //Send Response
+  int len;
+  ssize_t bytes_sent;
+
+  bytes_sent = send (m_ueSocket, output_message.c_str(), 
+		     output_message.length(), 0);
+  cout << "Reject sent " << endl;
+  cout << bytes_sent << " bytes sent " << endl;
+  }
 }
 

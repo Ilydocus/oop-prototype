@@ -173,6 +173,7 @@ void EnbEventHandler::handleNewUe(int conn_sock){
   UeContextEnb *ueContext = new UeContextEnb(conn_sock,m_mmeSocket);
   //Store this object in a map
   m_ueContexts.insert(pair<int,UeContextEnb>(conn_sock,*ueContext));
+  cout << "Handling New UE " << endl;
 } 
 
 void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueContext){

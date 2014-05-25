@@ -371,5 +371,41 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
   std::cout << "Bytes sent: "<<bytes_sent << std::endl;
 		     }
 		     
+		     //Attendre la reponse 
+		     bytes_recieved = recv(m_enbSocket, incoming_data_buffer,1000, 0);
+		      // If no data arrives, the program will just wait here until some data arrives.
+		     if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
+		       //return;}
+		     if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}//return;}
+		     std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
+		     if (bytes_recieved != -1 && bytes_recieved != 0){
+		     incoming_data_buffer[bytes_recieved] = '\0';
+		     //std::cout << incoming_data_buffer << std::endl;
 
+		     //The message is serialized, we need to deserialize it
+		     GOOGLE_PROTOBUF_VERIFY_VERSION;
+    
+		     RrcMessage rrcMessage;
+		     //const string str_message;
+		     string str_message(incoming_data_buffer, bytes_recieved);
+		     rrcMessage.ParseFromString(str_message);
+		     std::cout << "Message deserialized " << endl;
+		     
+		     
+		     switch (rrcMessage.messagetype()) {
+    case RrcMessage_MessageType_TypeRrcCA :
+      {RrcConnectionAccept rrcCA;
+      rrcCA = rrcMessage.messagerrcca();
+      cout << "Connection Accepted  C-rnti is : " << rrcCA.uecrnti() << endl;
+
+      }
+      break;
+    case RrcMessage_MessageType_TypeRrcCReject :
+      {RrcConnectionReject rrcConnectionReject;
+      rrcConnectionReject = rrcMessage.messagerrccreject();
+      cout << "Reject: Value of rnti is : " << rrcConnectionReject.uecrnti() << endl;
+      //Rejected
+      }
+      break;
+		     };}
 }

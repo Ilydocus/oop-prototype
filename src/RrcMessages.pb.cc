@@ -64,6 +64,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* RrcConnectionReject_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   RrcConnectionReject_reflection_ = NULL;
+const ::google::protobuf::Descriptor* RrcConnectionAccept_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  RrcConnectionAccept_reflection_ = NULL;
 const ::google::protobuf::EnumDescriptor* UeIdRntiType_descriptor_ = NULL;
 const ::google::protobuf::EnumDescriptor* RatType_descriptor_ = NULL;
 
@@ -77,7 +80,7 @@ void protobuf_AssignDesc_RrcMessages_2eproto() {
       "RrcMessages.proto");
   GOOGLE_CHECK(file != NULL);
   RrcMessage_descriptor_ = file->message_type(0);
-  static const int RrcMessage_offsets_[13] = {
+  static const int RrcMessage_offsets_[14] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagetype_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerap_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerar_),
@@ -91,6 +94,7 @@ void protobuf_AssignDesc_RrcMessages_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerrccreconfiguration_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerrccrc_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerrccreject_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcMessage, messagerrcca_),
   };
   RrcMessage_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -332,6 +336,21 @@ void protobuf_AssignDesc_RrcMessages_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(RrcConnectionReject));
+  RrcConnectionAccept_descriptor_ = file->message_type(15);
+  static const int RrcConnectionAccept_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcConnectionAccept, uecrnti_),
+  };
+  RrcConnectionAccept_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      RrcConnectionAccept_descriptor_,
+      RrcConnectionAccept::default_instance_,
+      RrcConnectionAccept_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcConnectionAccept, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RrcConnectionAccept, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(RrcConnectionAccept));
   UeIdRntiType_descriptor_ = file->enum_type(0);
   RatType_descriptor_ = file->enum_type(1);
 }
@@ -376,6 +395,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
     RrcConnectionReconfigurationComplete_descriptor_, &RrcConnectionReconfigurationComplete::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     RrcConnectionReject_descriptor_, &RrcConnectionReject::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    RrcConnectionAccept_descriptor_, &RrcConnectionAccept::default_instance());
 }
 
 }  // namespace
@@ -411,6 +432,8 @@ void protobuf_ShutdownFile_RrcMessages_2eproto() {
   delete RrcConnectionReconfigurationComplete_reflection_;
   delete RrcConnectionReject::default_instance_;
   delete RrcConnectionReject_reflection_;
+  delete RrcConnectionAccept::default_instance_;
+  delete RrcConnectionAccept_reflection_;
 }
 
 void protobuf_AddDesc_RrcMessages_2eproto() {
@@ -420,7 +443,7 @@ void protobuf_AddDesc_RrcMessages_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\021RrcMessages.proto\"\372\006\n\nRrcMessage\022,\n\013me"
+    "\n\021RrcMessages.proto\"\265\007\n\nRrcMessage\022,\n\013me"
     "ssageType\030\001 \002(\0162\027.RrcMessage.MessageType"
     "\022\037\n\nmessageRaP\030\002 \001(\0132\013.RaPreamble\022\037\n\nmes"
     "sageRaR\030\003 \001(\0132\013.RaResponse\0221\n\022messageRrc"
@@ -436,44 +459,47 @@ void protobuf_AddDesc_RrcMessages_2eproto() {
     "tion\030\013 \001(\0132\035.RrcConnectionReconfiguratio"
     "n\022<\n\rmessageRrcCRC\030\014 \001(\0132%.RrcConnection"
     "ReconfigurationComplete\022/\n\021messageRrcCRe"
-    "ject\030\r \001(\0132\024.RrcConnectionReject\"\355\001\n\013Mes"
-    "sageType\022\013\n\007TypeRaP\020\000\022\013\n\007TypeRaR\020\001\022\023\n\017Ty"
-    "peRrcCRequest\020\002\022\r\n\tTypeRrcCS\020\003\022\016\n\nTypeRr"
-    "cCSC\020\004\022\030\n\024TypeSecurityMCommand\020\005\022\031\n\025Type"
-    "SecurityMComplete\020\006\022\014\n\010TypeUeCE\020\007\022\014\n\010Typ"
-    "eUeCI\020\010\022\033\n\027TypeRrcCReconfiguration\020\t\022\016\n\n"
-    "TypeRrcCRC\020\n\022\022\n\016TypeRrcCReject\020\013\"H\n\nRaPr"
-    "eamble\022#\n\014ueIdRntiType\030\001 \002(\0162\r.UeIdRntiT"
-    "ype\022\025\n\rueIdRntiValue\030\002 \002(\003\"[\n\nRaResponse"
-    "\022#\n\014ueIdRntiType\030\001 \002(\0162\r.UeIdRntiType\022\025\n"
-    "\rueIdRntiValue\030\002 \002(\003\022\021\n\tueIdCRnti\030\003 \002(\003\""
-    "u\n\024RrcConnectionRequest\022#\n\014ueIdRntiType\030"
-    "\001 \002(\0162\r.UeIdRntiType\022\025\n\rueIdRntiValue\030\002 "
-    "\002(\003\022!\n\nueIdentity\030\003 \002(\0132\r.Imsi_message\"6"
-    "\n\014Imsi_message\022\013\n\003mcc\030\001 \002(\t\022\013\n\003mnc\030\002 \002(\t"
-    "\022\014\n\004msin\030\003 \002(\t\"e\n\022RrcConnectionSetup\022#\n\014"
-    "ueIdRntiType\030\001 \002(\0162\r.UeIdRntiType\022\025\n\rueI"
-    "dRntiValue\030\002 \002(\003\022\023\n\013srbIdentity\030\003 \002(\t\"K\n"
-    "\032RrcConnectionSetupComplete\022\017\n\007ueCRnti\030\001"
-    " \002(\003\022\034\n\024selectedPlmnIdentity\030\002 \002(\t\"@\n\023Se"
-    "curityModeCommand\022\017\n\007ueCRnti\030\001 \002(\003\022\030\n\020me"
-    "ssage_security\030\002 \002(\014\"D\n\024SecurityModeComp"
-    "lete\022\017\n\007ueCRnti\030\001 \002(\003\022\033\n\023securityModeSuc"
-    "cess\030\002 \002(\010\"Q\n\023UeCapabilityEnquiry\022\017\n\007ueC"
-    "Rnti\030\001 \002(\003\022)\n\023ueCapabilityRequest\030\002 \003(\0162"
-    "\010.RatTypeB\002\020\001\"W\n\027UeCapabilityInformation"
-    "\022\017\n\007ueCRnti\030\001 \002(\003\022+\n\023ueCapabilityRatList"
-    "\030\002 \003(\0132\016.RatCapability\";\n\rRatCapability\022"
-    "\025\n\003rat\030\001 \002(\0162\010.RatType\022\023\n\013isSupported\030\002 "
-    "\002(\010\"O\n\034RrcConnectionReconfiguration\022\017\n\007u"
-    "eCRnti\030\001 \002(\003\022\036\n\026epsRadioBearerIdentity\030\002"
-    " \002(\t\"X\n$RrcConnectionReconfigurationComp"
-    "lete\022\017\n\007ueCRnti\030\001 \002(\003\022\037\n\027epsRadioBearerA"
-    "ctivated\030\002 \002(\010\";\n\023RrcConnectionReject\022\017\n"
-    "\007ueCRnti\030\001 \002(\003\022\023\n\013waitingTime\030\002 \002(\005*\'\n\014U"
-    "eIdRntiType\022\013\n\007RA_RNTI\020\000\022\n\n\006C_RNTI\020\001*I\n\007"
-    "RatType\022\n\n\006E_UTRA\020\000\022\010\n\004UTRA\020\001\022\014\n\010GERAN_C"
-    "S\020\002\022\014\n\010GERAN_PS\020\003\022\014\n\010CDMA2000\020\004", 2151);
+    "ject\030\r \001(\0132\024.RrcConnectionReject\022*\n\014mess"
+    "ageRrcCA\030\016 \001(\0132\024.RrcConnectionAccept\"\374\001\n"
+    "\013MessageType\022\013\n\007TypeRaP\020\000\022\013\n\007TypeRaR\020\001\022\023"
+    "\n\017TypeRrcCRequest\020\002\022\r\n\tTypeRrcCS\020\003\022\016\n\nTy"
+    "peRrcCSC\020\004\022\030\n\024TypeSecurityMCommand\020\005\022\031\n\025"
+    "TypeSecurityMComplete\020\006\022\014\n\010TypeUeCE\020\007\022\014\n"
+    "\010TypeUeCI\020\010\022\033\n\027TypeRrcCReconfiguration\020\t"
+    "\022\016\n\nTypeRrcCRC\020\n\022\022\n\016TypeRrcCReject\020\013\022\r\n\t"
+    "TypeRrcCA\020\014\"H\n\nRaPreamble\022#\n\014ueIdRntiTyp"
+    "e\030\001 \002(\0162\r.UeIdRntiType\022\025\n\rueIdRntiValue\030"
+    "\002 \002(\003\"[\n\nRaResponse\022#\n\014ueIdRntiType\030\001 \002("
+    "\0162\r.UeIdRntiType\022\025\n\rueIdRntiValue\030\002 \002(\003\022"
+    "\021\n\tueIdCRnti\030\003 \002(\003\"u\n\024RrcConnectionReque"
+    "st\022#\n\014ueIdRntiType\030\001 \002(\0162\r.UeIdRntiType\022"
+    "\025\n\rueIdRntiValue\030\002 \002(\003\022!\n\nueIdentity\030\003 \002"
+    "(\0132\r.Imsi_message\"6\n\014Imsi_message\022\013\n\003mcc"
+    "\030\001 \002(\t\022\013\n\003mnc\030\002 \002(\t\022\014\n\004msin\030\003 \002(\t\"e\n\022Rrc"
+    "ConnectionSetup\022#\n\014ueIdRntiType\030\001 \002(\0162\r."
+    "UeIdRntiType\022\025\n\rueIdRntiValue\030\002 \002(\003\022\023\n\013s"
+    "rbIdentity\030\003 \002(\t\"K\n\032RrcConnectionSetupCo"
+    "mplete\022\017\n\007ueCRnti\030\001 \002(\003\022\034\n\024selectedPlmnI"
+    "dentity\030\002 \002(\t\"@\n\023SecurityModeCommand\022\017\n\007"
+    "ueCRnti\030\001 \002(\003\022\030\n\020message_security\030\002 \002(\014\""
+    "D\n\024SecurityModeComplete\022\017\n\007ueCRnti\030\001 \002(\003"
+    "\022\033\n\023securityModeSuccess\030\002 \002(\010\"Q\n\023UeCapab"
+    "ilityEnquiry\022\017\n\007ueCRnti\030\001 \002(\003\022)\n\023ueCapab"
+    "ilityRequest\030\002 \003(\0162\010.RatTypeB\002\020\001\"W\n\027UeCa"
+    "pabilityInformation\022\017\n\007ueCRnti\030\001 \002(\003\022+\n\023"
+    "ueCapabilityRatList\030\002 \003(\0132\016.RatCapabilit"
+    "y\";\n\rRatCapability\022\025\n\003rat\030\001 \002(\0162\010.RatTyp"
+    "e\022\023\n\013isSupported\030\002 \002(\010\"O\n\034RrcConnectionR"
+    "econfiguration\022\017\n\007ueCRnti\030\001 \002(\003\022\036\n\026epsRa"
+    "dioBearerIdentity\030\002 \002(\t\"X\n$RrcConnection"
+    "ReconfigurationComplete\022\017\n\007ueCRnti\030\001 \002(\003"
+    "\022\037\n\027epsRadioBearerActivated\030\002 \002(\010\";\n\023Rrc"
+    "ConnectionReject\022\017\n\007ueCRnti\030\001 \002(\003\022\023\n\013wai"
+    "tingTime\030\002 \002(\005\"&\n\023RrcConnectionAccept\022\017\n"
+    "\007ueCRnti\030\001 \002(\003*\'\n\014UeIdRntiType\022\013\n\007RA_RNT"
+    "I\020\000\022\n\n\006C_RNTI\020\001*U\n\007RatType\022\n\n\006E_UTRA\020\000\022\010"
+    "\n\004UTRA\020\001\022\014\n\010GERAN_CS\020\002\022\014\n\010GERAN_PS\020\003\022\014\n\010"
+    "CDMA2000\020\004\022\n\n\006NO_RAT\020\005", 2262);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "RrcMessages.proto", &protobuf_RegisterTypes);
   RrcMessage::default_instance_ = new RrcMessage();
@@ -491,6 +517,7 @@ void protobuf_AddDesc_RrcMessages_2eproto() {
   RrcConnectionReconfiguration::default_instance_ = new RrcConnectionReconfiguration();
   RrcConnectionReconfigurationComplete::default_instance_ = new RrcConnectionReconfigurationComplete();
   RrcConnectionReject::default_instance_ = new RrcConnectionReject();
+  RrcConnectionAccept::default_instance_ = new RrcConnectionAccept();
   RrcMessage::default_instance_->InitAsDefaultInstance();
   RaPreamble::default_instance_->InitAsDefaultInstance();
   RaResponse::default_instance_->InitAsDefaultInstance();
@@ -506,6 +533,7 @@ void protobuf_AddDesc_RrcMessages_2eproto() {
   RrcConnectionReconfiguration::default_instance_->InitAsDefaultInstance();
   RrcConnectionReconfigurationComplete::default_instance_->InitAsDefaultInstance();
   RrcConnectionReject::default_instance_->InitAsDefaultInstance();
+  RrcConnectionAccept::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_RrcMessages_2eproto);
 }
 
@@ -540,6 +568,7 @@ bool RatType_IsValid(int value) {
     case 2:
     case 3:
     case 4:
+    case 5:
       return true;
     default:
       return false;
@@ -567,6 +596,7 @@ bool RrcMessage_MessageType_IsValid(int value) {
     case 9:
     case 10:
     case 11:
+    case 12:
       return true;
     default:
       return false;
@@ -586,6 +616,7 @@ const RrcMessage_MessageType RrcMessage::TypeUeCI;
 const RrcMessage_MessageType RrcMessage::TypeRrcCReconfiguration;
 const RrcMessage_MessageType RrcMessage::TypeRrcCRC;
 const RrcMessage_MessageType RrcMessage::TypeRrcCReject;
+const RrcMessage_MessageType RrcMessage::TypeRrcCA;
 const RrcMessage_MessageType RrcMessage::MessageType_MIN;
 const RrcMessage_MessageType RrcMessage::MessageType_MAX;
 const int RrcMessage::MessageType_ARRAYSIZE;
@@ -604,6 +635,7 @@ const int RrcMessage::kMessageUeCIFieldNumber;
 const int RrcMessage::kMessageRrcCreconfigurationFieldNumber;
 const int RrcMessage::kMessageRrcCRCFieldNumber;
 const int RrcMessage::kMessageRrcCRejectFieldNumber;
+const int RrcMessage::kMessageRrcCAFieldNumber;
 #endif  // !_MSC_VER
 
 RrcMessage::RrcMessage()
@@ -624,6 +656,7 @@ void RrcMessage::InitAsDefaultInstance() {
   messagerrccreconfiguration_ = const_cast< ::RrcConnectionReconfiguration*>(&::RrcConnectionReconfiguration::default_instance());
   messagerrccrc_ = const_cast< ::RrcConnectionReconfigurationComplete*>(&::RrcConnectionReconfigurationComplete::default_instance());
   messagerrccreject_ = const_cast< ::RrcConnectionReject*>(&::RrcConnectionReject::default_instance());
+  messagerrcca_ = const_cast< ::RrcConnectionAccept*>(&::RrcConnectionAccept::default_instance());
 }
 
 RrcMessage::RrcMessage(const RrcMessage& from)
@@ -647,6 +680,7 @@ void RrcMessage::SharedCtor() {
   messagerrccreconfiguration_ = NULL;
   messagerrccrc_ = NULL;
   messagerrccreject_ = NULL;
+  messagerrcca_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -668,6 +702,7 @@ void RrcMessage::SharedDtor() {
     delete messagerrccreconfiguration_;
     delete messagerrccrc_;
     delete messagerrccreject_;
+    delete messagerrcca_;
   }
 }
 
@@ -732,6 +767,9 @@ void RrcMessage::Clear() {
     }
     if (has_messagerrccreject()) {
       if (messagerrccreject_ != NULL) messagerrccreject_->::RrcConnectionReject::Clear();
+    }
+    if (has_messagerrcca()) {
+      if (messagerrcca_ != NULL) messagerrcca_->::RrcConnectionAccept::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -928,6 +966,20 @@ bool RrcMessage::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(114)) goto parse_messageRrcCA;
+        break;
+      }
+
+      // optional .RrcConnectionAccept messageRrcCA = 14;
+      case 14: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_messageRrcCA:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_messagerrcca()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -1028,6 +1080,12 @@ void RrcMessage::SerializeWithCachedSizes(
       13, this->messagerrccreject(), output);
   }
 
+  // optional .RrcConnectionAccept messageRrcCA = 14;
+  if (has_messagerrcca()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      14, this->messagerrcca(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -1124,6 +1182,13 @@ void RrcMessage::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         13, this->messagerrccreject(), target);
+  }
+
+  // optional .RrcConnectionAccept messageRrcCA = 14;
+  if (has_messagerrcca()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        14, this->messagerrcca(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -1229,6 +1294,13 @@ int RrcMessage::ByteSize() const {
           this->messagerrccreject());
     }
 
+    // optional .RrcConnectionAccept messageRrcCA = 14;
+    if (has_messagerrcca()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->messagerrcca());
+    }
+
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -1297,6 +1369,9 @@ void RrcMessage::MergeFrom(const RrcMessage& from) {
     if (from.has_messagerrccreject()) {
       mutable_messagerrccreject()->::RrcConnectionReject::MergeFrom(from.messagerrccreject());
     }
+    if (from.has_messagerrcca()) {
+      mutable_messagerrcca()->::RrcConnectionAccept::MergeFrom(from.messagerrcca());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -1352,6 +1427,9 @@ bool RrcMessage::IsInitialized() const {
   if (has_messagerrccreject()) {
     if (!this->messagerrccreject().IsInitialized()) return false;
   }
+  if (has_messagerrcca()) {
+    if (!this->messagerrcca().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -1370,6 +1448,7 @@ void RrcMessage::Swap(RrcMessage* other) {
     std::swap(messagerrccreconfiguration_, other->messagerrccreconfiguration_);
     std::swap(messagerrccrc_, other->messagerrccrc_);
     std::swap(messagerrccreject_, other->messagerrccreject_);
+    std::swap(messagerrcca_, other->messagerrcca_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -5216,6 +5295,215 @@ void RrcConnectionReject::Swap(RrcConnectionReject* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = RrcConnectionReject_descriptor_;
   metadata.reflection = RrcConnectionReject_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int RrcConnectionAccept::kUeCRntiFieldNumber;
+#endif  // !_MSC_VER
+
+RrcConnectionAccept::RrcConnectionAccept()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void RrcConnectionAccept::InitAsDefaultInstance() {
+}
+
+RrcConnectionAccept::RrcConnectionAccept(const RrcConnectionAccept& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void RrcConnectionAccept::SharedCtor() {
+  _cached_size_ = 0;
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+RrcConnectionAccept::~RrcConnectionAccept() {
+  SharedDtor();
+}
+
+void RrcConnectionAccept::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void RrcConnectionAccept::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* RrcConnectionAccept::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return RrcConnectionAccept_descriptor_;
+}
+
+const RrcConnectionAccept& RrcConnectionAccept::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_RrcMessages_2eproto();
+  return *default_instance_;
+}
+
+RrcConnectionAccept* RrcConnectionAccept::default_instance_ = NULL;
+
+RrcConnectionAccept* RrcConnectionAccept::New() const {
+  return new RrcConnectionAccept;
+}
+
+void RrcConnectionAccept::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    uecrnti_ = GOOGLE_LONGLONG(0);
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool RrcConnectionAccept::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required int64 ueCRnti = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &uecrnti_)));
+          set_has_uecrnti();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void RrcConnectionAccept::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required int64 ueCRnti = 1;
+  if (has_uecrnti()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(1, this->uecrnti(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* RrcConnectionAccept::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required int64 ueCRnti = 1;
+  if (has_uecrnti()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(1, this->uecrnti(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int RrcConnectionAccept::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required int64 ueCRnti = 1;
+    if (has_uecrnti()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->uecrnti());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void RrcConnectionAccept::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const RrcConnectionAccept* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const RrcConnectionAccept*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void RrcConnectionAccept::MergeFrom(const RrcConnectionAccept& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_uecrnti()) {
+      set_uecrnti(from.uecrnti());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void RrcConnectionAccept::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void RrcConnectionAccept::CopyFrom(const RrcConnectionAccept& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool RrcConnectionAccept::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void RrcConnectionAccept::Swap(RrcConnectionAccept* other) {
+  if (other != this) {
+    std::swap(uecrnti_, other->uecrnti_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata RrcConnectionAccept::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = RrcConnectionAccept_descriptor_;
+  metadata.reflection = RrcConnectionAccept_reflection_;
   return metadata;
 }
 

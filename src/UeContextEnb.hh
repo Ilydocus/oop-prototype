@@ -7,6 +7,8 @@
 #include "S1Messages.pb.h"
 #include "UeContext.hh"
 
+#define NB_RAT 5
+
 using namespace std;
 
 enum RrcState {RRC_Idle, RRC_Connected};
@@ -17,7 +19,7 @@ struct UeStateEnb{
   Imsi_message imsi;
   string srbIdentity;
   int enbUeS1ApId;
-  RatCapability ratCapabilities[5];
+  RatCapability ratCapabilities[NB_RAT];
   int securityKey;
   string epsBearerId; 
 };
@@ -39,7 +41,7 @@ class UeContextEnb : public UeContext
 
   int m_ueSocket;
   int m_mmeSocket;
-  UeStateEnb m_state;
+  UeStateEnb *m_state;
 
 };
 

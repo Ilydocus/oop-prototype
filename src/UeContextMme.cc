@@ -47,4 +47,6 @@ void UeContextMme::handleS1ApInitialUeMessage(S1ApInitialUeMessage message){
 }
  
 void UeContextMme::handleS1ApInitialContextSetupResponse(S1ApInitialContextSetupResponse message){
+  cout << "Message Initial ContextSetup Response received " << endl;
+  cout << "Id is : " << message.enb_ue_s1ap_id() << endl;
 }

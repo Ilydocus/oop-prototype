@@ -47,6 +47,7 @@ class RatCapability;
 class RrcConnectionReconfiguration;
 class RrcConnectionReconfigurationComplete;
 class RrcConnectionReject;
+class RrcConnectionAccept;
 
 enum RrcMessage_MessageType {
   RrcMessage_MessageType_TypeRaP = 0,
@@ -60,11 +61,12 @@ enum RrcMessage_MessageType {
   RrcMessage_MessageType_TypeUeCI = 8,
   RrcMessage_MessageType_TypeRrcCReconfiguration = 9,
   RrcMessage_MessageType_TypeRrcCRC = 10,
-  RrcMessage_MessageType_TypeRrcCReject = 11
+  RrcMessage_MessageType_TypeRrcCReject = 11,
+  RrcMessage_MessageType_TypeRrcCA = 12
 };
 bool RrcMessage_MessageType_IsValid(int value);
 const RrcMessage_MessageType RrcMessage_MessageType_MessageType_MIN = RrcMessage_MessageType_TypeRaP;
-const RrcMessage_MessageType RrcMessage_MessageType_MessageType_MAX = RrcMessage_MessageType_TypeRrcCReject;
+const RrcMessage_MessageType RrcMessage_MessageType_MessageType_MAX = RrcMessage_MessageType_TypeRrcCA;
 const int RrcMessage_MessageType_MessageType_ARRAYSIZE = RrcMessage_MessageType_MessageType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* RrcMessage_MessageType_descriptor();
@@ -101,11 +103,12 @@ enum RatType {
   UTRA = 1,
   GERAN_CS = 2,
   GERAN_PS = 3,
-  CDMA2000 = 4
+  CDMA2000 = 4,
+  NO_RAT = 5
 };
 bool RatType_IsValid(int value);
 const RatType RatType_MIN = E_UTRA;
-const RatType RatType_MAX = CDMA2000;
+const RatType RatType_MAX = NO_RAT;
 const int RatType_ARRAYSIZE = RatType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* RatType_descriptor();
@@ -185,6 +188,7 @@ class RrcMessage : public ::google::protobuf::Message {
   static const MessageType TypeRrcCReconfiguration = RrcMessage_MessageType_TypeRrcCReconfiguration;
   static const MessageType TypeRrcCRC = RrcMessage_MessageType_TypeRrcCRC;
   static const MessageType TypeRrcCReject = RrcMessage_MessageType_TypeRrcCReject;
+  static const MessageType TypeRrcCA = RrcMessage_MessageType_TypeRrcCA;
   static inline bool MessageType_IsValid(int value) {
     return RrcMessage_MessageType_IsValid(value);
   }
@@ -323,6 +327,15 @@ class RrcMessage : public ::google::protobuf::Message {
   inline ::RrcConnectionReject* release_messagerrccreject();
   inline void set_allocated_messagerrccreject(::RrcConnectionReject* messagerrccreject);
 
+  // optional .RrcConnectionAccept messageRrcCA = 14;
+  inline bool has_messagerrcca() const;
+  inline void clear_messagerrcca();
+  static const int kMessageRrcCAFieldNumber = 14;
+  inline const ::RrcConnectionAccept& messagerrcca() const;
+  inline ::RrcConnectionAccept* mutable_messagerrcca();
+  inline ::RrcConnectionAccept* release_messagerrcca();
+  inline void set_allocated_messagerrcca(::RrcConnectionAccept* messagerrcca);
+
   // @@protoc_insertion_point(class_scope:RrcMessage)
  private:
   inline void set_has_messagetype();
@@ -351,6 +364,8 @@ class RrcMessage : public ::google::protobuf::Message {
   inline void clear_has_messagerrccrc();
   inline void set_has_messagerrccreject();
   inline void clear_has_messagerrccreject();
+  inline void set_has_messagerrcca();
+  inline void clear_has_messagerrcca();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -366,10 +381,11 @@ class RrcMessage : public ::google::protobuf::Message {
   ::RrcConnectionReconfiguration* messagerrccreconfiguration_;
   ::RrcConnectionReconfigurationComplete* messagerrccrc_;
   ::RrcConnectionReject* messagerrccreject_;
+  ::RrcConnectionAccept* messagerrcca_;
   int messagetype_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(13 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(14 + 31) / 32];
 
   friend void  protobuf_AddDesc_RrcMessages_2eproto();
   friend void protobuf_AssignDesc_RrcMessages_2eproto();
@@ -1748,6 +1764,88 @@ class RrcConnectionReject : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static RrcConnectionReject* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class RrcConnectionAccept : public ::google::protobuf::Message {
+ public:
+  RrcConnectionAccept();
+  virtual ~RrcConnectionAccept();
+
+  RrcConnectionAccept(const RrcConnectionAccept& from);
+
+  inline RrcConnectionAccept& operator=(const RrcConnectionAccept& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RrcConnectionAccept& default_instance();
+
+  void Swap(RrcConnectionAccept* other);
+
+  // implements Message ----------------------------------------------
+
+  RrcConnectionAccept* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const RrcConnectionAccept& from);
+  void MergeFrom(const RrcConnectionAccept& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required int64 ueCRnti = 1;
+  inline bool has_uecrnti() const;
+  inline void clear_uecrnti();
+  static const int kUeCRntiFieldNumber = 1;
+  inline ::google::protobuf::int64 uecrnti() const;
+  inline void set_uecrnti(::google::protobuf::int64 value);
+
+  // @@protoc_insertion_point(class_scope:RrcConnectionAccept)
+ private:
+  inline void set_has_uecrnti();
+  inline void clear_has_uecrnti();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::int64 uecrnti_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  friend void  protobuf_AddDesc_RrcMessages_2eproto();
+  friend void protobuf_AssignDesc_RrcMessages_2eproto();
+  friend void protobuf_ShutdownFile_RrcMessages_2eproto();
+
+  void InitAsDefaultInstance();
+  static RrcConnectionAccept* default_instance_;
+};
 // ===================================================================
 
 
@@ -2231,6 +2329,44 @@ inline void RrcMessage::set_allocated_messagerrccreject(::RrcConnectionReject* m
     set_has_messagerrccreject();
   } else {
     clear_has_messagerrccreject();
+  }
+}
+
+// optional .RrcConnectionAccept messageRrcCA = 14;
+inline bool RrcMessage::has_messagerrcca() const {
+  return (_has_bits_[0] & 0x00002000u) != 0;
+}
+inline void RrcMessage::set_has_messagerrcca() {
+  _has_bits_[0] |= 0x00002000u;
+}
+inline void RrcMessage::clear_has_messagerrcca() {
+  _has_bits_[0] &= ~0x00002000u;
+}
+inline void RrcMessage::clear_messagerrcca() {
+  if (messagerrcca_ != NULL) messagerrcca_->::RrcConnectionAccept::Clear();
+  clear_has_messagerrcca();
+}
+inline const ::RrcConnectionAccept& RrcMessage::messagerrcca() const {
+  return messagerrcca_ != NULL ? *messagerrcca_ : *default_instance_->messagerrcca_;
+}
+inline ::RrcConnectionAccept* RrcMessage::mutable_messagerrcca() {
+  set_has_messagerrcca();
+  if (messagerrcca_ == NULL) messagerrcca_ = new ::RrcConnectionAccept;
+  return messagerrcca_;
+}
+inline ::RrcConnectionAccept* RrcMessage::release_messagerrcca() {
+  clear_has_messagerrcca();
+  ::RrcConnectionAccept* temp = messagerrcca_;
+  messagerrcca_ = NULL;
+  return temp;
+}
+inline void RrcMessage::set_allocated_messagerrcca(::RrcConnectionAccept* messagerrcca) {
+  delete messagerrcca_;
+  messagerrcca_ = messagerrcca;
+  if (messagerrcca) {
+    set_has_messagerrcca();
+  } else {
+    clear_has_messagerrcca();
   }
 }
 
@@ -3357,6 +3493,32 @@ inline ::google::protobuf::int32 RrcConnectionReject::waitingtime() const {
 inline void RrcConnectionReject::set_waitingtime(::google::protobuf::int32 value) {
   set_has_waitingtime();
   waitingtime_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// RrcConnectionAccept
+
+// required int64 ueCRnti = 1;
+inline bool RrcConnectionAccept::has_uecrnti() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void RrcConnectionAccept::set_has_uecrnti() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void RrcConnectionAccept::clear_has_uecrnti() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void RrcConnectionAccept::clear_uecrnti() {
+  uecrnti_ = GOOGLE_LONGLONG(0);
+  clear_has_uecrnti();
+}
+inline ::google::protobuf::int64 RrcConnectionAccept::uecrnti() const {
+  return uecrnti_;
+}
+inline void RrcConnectionAccept::set_uecrnti(::google::protobuf::int64 value) {
+  set_has_uecrnti();
+  uecrnti_ = value;
 }
 
 
