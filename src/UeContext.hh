@@ -2,13 +2,18 @@
 #define DEF_UECONTEXT
 
 #include <string>
+#include "RrcMessages.pb.h"
+#include "S1Messages.pb.h"
 
 using namespace std;
 
 class UeContext {
 protected:
   void genRandId(string * id,const int len);
-  void sendMessage(int socket, string output_message);
+  void sendRrcMessage(int socket, RrcMessage message);
+  void sendS1Message(int socket, S1Message message);
+  int receiveRrcMessage(int socket,RrcMessage *message);
+  int receiveS1Message(int socket,S1Message *message);
 };
 
 #endif
