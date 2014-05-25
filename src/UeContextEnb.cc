@@ -5,10 +5,11 @@
 #include "crypto++/modes.h"
 #include "crypto++/aes.h"
 #include "crypto++/filters.h"
+#include <sstream>
 
 using namespace std;
 
-UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket){
+UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket, Log *log):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket),m_log(log){
   m_state = new UeStateEnb;
   //Initialize the state
   m_state->rrcState=RRC_Idle;
@@ -49,11 +50,10 @@ void UeContextEnb::handleRaPreamble(RaPreamble message)
   m_state->c_rnti = message.ueidrntivalue();
   cout << "State is : " << m_state->c_rnti << endl;
   //Send Response
-  int len;
-  ssize_t bytes_sent;
+  sendMessage(m_ueSocket,output_message);
 
-  bytes_sent = send (m_ueSocket, output_message.c_str(), 
-		     output_message.length(), 0);
+//bytes_sent = send (m_ueSocket, output_message.c_str(), 
+//		     output_message.length(), 0);
   cout << "RA Response sent " << endl;
   cout << "M_state crnti : "<<  m_state->c_rnti << endl;
   
@@ -331,6 +331,7 @@ void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReco
 		     output_message.length(), 0);
   cout << "Accept sent " << endl;
   cout << bytes_sent << " bytes sent " << endl;
+  printState();
   }
   else {
     RrcMessage rrcMessage;
@@ -358,3 +359,8 @@ void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReco
   }
 }
 
+void UeContextEnb::printState(){
+  ostringstream state;
+  state << "Context at the end: UeContextEnb {RRC state: " << m_state->rrcState << "}" << endl; 
+  m_log->writeToLog(state.str());
+}

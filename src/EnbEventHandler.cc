@@ -77,6 +77,8 @@ EnbEventHandler::EnbEventHandler(){
   
 
   freeaddrinfo(host_info_list_mme);
+
+  m_log = new Log("EnbLog.txt");
 }
 
 void EnbEventHandler::run () {    
@@ -170,7 +172,7 @@ void EnbEventHandler::run () {
 void EnbEventHandler::handleNewUe(int conn_sock){
 
   //Creation of an object to handle this UE
-  UeContextEnb *ueContext = new UeContextEnb(conn_sock,m_mmeSocket);
+  UeContextEnb *ueContext = new UeContextEnb(conn_sock,m_mmeSocket,m_log);
   //Store this object in a map
   m_ueContexts.insert(pair<int,UeContextEnb>(conn_sock,*ueContext));
   cout << "Handling New UE " << endl;
