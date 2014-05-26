@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 UeEventHandler::UeEventHandler(int ueId,Log *log){
-  //Create a socket and connect it
   int status;
   struct addrinfo host_info;
   struct addrinfo *host_info_list;
@@ -26,18 +25,14 @@ UeEventHandler::UeEventHandler(int ueId,Log *log){
 
   status = connect (socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
 
-  //Initialize the UE state
   m_enbSocket = socketfd;
-  
   m_ueContext = new UeContextUe(ueId, m_enbSocket,log);
-
+  m_log = log;
 
   freeaddrinfo(host_info_list);
-  m_log = log;
 }
 
 void UeEventHandler::run(){
-
   m_ueContext->sendRaPreamble();
   m_ueContext->handleRaResponse();
   bool reject = m_ueContext->handleRrcConnectionSetup();
@@ -46,19 +41,14 @@ void UeEventHandler::run(){
     bool reject_2 = m_ueContext->handleUeCapabilityEnquiry();
     if (!reject_2){
       m_ueContext->handleRrcConnectionReconfiguration();
-      //see if need of a RrcConnectionAccept
     }
   }
 }
 
 UeEventHandler::~UeEventHandler(){
-  //Termination of the procedure
   google::protobuf::ShutdownProtobufLibrary();
-  std::cout << "Stopping server..." << std::endl;
-  //freeaddrinfo(host_info_list);
-  close(m_enbSocket);
-  
-  delete m_ueContext;
-  
+  std::cout << "UE switched off..." << std::endl;
+  close(m_enbSocket); 
+  delete m_ueContext; 
   pthread_exit(NULL);
 }

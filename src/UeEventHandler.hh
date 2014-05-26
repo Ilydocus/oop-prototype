@@ -13,7 +13,6 @@ class UeEventHandler: public EventHandler{
   private:
   UeContextUe *m_ueContext;
   int m_enbSocket;
-  //int m_mmeSocket;
   Log *m_log;
 
   //void handleNewUe(int conn_sock);
