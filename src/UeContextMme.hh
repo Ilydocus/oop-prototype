@@ -13,14 +13,15 @@ class UeContextMme : public UeContext
 {
  public:
 
-  UeContextMme(int enbSocket);
+  UeContextMme(int enbSocket, Log *log);
   void handleS1ApInitialUeMessage(S1ApInitialUeMessage message); 
   void handleS1ApInitialContextSetupResponse(S1ApInitialContextSetupResponse message); 
+  void printState();
 
  private:
 
   int m_enbSocket;
-  UeStateMme m_state;
+  UeStateMme *m_state;
 
 };
 

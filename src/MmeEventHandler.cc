@@ -53,6 +53,8 @@ int status;
     if (status == -1)  std::cout << "listen error" << std::endl ;
 
     m_listenSocket = socketfd;
+
+    m_log = new Log("MmeLog.txt");
 }
 
 void MmeEventHandler::run () {    
@@ -146,7 +148,7 @@ void MmeEventHandler::run () {
 void MmeEventHandler::handleNewUe(int conn_sock){
 
   //Creation of an object to handle this UE
-  UeContextMme *ueContext = new UeContextMme(conn_sock);
+  UeContextMme *ueContext = new UeContextMme(conn_sock,m_log);
   //Store this object in a map
   m_ueContexts.insert(pair<int,UeContextMme>(conn_sock,*ueContext));
 } 

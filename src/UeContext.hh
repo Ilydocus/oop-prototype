@@ -4,6 +4,7 @@
 #include <string>
 #include "RrcMessages.pb.h"
 #include "S1Messages.pb.h"
+#include "Log.hh"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ protected:
   void sendS1Message(int socket, S1Message message);
   int receiveRrcMessage(int socket,RrcMessage *message);
   int receiveS1Message(int socket,S1Message *message);
+  Log *m_log;
 };
 
 #endif

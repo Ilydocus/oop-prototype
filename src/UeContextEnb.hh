@@ -6,7 +6,6 @@
 #include "RrcMessages.pb.h"
 #include "S1Messages.pb.h"
 #include "UeContext.hh"
-#include "Log.hh"
 
 #define NB_RAT 5
 
@@ -45,7 +44,7 @@ class UeContextEnb : public UeContext
   int m_ueSocket;
   int m_mmeSocket;
   UeStateEnb *m_state;
-  Log *m_log;
+  //Log *m_log;
 
 };
 

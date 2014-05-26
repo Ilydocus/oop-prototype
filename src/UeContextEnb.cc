@@ -9,7 +9,7 @@
 
 using namespace std;
 
-UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket, Log *log):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket),m_log(log){
+UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket, Log *log):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket){
   m_state = new UeStateEnb;
   m_state->rrcState=RRC_Idle;
   m_state->c_rnti=-1;
@@ -24,6 +24,8 @@ UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket, Log *log):m_ueSocket(ueS
   }
   m_state->securityKey=-1;
   m_state->epsBearerId="-1";
+
+  m_log = log;
 }
 
 void UeContextEnb::handleRaPreamble(RaPreamble message){
@@ -63,6 +65,7 @@ void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
 
     rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReject);
     rrcMessage.set_allocated_messagerrccreject(rrcCReject);
+    printState();
     }
   else {
     string * srbId = new string;
@@ -104,12 +107,14 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
 
   S1Message *response = new S1Message;
   int receiveSuccess = receiveS1Message(m_mmeSocket,response);
+  
   if(receiveSuccess){
     S1ApInitialContextSetupRequest initialCSRequest;
-    initialCSRequest = s1Message.messages1apicsrequest();
+    initialCSRequest = response->messages1apicsrequest();
 
     m_state->securityKey = initialCSRequest.securitykey();
     m_state->epsBearerId = initialCSRequest.epsbearerid();
+    cout << "SecurityKey is" << initialCSRequest.securitykey() << endl;
 
     string plainMessage = "ciphered";
     string encryptedMessage; 
@@ -161,6 +166,7 @@ void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
     rrcMessage.set_allocated_messagerrccreject(rrcCReject);
 
     m_state->rrcState = RRC_Idle;
+    printState();
   }
   sendRrcMessage(m_ueSocket,rrcMessage);
 }
@@ -221,6 +227,7 @@ void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReco
     m_state->rrcState = RRC_Idle;
 
     sendRrcMessage(m_ueSocket,rrcMessage);
+    printState();
   }
 }
 

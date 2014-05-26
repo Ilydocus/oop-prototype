@@ -6,7 +6,7 @@
 
 class UeEventHandler: public EventHandler{
   public:
-  UeEventHandler(int ueId);
+  UeEventHandler(int ueId, Log *log);
   ~UeEventHandler();
   void run();
 
@@ -14,6 +14,7 @@ class UeEventHandler: public EventHandler{
   UeContextUe *m_ueContext;
   int m_enbSocket;
   //int m_mmeSocket;
+  Log *m_log;
 
   //void handleNewUe(int conn_sock);
   //void handleUeMessage(RrcMessage rrcMessage,UeContextEnb ueContext);

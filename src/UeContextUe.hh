@@ -18,7 +18,7 @@ struct UeStateUe{
 class UeContextUe : public UeContext {
  public:
 
-  UeContextUe(int ueId,int enbSocket);
+  UeContextUe(int ueId,int enbSocket,Log *log);
   void sendRaPreamble ();
   void handleRaResponse ();
   bool handleRrcConnectionSetup ();

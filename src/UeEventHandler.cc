@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <unistd.h>
 
-UeEventHandler::UeEventHandler(int ueId){
+UeEventHandler::UeEventHandler(int ueId,Log *log){
   //Create a socket and connect it
   int status;
   struct addrinfo host_info;
@@ -29,10 +29,11 @@ UeEventHandler::UeEventHandler(int ueId){
   //Initialize the UE state
   m_enbSocket = socketfd;
   
-  m_ueContext = new UeContextUe(ueId, m_enbSocket);
+  m_ueContext = new UeContextUe(ueId, m_enbSocket,log);
 
 
   freeaddrinfo(host_info_list);
+  m_log = log;
 }
 
 void UeEventHandler::run(){

@@ -5,20 +5,19 @@
 #include "crypto++/modes.h"
 #include "crypto++/aes.h"
 #include "crypto++/filters.h"
+#include <sstream>
 
-UeContextUe::UeContextUe(int ueId,int enbSocket){
+UeContextUe::UeContextUe(int ueId,int enbSocket,Log *log){
 
   m_enbSocket = enbSocket;
+  m_state.securityKey = ueId * 18;
+  m_ueId = ueId;
+  m_log = log;
 
-  Imsi_message * temp_imsi = new Imsi_message;
+  Imsi_message *temp_imsi = new Imsi_message;
   genImsi(temp_imsi);
   m_state.imsi = *temp_imsi;
   delete temp_imsi;
-
-  m_state.securityKey = ueId * 18;
-
-  m_ueId = ueId;
-  
 }
 
 void UeContextUe::genImsi(Imsi_message *imsi){
@@ -27,193 +26,102 @@ void UeContextUe::genImsi(Imsi_message *imsi){
   string *randomId_msin= new string;
   genRandId(randomId_mnc,2);
   genRandId(randomId_msin,10);
-  //randomId = genRandId(12);
-  string *temp_mcc = new string("260");//p-e pas besoin
+
+  string *temp_mcc = new string("260");
   imsi->set_mcc(*temp_mcc);
-  imsi->set_mnc(*randomId_mnc);//randomId.substr(0,2));
-  imsi->set_msin(*randomId_msin);//randomId.substr(2,10));
+  imsi->set_mnc(*randomId_mnc);
+  imsi->set_msin(*randomId_msin);
+  //delete temp
 }
 
 void UeContextUe::sendRaPreamble (){
   RaPreamble *rapreamble = new RaPreamble;
   rapreamble->set_ueidrntitype(RA_RNTI);
   rapreamble->set_ueidrntivalue(m_ueId);
-  std::cout << "Ra_rnti is : " << rapreamble->ueidrntivalue() << std::endl;
-  //Pack it into a RrcMessage
+  
   RrcMessage rrcMessage;
   rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRaP);
   rrcMessage.set_allocated_messagerap(rapreamble);
-  //Serialize the message
-  std::string message;
-  rrcMessage.SerializeToString(&message);
-  std::cout << "Serialization completed " << std::endl;
-  //Conversion of the message
-  const char * ser_message;
-  ser_message = message.c_str();
-  //Socket code
-  
-  //status ==-1 error
-  int len;
-  ssize_t bytes_sent;
-  len = strlen(ser_message);
 
-  std::cout << "Len from strlen: " << len << ", len from strting: "
-       << message.length() << std::endl;
-
-  bytes_sent = send (m_enbSocket, message.c_str(), 
-		     message.length(), 0);
-
-  std::cout << "Message RAPreamble sent" << std::endl;
-  std::cout << "Bytes sent: "<<bytes_sent << std::endl; 
+  sendRrcMessage(m_enbSocket,rrcMessage);
 }
 
 void UeContextUe::handleRaResponse () {
-  //Part 1: Recieve the message
-ssize_t bytes_recieved;
-		     char incoming_data_buffer[1000];
-		     bytes_recieved = recv(m_enbSocket, incoming_data_buffer,1000, 0);
-		      // If no data arrives, the program will just wait here until some data arrives.
-		     if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
-		       //return;}
-		     if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}//return;}
-		     std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
-		     if (bytes_recieved != -1 && bytes_recieved != 0){
-		     incoming_data_buffer[bytes_recieved] = '\0';
-		     //std::cout << incoming_data_buffer << std::endl;
-
-		     //The message is serialized, we need to deserialize it
-		     GOOGLE_PROTOBUF_VERIFY_VERSION;
+  RrcMessage *message = new RrcMessage;
+  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  if(receiveSuccess){
+    RaResponse raResponse;
+    raResponse = message->messagerar();
+    ostringstream message_log;
+    message_log << "Message received from ENodeB: RaResponse {Rnti Type: " << raResponse.ueidrntitype() << " Ra-Rnti value: " << raResponse.ueidrntivalue() << " C-Rnti: " << raResponse.ueidcrnti() << " }" << endl; 
+    m_log->writeToLog(message_log.str());
     
-		     RrcMessage rrcMessage;
-		     //const string str_message;
-		     string str_message(incoming_data_buffer, bytes_recieved);
-		     rrcMessage.ParseFromString(str_message);
-		     std::cout << "Message deserialized " << endl;
-		     RaResponse raResponse;
-		       raResponse = rrcMessage.messagerar();
-		     cout << "Type of rnti is : " << raResponse.ueidrntitype() << endl;
-  cout << "Value of rnti is : " << raResponse.ueidrntivalue() << endl;
-
-		     //Part 2: Send Response
-RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
-  rrcConnectionRequest->set_ueidrntitype(C_RNTI);
-  rrcConnectionRequest->set_ueidrntivalue(raResponse.ueidrntivalue());
-  Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
-  //tempImsi = ue_state->imsi;
-  rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
-  //delete tempImsi;?
-  std::cout << "C_rnti is : " << rrcConnectionRequest->ueidrntivalue() << std::endl;
-  //Pack it into a RrcMessage
-  RrcMessage rrcMessage_o;
-  rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
-  rrcMessage_o.set_allocated_messagerrccrequest(rrcConnectionRequest);
-  //Serialize the message
-  std::string message;
-  rrcMessage_o.SerializeToString(&message);
-  std::cout << "Serialization completed " << std::endl;
-
-  ssize_t bytes_sent;
-  bytes_sent = send (m_enbSocket, message.c_str(), 
-		     message.length(), 0);
-
-  std::cout << "Message RrcConnectionRequest sent" << std::endl;
-  std::cout << "Bytes sent: "<<bytes_sent << std::endl;
-		     }
-		     
+    RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
+    rrcConnectionRequest->set_ueidrntitype(C_RNTI);
+    rrcConnectionRequest->set_ueidrntivalue(raResponse.ueidrntivalue());
+    Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
+    rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
+    //delete tempImsi;?
+    RrcMessage rrcMessage_o;
+    rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
+    rrcMessage_o.set_allocated_messagerrccrequest(rrcConnectionRequest);
+    
+    sendRrcMessage(m_enbSocket,rrcMessage_o);
+  }
 }
 
 bool UeContextUe::handleRrcConnectionSetup () {
-  //Part 1: Recieve the message
-  ssize_t bytes_recieved;
-  char incoming_data_buffer[1000];
-  bytes_recieved = recv(m_enbSocket, incoming_data_buffer,1000, 0);
-  // If no data arrives, the program will just wait here until some data arrives.
-  if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
-  if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}
-  std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
-  if (bytes_recieved != -1 && bytes_recieved != 0){
-    incoming_data_buffer[bytes_recieved] = '\0';
-    //The message is serialized, we need to deserialize it
-    GOOGLE_PROTOBUF_VERIFY_VERSION;
-    RrcMessage rrcMessage;
-    string str_message(incoming_data_buffer, bytes_recieved);
-    rrcMessage.ParseFromString(str_message);
-    std::cout << "Message deserialized " << endl;
-    switch (rrcMessage.messagetype()) {
-    case RrcMessage_MessageType_TypeRrcCS :
-      {RrcConnectionSetup rrcConnectionSetup;
-      rrcConnectionSetup = rrcMessage.messagerrccs();
-      cout << "Setup: Value of rnti is : " << rrcConnectionSetup.ueidrntivalue() << endl;
-      //add srb to the state
-      m_state.srbId = rrcConnectionSetup.srbidentity();
-      //Send Response
-      RrcConnectionSetupComplete *rrcCSC = new RrcConnectionSetupComplete;
-      rrcCSC->set_uecrnti(rrcConnectionSetup.ueidrntivalue());
-      rrcCSC->set_selectedplmnidentity((m_state.imsi).mcc() + (m_state.imsi).mnc());
-      //Pack it into a RrcMessage
-      RrcMessage rrcMessage_o;
-      rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCSC);
-      rrcMessage_o.set_allocated_messagerrccsc(rrcCSC);
-      //Serialize the message
-      std::string message;
-      rrcMessage_o.SerializeToString(&message);
-      std::cout << "Serialization completed " << std::endl;
+  RrcMessage *message = new RrcMessage;
+  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  if(receiveSuccess){
+    switch (message->messagetype()) {
+      case RrcMessage_MessageType_TypeRrcCS :
+	{RrcConnectionSetup rrcConnectionSetup;
+	rrcConnectionSetup = message->messagerrccs();
+	ostringstream message_log;
+	message_log << "Message received from ENodeB: RrcConnectionSetup {Rnti Type: " << rrcConnectionSetup.ueidrntitype() << " Rnti value: " << rrcConnectionSetup.ueidrntivalue() << " Srb Identity: " << rrcConnectionSetup.srbidentity() << " }" << endl; 
+	m_log->writeToLog(message_log.str());
 
-      ssize_t bytes_sent;
-      bytes_sent = send (m_enbSocket, message.c_str(), 
-			 message.length(), 0);
+	m_state.srbId = rrcConnectionSetup.srbidentity();
 
-      std::cout << "Message RrcConnectionSetupComplete sent" << std::endl;
-      std::cout << "Bytes sent: "<<bytes_sent << std::endl;
+	RrcConnectionSetupComplete *rrcCSC = new RrcConnectionSetupComplete;
+	rrcCSC->set_uecrnti(rrcConnectionSetup.ueidrntivalue());
+	rrcCSC->set_selectedplmnidentity((m_state.imsi).mcc() + (m_state.imsi).mnc());
+	RrcMessage rrcMessage_o;
+	rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCSC);
+	rrcMessage_o.set_allocated_messagerrccsc(rrcCSC);
+	
+	sendRrcMessage(m_enbSocket,rrcMessage_o);
 
-      //Not rejected
-      return false;}
-      break;
-    case RrcMessage_MessageType_TypeRrcCReject :
-      {RrcConnectionReject rrcConnectionReject;
-      rrcConnectionReject = rrcMessage.messagerrccreject();
-      cout << "Reject: Value of rnti is : " << rrcConnectionReject.uecrnti() << endl;
-      //Rejected
-      return true;}
-      break;
+	return false;}
+	break;
+      case RrcMessage_MessageType_TypeRrcCReject :
+	{RrcConnectionReject rrcConnectionReject;
+	rrcConnectionReject = message->messagerrccreject();
+	ostringstream message_log;
+	message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
+	m_log->writeToLog(message_log.str());
+	return true;}
+	break;
     };
-     }
-		     
+  }
 }
 
 void UeContextUe::handleSecurityModeCommand () {
-  //Part 1: Recieve the message
-  ssize_t bytes_recieved;
-  char incoming_data_buffer[1000];
-  bytes_recieved = recv(m_enbSocket, incoming_data_buffer,1000, 0);
-  // If no data arrives, the program will just wait here until some data arrives.
-  if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
-  //return;}
-  if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}//return;}
-  std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
-  if (bytes_recieved != -1 && bytes_recieved != 0){
-    incoming_data_buffer[bytes_recieved] = '\0';
-    //std::cout << incoming_data_buffer << std::endl;
-    
-    //The message is serialized, we need to deserialize it
-    GOOGLE_PROTOBUF_VERIFY_VERSION;
-    RrcMessage rrcMessage;
-    //const string str_message;
-    string str_message(incoming_data_buffer, bytes_recieved);
-    rrcMessage.ParseFromString(str_message);
-    std::cout << "Message deserialized " << endl;
+  RrcMessage *message = new RrcMessage;
+  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  if(receiveSuccess){
     SecurityModeCommand securityMCommand;
-    securityMCommand = rrcMessage.messagesecuritymcommand();
-    cout << "Security M Command:  C-rnti is : " << securityMCommand.uecrnti() << endl;
+    securityMCommand = message->messagesecuritymcommand();
+    ostringstream message_log;
+    message_log << "Message received from ENodeB: SecurityModeCommand {C-Rnti: " << securityMCommand.uecrnti() << " Message_security: " << securityMCommand.message_security() << " }" << endl; 
+    m_log->writeToLog(message_log.str());
 
-    //Decrypt Message
     string decryptedMessage;
     string cryptedMessage = securityMCommand.message_security();
-    
     byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
     memset (key,m_state.securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
     memset (iv,0x00,CryptoPP::AES::BLOCKSIZE);
-
     CryptoPP::AES::Decryption aesDecryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
     CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption (aesDecryption, iv);
     CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::StringSink(decryptedMessage));
@@ -222,190 +130,101 @@ void UeContextUe::handleSecurityModeCommand () {
 
     bool securityModeSuccess;
     securityModeSuccess = decryptedMessage.compare("ciphered");
-    cout << "Decryption Result : " << decryptedMessage << endl;
-    cout << "Decryption Result : " << securityModeSuccess << endl;
 
-    //Part 2: Send Response
     SecurityModeComplete *securityMComplete = new SecurityModeComplete;
     securityMComplete->set_uecrnti(securityMCommand.uecrnti());
     securityMComplete->set_securitymodesuccess(securityModeSuccess);
-    //Pack it into a RrcMessage
+
     RrcMessage rrcMessage_o;
     rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeSecurityMComplete);
     rrcMessage_o.set_allocated_messagesecuritymcomplete(securityMComplete);
-    //Serialize the message
-    std::string message;
-    rrcMessage_o.SerializeToString(&message);
-    std::cout << "Serialization completed " << std::endl;
-      
-    ssize_t bytes_sent;
-    bytes_sent = send (m_enbSocket, message.c_str(), 
-    message.length(), 0);
-     
-    std::cout << "Message SecurityModeComplete sent" << std::endl;
-    std::cout << "Bytes sent: "<<bytes_sent << std::endl;
+
+    sendRrcMessage(m_enbSocket,rrcMessage_o);
   }
-  
 }
 
 bool UeContextUe::handleUeCapabilityEnquiry () {
-  //Part 1: Recieve the message
-  std::cout << " poufpouf2" << std::endl ;
-  ssize_t bytes_recieved;
-  char incoming_data_buffer[1000];
-  bytes_recieved = recv(m_enbSocket, incoming_data_buffer,1000, 0);
-  // If no data arrives, the program will just wait here until some data arrives.
-  if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
-  //return;}
-  if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}//return;}
-  std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
-  if (bytes_recieved != -1 && bytes_recieved != 0){
-    incoming_data_buffer[bytes_recieved] = '\0';
-    //std::cout << incoming_data_buffer << std::endl;
-    
-    //The message is serialized, we need to deserialize it
-    GOOGLE_PROTOBUF_VERIFY_VERSION;
-    RrcMessage rrcMessage;
-    //const string str_message;
-    string str_message(incoming_data_buffer, bytes_recieved);
-    rrcMessage.ParseFromString(str_message);
-    std::cout << "Message deserialized " << endl;
-    switch (rrcMessage.messagetype()) {
-    case RrcMessage_MessageType_TypeUeCE :
-      {UeCapabilityEnquiry ueCE;
-      ueCE = rrcMessage.messageuece();
-      cout << "Capability Enquiry:  C-rnti is : " << ueCE.uecrnti() << endl;
+  RrcMessage *message = new RrcMessage;
+  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  if(receiveSuccess){
+    switch (message->messagetype()) {
+      case RrcMessage_MessageType_TypeUeCE :
+	{UeCapabilityEnquiry ueCE;
+	ueCE = message->messageuece();
+	ostringstream message_log;
+	message_log << "Message received from ENodeB: UeCapabilityEnquiry {C-Rnti: " << ueCE.uecrnti() << " CapabilityRequest: " << " }" << endl; //DO THE CAPABILITY REQUEST
+	m_log->writeToLog(message_log.str());
 
-      //Send Response
-      UeCapabilityInformation *ueCI = new UeCapabilityInformation;
-      ueCI->set_uecrnti(ueCE.uecrnti());
-      //recup les differente sRAT
-      srand(ueCE.uecrnti() *6);
-      for (int i = 0; i < ueCE.uecapabilityrequest_size(); i++){
-	RatCapability *ratCap = ueCI->add_uecapabilityratlist();
-	ratCap->set_rat(ueCE.uecapabilityrequest(i));
-	ratCap->set_issupported(rand() % 2);
-	
-      }
-      //Pack it into a RrcMessage
-      RrcMessage rrcMessage_o;
-      rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeUeCI);
-      rrcMessage_o.set_allocated_messageueci(ueCI);
-      //Serialize the message
-      std::string message;
-      rrcMessage_o.SerializeToString(&message);
-      std::cout << "Serialization completed " << std::endl;
+	UeCapabilityInformation *ueCI = new UeCapabilityInformation;
+	ueCI->set_uecrnti(ueCE.uecrnti());
+	srand(ueCE.uecrnti() *6);
+	for (int i = 0; i < ueCE.uecapabilityrequest_size(); i++){
+	  RatCapability *ratCap = ueCI->add_uecapabilityratlist();
+	  ratCap->set_rat(ueCE.uecapabilityrequest(i));
+	  ratCap->set_issupported(rand() % 2);
+	}
+	RrcMessage rrcMessage_o;
+	rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeUeCI);
+	rrcMessage_o.set_allocated_messageueci(ueCI);
 
-      ssize_t bytes_sent;
-      bytes_sent = send (m_enbSocket, message.c_str(), 
-			 message.length(), 0);
-
-      std::cout << "Message UeCI sent" << std::endl;
-      std::cout << "Bytes sent: "<< bytes_sent << std::endl;
-
-      //Not rejected
-      return false;}
-      break;
-    case RrcMessage_MessageType_TypeRrcCReject :
-      {RrcConnectionReject rrcConnectionReject;
-      rrcConnectionReject = rrcMessage.messagerrccreject();
-      cout << "Reject: Value of rnti is : " << rrcConnectionReject.uecrnti() << endl;
-      //Rejected
-      return true;}
-      break;
+	sendRrcMessage(m_enbSocket,rrcMessage_o);
+	return false;}
+	break;
+      case RrcMessage_MessageType_TypeRrcCReject :
+	{RrcConnectionReject rrcConnectionReject;
+	rrcConnectionReject = message->messagerrccreject();
+	ostringstream message_log;
+	message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
+	m_log->writeToLog(message_log.str());
+	return true;}
+	break;
     };
   }
-  
 }
 
- void UeContextUe::handleRrcConnectionReconfiguration(){
-   //Part 1: Recieve the message
-   ssize_t bytes_recieved;
-   char incoming_data_buffer[1000];
-		     bytes_recieved = recv(m_enbSocket, incoming_data_buffer,1000, 0);
-		      // If no data arrives, the program will just wait here until some data arrives.
-		     if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
-		       //return;}
-		     if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}//return;}
-		     std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
-		     if (bytes_recieved != -1 && bytes_recieved != 0){
-		     incoming_data_buffer[bytes_recieved] = '\0';
-		     //std::cout << incoming_data_buffer << std::endl;
+void UeContextUe::handleRrcConnectionReconfiguration(){
+  RrcMessage *message = new RrcMessage;
+  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  if(receiveSuccess){
+    RrcConnectionReconfiguration rrcCReconfiguration;
+    rrcCReconfiguration = message->messagerrccreconfiguration();
+    ostringstream message_log;
+    message_log << "Message received from ENodeB: RrcConnectionReconfiguration {C-Rnti: " << rrcCReconfiguration.uecrnti() << " Eps radio bearer identity: " << rrcCReconfiguration.epsradiobeareridentity() << " }" << endl;
+    m_log->writeToLog(message_log.str());
+		    		    
+    bool epsBearerActivated;
+    string epsBearer = rrcCReconfiguration.epsradiobeareridentity();
+    int len = (int)epsBearer.length();
+    if ((epsBearer[0]== epsBearer[len]) == '9'){ epsBearerActivated = false;}
+    else {epsBearerActivated = true;}
 
-		     //The message is serialized, we need to deserialize it
-		     GOOGLE_PROTOBUF_VERIFY_VERSION;
+    RrcConnectionReconfigurationComplete *rrcCRC = new RrcConnectionReconfigurationComplete;
+    rrcCRC->set_uecrnti(rrcCReconfiguration.uecrnti());
+    rrcCRC->set_epsradiobeareractivated(epsBearerActivated);
+ 
+    RrcMessage rrcMessage_o;
+    rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRC);
+    rrcMessage_o.set_allocated_messagerrccrc(rrcCRC);
+
+    sendRrcMessage(m_enbSocket,rrcMessage_o);
     
-		     RrcMessage rrcMessage;
-		     //const string str_message;
-		     string str_message(incoming_data_buffer, bytes_recieved);
-		     rrcMessage.ParseFromString(str_message);
-		     std::cout << "Message deserialized " << endl;
-		     RrcConnectionReconfiguration rrcCReconfiguration;
-		       rrcCReconfiguration = rrcMessage.messagerrccreconfiguration();
-		     cout << "RrcReconfiguration C-Rnti : " << rrcCReconfiguration.uecrnti() << endl;
-		     //Activate the radioBeareri
-		     bool epsBearerActivated;
-		     string epsBearer = rrcCReconfiguration.epsradiobeareridentity();
-		     int len = (int)epsBearer.length();
-		     if ((epsBearer[0]== epsBearer[len]) == '9'){ epsBearerActivated = false;}
-		     else {epsBearerActivated = true;}
-
-		     //Part 2: Send Response
-  RrcConnectionReconfigurationComplete *rrcCRC = new RrcConnectionReconfigurationComplete;
-  rrcCRC->set_uecrnti(rrcCReconfiguration.uecrnti());
-  rrcCRC->set_epsradiobeareractivated(epsBearerActivated);
-  //Pack it into a RrcMessage
-  RrcMessage rrcMessage_o;
-  rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRC);
-  rrcMessage_o.set_allocated_messagerrccrc(rrcCRC);
-  //Serialize the message
-  std::string message;
-  rrcMessage_o.SerializeToString(&message);
-  std::cout << "Serialization completed " << std::endl;
-
-  ssize_t bytes_sent;
-  bytes_sent = send (m_enbSocket, message.c_str(), 
-		     message.length(), 0);
-
-  std::cout << "Message RrcConnectionReconfigurationComplete sent" << std::endl;
-  std::cout << "Bytes sent: "<<bytes_sent << std::endl;
-		     }
-		     
-		     //Attendre la reponse 
-		     bytes_recieved = recv(m_enbSocket, incoming_data_buffer,1000, 0);
-		      // If no data arrives, the program will just wait here until some data arrives.
-		     if (bytes_recieved == 0) {std::cout << "host shut down." << std::endl ;}
-		       //return;}
-		     if (bytes_recieved == -1){std::cout << "recieve error!" << std::endl ;}//return;}
-		     std::cout << bytes_recieved << " bytes recieved :" << std::endl ;
-		     if (bytes_recieved != -1 && bytes_recieved != 0){
-		     incoming_data_buffer[bytes_recieved] = '\0';
-		     //std::cout << incoming_data_buffer << std::endl;
-
-		     //The message is serialized, we need to deserialize it
-		     GOOGLE_PROTOBUF_VERIFY_VERSION;
-    
-		     RrcMessage rrcMessage;
-		     //const string str_message;
-		     string str_message(incoming_data_buffer, bytes_recieved);
-		     rrcMessage.ParseFromString(str_message);
-		     std::cout << "Message deserialized " << endl;
-		     
-		     
-		     switch (rrcMessage.messagetype()) {
-    case RrcMessage_MessageType_TypeRrcCA :
-      {RrcConnectionAccept rrcCA;
-      rrcCA = rrcMessage.messagerrcca();
-      cout << "Connection Accepted  C-rnti is : " << rrcCA.uecrnti() << endl;
-
-      }
-      break;
-    case RrcMessage_MessageType_TypeRrcCReject :
-      {RrcConnectionReject rrcConnectionReject;
-      rrcConnectionReject = rrcMessage.messagerrccreject();
-      cout << "Reject: Value of rnti is : " << rrcConnectionReject.uecrnti() << endl;
-      //Rejected
-      }
-      break;
-		     };}
+    RrcMessage *message2 = new RrcMessage;
+    int receiveSuccess2 = receiveRrcMessage(m_enbSocket,message2);
+    if(receiveSuccess2){
+      switch (message->messagetype()){
+        case RrcMessage_MessageType_TypeRrcCA :
+          {RrcConnectionAccept rrcCA;
+	  rrcCA = message2->messagerrcca();
+	  message_log << "Message received from ENodeB: RrcConnectionAccept {C-Rnti: " << rrcCA.uecrnti() << " }" << endl;
+	  m_log->writeToLog(message_log.str());}
+	  break;
+        case RrcMessage_MessageType_TypeRrcCReject :
+	  {RrcConnectionReject rrcConnectionReject;
+	  rrcConnectionReject = message2->messagerrccreject();
+	  message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
+	  m_log->writeToLog(message_log.str());}
+	  break;
+      };
+    }
+  }
 }
