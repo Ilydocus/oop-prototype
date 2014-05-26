@@ -172,8 +172,17 @@ void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
 
 void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message){
   ostringstream message_log;
-  message_log << "Message received from Ue: UeCapabilityInformation {C-Rnti: " << message.uecrnti() << " Ue RAT capabilities: " << " }" << endl; //RAT Capability List
+  message_log << "Message received from Ue: UeCapabilityInformation {C-Rnti: " << message.uecrnti() << " Ue RAT capabilities: " << printRatCapabilities(message) <<" }" << endl;
   m_log->writeToLog(message_log.str());
+  
+  if (message.uecapabilityratlist_size() != NB_RAT){
+    cerr << "Incompatible numbers of RAT" << endl;
+    return;
+  }
+  for(int i = 0; i<message.uecapabilityratlist_size();i++){
+    (m_state->ratCapabilities[i]).set_rat(message.uecapabilityratlist(i).rat());
+    (m_state->ratCapabilities[i]).set_issupported(message.uecapabilityratlist(i).issupported());
+  }
 
   RrcConnectionReconfiguration *rrcCReconfiguration = new RrcConnectionReconfiguration;
   rrcCReconfiguration->set_uecrnti(message.uecrnti());
@@ -232,6 +241,22 @@ void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReco
 
 void UeContextEnb::printState(){
   ostringstream state;
-  state << "Context at the end: UeContextEnb {RRC state: " << m_state->rrcState << "}" << endl; 
+  state << "Context at the end: UeContextEnb {RRC state: " << m_state->rrcState << " C-Rnti: " << m_state->c_rnti << " Imsi: " <<  (m_state->imsi).mcc()<<"-"<< (m_state->imsi).mnc() << "-"<< (m_state->imsi).msin() << " SRB identity: "<<m_state->srbIdentity << " EnB S1 Identity: " << m_state->enbUeS1ApId << " RAT capabilities: " << printRatCapabilities(m_state->ratCapabilities) << " security key: " << m_state->securityKey << " EPS bearer id: " << m_state->epsBearerId << "}" << endl; 
   m_log->writeToLog(state.str());
+}
+
+string UeContextEnb::printRatCapabilities(RatCapability *ratCapabilities){
+  ostringstream rat;
+  for(int i = 0; i<NB_RAT;i++){
+    rat << "(" << ratCapabilities[i].rat() <<"," << ratCapabilities[i].issupported()<<")";
+  }
+  return rat.str();
+}
+
+string UeContextEnb::printRatCapabilities(UeCapabilityInformation message){
+  ostringstream rat;
+  for(int i = 0; i<message.uecapabilityratlist_size();i++){
+    rat << "(" << message.uecapabilityratlist(i).rat() <<"," << message.uecapabilityratlist(i).issupported()<<")";
+  }
+  return rat.str();
 }

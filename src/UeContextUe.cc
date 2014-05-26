@@ -31,7 +31,10 @@ void UeContextUe::genImsi(Imsi_message *imsi){
   imsi->set_mcc(*temp_mcc);
   imsi->set_mnc(*randomId_mnc);
   imsi->set_msin(*randomId_msin);
-  //delete temp
+  
+  delete randomId_mnc;
+  delete randomId_msin;
+  delete temp_mcc;
 }
 
 void UeContextUe::sendRaPreamble (){
@@ -101,6 +104,7 @@ bool UeContextUe::handleRrcConnectionSetup () {
 	ostringstream message_log;
 	message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
 	m_log->writeToLog(message_log.str());
+	printState();
 	return true;}
 	break;
     };
@@ -152,7 +156,7 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 	{UeCapabilityEnquiry ueCE;
 	ueCE = message->messageuece();
 	ostringstream message_log;
-	message_log << "Message received from ENodeB: UeCapabilityEnquiry {C-Rnti: " << ueCE.uecrnti() << " CapabilityRequest: " << " }" << endl; //DO THE CAPABILITY REQUEST
+	message_log << "Message received from ENodeB: UeCapabilityEnquiry {C-Rnti: " << ueCE.uecrnti() << " CapabilityRequest: " << printCapabilityRequest(ueCE) << " }" << endl; 
 	m_log->writeToLog(message_log.str());
 
 	UeCapabilityInformation *ueCI = new UeCapabilityInformation;
@@ -176,6 +180,7 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 	ostringstream message_log;
 	message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
 	m_log->writeToLog(message_log.str());
+	printState();
 	return true;}
 	break;
     };
@@ -216,13 +221,15 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
           {RrcConnectionAccept rrcCA;
 	  rrcCA = message2->messagerrcca();
 	  message_log << "Message received from ENodeB: RrcConnectionAccept {C-Rnti: " << rrcCA.uecrnti() << " }" << endl;
-	  m_log->writeToLog(message_log.str());}
+	  m_log->writeToLog(message_log.str());
+	  printState();}
 	  break;
         case RrcMessage_MessageType_TypeRrcCReject :
 	  {RrcConnectionReject rrcConnectionReject;
 	  rrcConnectionReject = message2->messagerrccreject();
 	  message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
-	  m_log->writeToLog(message_log.str());}
+	  m_log->writeToLog(message_log.str());
+	  printState();}
 	  break;
       };
     }
@@ -233,4 +240,12 @@ void UeContextUe::printState(){
   ostringstream state;
   state << "Context at the end: UeContextUe {Imsi: " << (m_state.imsi).mcc()<<"-"<< (m_state.imsi).mnc() << "-"<< (m_state.imsi).msin() << " Security key:" << m_state.securityKey << "}" << endl; 
   m_log->writeToLog(state.str());
+}
+
+string UeContextUe::printCapabilityRequest(UeCapabilityEnquiry message){
+  ostringstream request;
+  for(int i = 0; i<message.uecapabilityrequest_size();i++){
+    request << message.uecapabilityrequest(i) <<",";
+  }
+  return request.str();
 }

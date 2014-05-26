@@ -42,7 +42,8 @@ class UeContextEnb : public UeContext
   int m_ueSocket;
   int m_mmeSocket;
   UeStateEnb *m_state;
-  //Log *m_log;
+  string printRatCapabilities(RatCapability *ratCapabilities);
+  string printRatCapabilities(UeCapabilityInformation message);
 
 };
 

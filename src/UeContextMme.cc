@@ -22,8 +22,6 @@ void UeContextMme::handleS1ApInitialUeMessage(S1ApInitialUeMessage message){
 
   m_state->mmeUeS1ApId = message.enb_ue_s1ap_id() - 4;
   m_state->securityKey_mme = (message.enb_ue_s1ap_id() / 17 )*18;
-  cout<<"Enb id"<<message.enb_ue_s1ap_id()<<endl;
-cout<<"Security Key id"<<m_state->securityKey_mme<<endl;
 
   string * epsBearerId = new string;
   genRandId(epsBearerId, 8);
@@ -33,7 +31,6 @@ cout<<"Security Key id"<<m_state->securityKey_mme<<endl;
   initialCSRequest->set_enb_ue_s1ap_id(message.enb_ue_s1ap_id());
   initialCSRequest->set_securitykey(m_state->securityKey_mme);
   initialCSRequest->set_epsbearerid(*epsBearerId);
- cout<<"SecurityKey"<<initialCSRequest->securitykey()<<endl;
    //delete epsBearerId?
   S1Message s1Message;
   s1Message.set_messagetype(S1Message_MessageType_TypeS1ApICSRequest);

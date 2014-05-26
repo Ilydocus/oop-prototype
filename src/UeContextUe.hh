@@ -17,7 +17,6 @@ struct UeStateUe{
 
 class UeContextUe : public UeContext {
  public:
-
   UeContextUe(int ueId,int enbSocket,Log *log);
   void sendRaPreamble ();
   void handleRaResponse ();
@@ -26,13 +25,14 @@ class UeContextUe : public UeContext {
   bool handleUeCapabilityEnquiry();
   void handleRrcConnectionReconfiguration();
   void printState();
- private:
 
+ private:
   int m_enbSocket;
   UeStateUe m_state;
-  int m_ueId; //Think if really needed
+  int m_ueId;
 
   void genImsi (Imsi_message *imsi);
+  string printCapabilityRequest(UeCapabilityEnquiry message);
 
 };
 
