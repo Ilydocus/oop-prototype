@@ -36,9 +36,7 @@ class UeContextEnb : public UeContext
   void handleSecurityModeComplete(SecurityModeComplete message);
   void handleUeCapabilityInformation(UeCapabilityInformation message);
   void handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message);
-
   void printState();
-
  private:
 
   int m_ueSocket;

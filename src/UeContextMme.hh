@@ -17,7 +17,6 @@ class UeContextMme : public UeContext
   void handleS1ApInitialUeMessage(S1ApInitialUeMessage message); 
   void handleS1ApInitialContextSetupResponse(S1ApInitialContextSetupResponse message); 
   void printState();
-
  private:
 
   int m_enbSocket;

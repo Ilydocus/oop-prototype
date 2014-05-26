@@ -114,7 +114,6 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
 
     m_state->securityKey = initialCSRequest.securitykey();
     m_state->epsBearerId = initialCSRequest.epsbearerid();
-    cout << "SecurityKey is" << initialCSRequest.securitykey() << endl;
 
     string plainMessage = "ciphered";
     string encryptedMessage; 

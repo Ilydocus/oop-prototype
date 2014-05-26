@@ -228,3 +228,9 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
     }
   }
 }
+
+void UeContextUe::printState(){
+  ostringstream state;
+  state << "Context at the end: UeContextUe {Imsi: " << (m_state.imsi).mcc()<<"-"<< (m_state.imsi).mnc() << "-"<< (m_state.imsi).msin() << " Security key:" << m_state.securityKey << "}" << endl; 
+  m_log->writeToLog(state.str());
+}

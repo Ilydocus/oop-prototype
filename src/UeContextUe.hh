@@ -25,7 +25,7 @@ class UeContextUe : public UeContext {
   void handleSecurityModeCommand ();  
   bool handleUeCapabilityEnquiry();
   void handleRrcConnectionReconfiguration();
-
+  void printState();
  private:
 
   int m_enbSocket;
