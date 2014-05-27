@@ -23,16 +23,14 @@ int main () {
 
   Log *log = new Log("UesLog.txt");
 
-  const int nbOfUes = 1;
+  const int nbOfUes = 100;
   pthread_t thread[nbOfUes];
-  int temp_arg[nbOfUes];
+  arg_struct temp_arg[nbOfUes];
 
   for (int i = 1; i<nbOfUes+1;i++){
-    temp_arg[i-1]= i;
-    arg_struct args;
-    args.ueId = temp_arg[i-1];
-    args.log = log;
-    pthread_create (&thread[i -1], NULL, powerOn,static_cast<void*>(&args));
+    temp_arg[i-1].ueId= i;
+    temp_arg[i-1].log= log;
+    pthread_create (&thread[i -1], NULL, powerOn,static_cast<void*>(&temp_arg[i-1]));
     
   }
   for (int i = 1; i<=nbOfUes;i++){

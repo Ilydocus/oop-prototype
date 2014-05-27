@@ -27,6 +27,7 @@ UeEventHandler::UeEventHandler(int ueId,Log *log){
   m_enbSocket = socketfd;
   m_ueContext = new UeContextUe(ueId, m_enbSocket,log);
   m_log = log;
+  m_ueId = ueId;
 
   freeaddrinfo(host_info_list);
 }
@@ -46,7 +47,7 @@ void UeEventHandler::run(){
 
 UeEventHandler::~UeEventHandler(){
   google::protobuf::ShutdownProtobufLibrary();
-  std::cout << "UE switched off..." << std::endl;
+  std::cout << "UE "<< m_ueId << " switched off..." << std::endl;
   close(m_enbSocket); 
   delete m_ueContext; 
   pthread_exit(NULL);
