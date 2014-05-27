@@ -13,8 +13,6 @@ struct UeStateUe{
   int securityKey;
 };
 
-
-
 class UeContextUe : public UeContext {
  public:
   UeContextUe(int ueId,int enbSocket,Log *log);

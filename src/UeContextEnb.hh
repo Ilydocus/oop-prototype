@@ -27,27 +27,22 @@ struct UeStateEnb{
 class UeContextEnb : public UeContext
 {
  public:
-
   UeContextEnb(int ueSocket, int mmeSocket, Log* log);
   void handleRaPreamble(RaPreamble message);
   void handleRrcConnectionRequest(RrcConnectionRequest message);
   void handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message);
-  //void handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest message); 
   void handleSecurityModeComplete(SecurityModeComplete message);
   void handleUeCapabilityInformation(UeCapabilityInformation message);
   void handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message);
   void printState();
- private:
 
+ private:
   int m_ueSocket;
   int m_mmeSocket;
   UeStateEnb *m_state;
+
   string printRatCapabilities(RatCapability *ratCapabilities);
   string printRatCapabilities(UeCapabilityInformation message);
-
 };
-
-
-
 
 #endif

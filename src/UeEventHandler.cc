@@ -2,7 +2,7 @@
 #include <pthread.h>
 #include <iostream>
 #include "UeEventHandler.hh"
-#include <cstring> //for memset
+#include <cstring> 
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
@@ -17,11 +17,10 @@ UeEventHandler::UeEventHandler(int ueId,Log *log){
   host_info.ai_socktype = SOCK_STREAM;
 
   status = getaddrinfo("127.0.0.1","43000",&host_info, &host_info_list);
-  //status != 0 -error
+  if (status != 0) std::cout << "getaddrinfo error" << std::endl; 
   int socketfd;
   socketfd = socket(host_info_list->ai_family, host_info_list->ai_socktype, host_info_list->ai_protocol);
-  //use first one in the list
-  //socket == 1 -error
+  if(socketfd == 1) std::cout << "socket error" << std::endl; 
 
   status = connect (socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
 

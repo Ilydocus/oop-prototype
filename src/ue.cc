@@ -27,7 +27,6 @@ int main () {
   pthread_t thread[nbOfUes];
   int temp_arg[nbOfUes];
 
-  //Aim:powerOn several UEs in different threads
   for (int i = 1; i<nbOfUes+1;i++){
     temp_arg[i-1]= i;
     arg_struct args;
@@ -36,7 +35,6 @@ int main () {
     pthread_create (&thread[i -1], NULL, powerOn,static_cast<void*>(&args));
     
   }
-  //Wait
   for (int i = 1; i<=nbOfUes;i++){
 
     pthread_join(thread[i-1],NULL);

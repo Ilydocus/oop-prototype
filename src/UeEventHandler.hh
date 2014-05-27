@@ -13,14 +13,9 @@ class UeEventHandler: public EventHandler{
   private:
   UeContextUe *m_ueContext;
   int m_enbSocket;
-  Log *m_log;
 
-  //void handleNewUe(int conn_sock);
-  //void handleUeMessage(RrcMessage rrcMessage,UeContextEnb ueContext);
   void createRaPreamble (RaPreamble *rapreamble, int ueId);
   void sendRaPreamble (int socketfd, int ueId);
-
 };
-
 
 #endif

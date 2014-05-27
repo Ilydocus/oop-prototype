@@ -98,7 +98,7 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
   Imsi_message *tempImsi = new Imsi_message();
   *tempImsi = m_state->imsi;
   initialUeMessage->set_allocated_identity(tempImsi);
-  //delete tempImsi?
+
   S1Message s1Message;
   s1Message.set_messagetype(S1Message_MessageType_TypeS1ApIUeM);
   s1Message.set_allocated_messages1apiuem(initialUeMessage);

@@ -10,9 +10,7 @@ using namespace std;
 class Log {
 public:
   Log(string fileName);
-  //Destructeur avec fclose(stderr)
-  //virtual void printState() = 0;
-
+  ~Log();
   void writeToLog(string message);
 private:
   const string currentDateTime();
