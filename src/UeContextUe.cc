@@ -47,7 +47,6 @@ void UeContextUe::sendRaPreamble (){
   rrcMessage.set_allocated_messagerap(raPreamble);
 
   sendRrcMessage(m_enbSocket,rrcMessage);
-  delete raPreamble;
 }
 
 void UeContextUe::handleRaResponse () {
@@ -66,7 +65,6 @@ void UeContextUe::handleRaResponse () {
     rrcConnectionRequest->set_ueidrntivalue(raResponse.ueidrntivalue());
     Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
     rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
-    delete tempImsi;
     RrcMessage rrcMessage_o;
     rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
     rrcMessage_o.set_allocated_messagerrccrequest(rrcConnectionRequest);
@@ -98,7 +96,6 @@ bool UeContextUe::handleRrcConnectionSetup () {
 	rrcMessage_o.set_allocated_messagerrccsc(rrcCSC);
 	
 	sendRrcMessage(m_enbSocket,rrcMessage_o);
-	delete rrcCSC;
 	return false;}
 	break;
       case RrcMessage_MessageType_TypeRrcCReject :
@@ -149,7 +146,6 @@ void UeContextUe::handleSecurityModeCommand () {
     rrcMessage_o.set_allocated_messagesecuritymcomplete(securityMComplete);
 
     sendRrcMessage(m_enbSocket,rrcMessage_o);
-    delete securityMComplete;
   }
 }
 
@@ -179,12 +175,12 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 	rrcMessage_o.set_allocated_messageueci(ueCI);
 
 	sendRrcMessage(m_enbSocket,rrcMessage_o);
-	delete ueCI;
 	return false;}
 	break;
       case RrcMessage_MessageType_TypeRrcCReject :
 	{RrcConnectionReject rrcConnectionReject;
 	rrcConnectionReject = message->messagerrccreject();
+	delete message;
 	ostringstream message_log;
 	message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
 	m_log->writeToLog(message_log.str());
@@ -221,12 +217,11 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
     rrcMessage_o.set_allocated_messagerrccrc(rrcCRC);
 
     sendRrcMessage(m_enbSocket,rrcMessage_o);
-    delete rrcCRC;
     
     RrcMessage *message2 = new RrcMessage;
     int receiveSuccess2 = receiveRrcMessage(m_enbSocket,message2);
     if(receiveSuccess2){
-      switch (message->messagetype()){
+      switch (message2->messagetype()){
         case RrcMessage_MessageType_TypeRrcCA :
           {RrcConnectionAccept rrcCA;
 	  rrcCA = message2->messagerrcca();
@@ -244,8 +239,8 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
 	  printState();}
 	  break;
         default:
+	  cout << "Unexpected last message of type: "<< message2->messagetype() << endl;
 	  delete message2;
-	  cout << "Unexpected last message" << endl;
       };
     }
   }

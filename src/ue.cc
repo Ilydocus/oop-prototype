@@ -34,6 +34,7 @@ int main () {
     args.ueId = temp_arg[i-1];
     args.log = log;
     pthread_create (&thread[i -1], NULL, powerOn,static_cast<void*>(&args));
+    
   }
   //Wait
   for (int i = 1; i<=nbOfUes;i++){
