@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <unistd.h>
 #include <utility>
+#include <sstream>
 
 #define MAX_EVENTS 10 
 
@@ -62,6 +63,7 @@ EnbEventHandler::EnbEventHandler(){
 
   m_mmeSocket = socketMme;
   m_log = new Log("EnbLog.txt");
+  m_nbMessages = 0;
 }
 
 void EnbEventHandler::run () {    
@@ -137,6 +139,10 @@ void EnbEventHandler::handleNewUe(int conn_sock){
 } 
 
 void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueContext){
+  m_nbMessages++;
+  ostringstream message_log;
+  message_log << "Total number of messages received in the eNodeB: " << m_nbMessages << endl;
+  m_log->writeToLog(message_log.str());
   switch (rrcMessage.messagetype()){
     case 0 : //RaPreamble
       {RaPreamble rapreamble;
@@ -168,5 +174,7 @@ void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueCont
       rrcCRC = rrcMessage.messagerrccrc();
       ueContext.handleRrcConnectionReconfigurationComplete(rrcCRC);}
       break;
+    default: 
+      cerr << "Unexpected message type in eNodeB" << endl;
   }
 }

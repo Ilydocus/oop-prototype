@@ -12,11 +12,11 @@ class MmeEventHandler: public EventHandler{
   private:
   map<int,UeContextMme> m_ueContexts;
   int m_listenSocket;
+  int m_nbMessages;
 
   void handleNewUe(int conn_sock);
   void handleUeMessage(S1Message rrcMessage,UeContextMme ueContext);
 
 };
-
 
 #endif

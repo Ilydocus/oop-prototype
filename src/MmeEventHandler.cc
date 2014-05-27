@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <unistd.h>
 #include <utility>
+#include <sstream>
 
 #define MAX_EVENTS 10 
 
@@ -43,6 +44,7 @@ MmeEventHandler::MmeEventHandler(){
 
   m_listenSocket = socketfd;
   m_log = new Log("MmeLog.txt");
+  m_nbMessages = 0;
 }
 
 void MmeEventHandler::run () {    
@@ -119,6 +121,10 @@ void MmeEventHandler::handleNewUe(int conn_sock){
 } 
 
 void MmeEventHandler::handleUeMessage(S1Message s1Message, UeContextMme ueContext){
+  m_nbMessages++;
+  ostringstream message_log;
+  message_log << "Total number of messages received in the MME: " << m_nbMessages << endl;
+  m_log->writeToLog(message_log.str());
   switch (s1Message.messagetype()){
     case 0 : //S1ApInitialUeMessage
       {S1ApInitialUeMessage initialUeMessage;
@@ -130,5 +136,7 @@ void MmeEventHandler::handleUeMessage(S1Message s1Message, UeContextMme ueContex
       initialCSResponse = s1Message.messages1apicsresponse();
       ueContext.handleS1ApInitialContextSetupResponse(initialCSResponse);}
       break;
+    default: 
+      cerr << "Unexpected message type in MME" << endl;
   }
 }

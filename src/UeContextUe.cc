@@ -53,6 +53,7 @@ void UeContextUe::handleRaResponse () {
   RrcMessage *message = new RrcMessage;
   int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
   if(receiveSuccess){
+    if (message->messagetype() != RrcMessage_MessageType_TypeRaR) cerr << "Invalid message type, should be RaResponse" << endl;
     RaResponse raResponse;
     raResponse = message->messagerar();
     delete message;
@@ -108,7 +109,10 @@ bool UeContextUe::handleRrcConnectionSetup () {
 	printState();
 	return true;}
 	break;
-    };
+      default:
+	delete message;
+	cerr << "Invalid message type, should be RrcConnectionSetup or RrcConnectionReject" << endl;
+  };
   }
 }
 
@@ -116,6 +120,7 @@ void UeContextUe::handleSecurityModeCommand () {
   RrcMessage *message = new RrcMessage;
   int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
   if(receiveSuccess){
+    if (message->messagetype() != RrcMessage_MessageType_TypeSecurityMCommand) cerr << "Invalid message type, should be SecurityModeCommand" << endl;
     SecurityModeCommand securityMCommand;
     securityMCommand = message->messagesecuritymcommand();
     delete message;
@@ -187,6 +192,9 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 	printState();
 	return true;}
 	break;
+      default:
+	delete message;
+	cerr << "Invalid message type, should be UeCapabilityEnquiry or RrcConnectionReject" << endl;
     };
   }
 }
@@ -195,6 +203,7 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
   RrcMessage *message = new RrcMessage;
   int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
   if(receiveSuccess){
+    if (message->messagetype() != RrcMessage_MessageType_TypeRrcCReconfiguration) cerr << "Invalid message type, should be RrcConnectionReconfiguration" << endl;
     RrcConnectionReconfiguration rrcCReconfiguration;
     rrcCReconfiguration = message->messagerrccreconfiguration();
     delete message;
@@ -239,7 +248,7 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
 	  printState();}
 	  break;
         default:
-	  cout << "Unexpected last message of type: "<< message2->messagetype() << endl;
+	  cerr << "Invalid message type, should be RrcConnectionAccept or RrcConnectionReject" << endl;
 	  delete message2;
       };
     }

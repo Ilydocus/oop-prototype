@@ -13,6 +13,7 @@ class EnbEventHandler: public EventHandler{
   map<int,UeContextEnb> m_ueContexts;
   int m_listenSocket;
   int m_mmeSocket;
+  int m_nbMessages;
 
   void handleNewUe(int conn_sock);
   void handleUeMessage(RrcMessage rrcMessage,UeContextEnb ueContext);
