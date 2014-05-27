@@ -31,7 +31,7 @@ void UeContextMme::handleS1ApInitialUeMessage(S1ApInitialUeMessage message){
   initialCSRequest->set_enb_ue_s1ap_id(message.enb_ue_s1ap_id());
   initialCSRequest->set_securitykey(m_state->securityKey_mme);
   initialCSRequest->set_epsbearerid(*epsBearerId);
-   //delete epsBearerId?
+  delete epsBearerId;
   S1Message s1Message;
   s1Message.set_messagetype(S1Message_MessageType_TypeS1ApICSRequest);
   s1Message.set_allocated_messages1apicsrequest(initialCSRequest);
