@@ -25,9 +25,9 @@ class UeContextUe : public UeContext {
   void printState();
 
  private:
-  int m_enbSocket;
-  UeStateUe m_state;
-  int m_ueId;
+  int mEnbSocket;
+  UeStateUe mState;
+  int mUeId;
 
   void genImsi (Imsi_message *imsi);
   string printCapabilityRequest(UeCapabilityEnquiry message);

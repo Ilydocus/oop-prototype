@@ -17,58 +17,58 @@ using namespace std;
 
 EnbEventHandler::EnbEventHandler(){
   int status;
-  struct addrinfo host_info;      
-  struct addrinfo *host_info_list; 
+  struct addrinfo hostInfo;      
+  struct addrinfo *hostInfoList; 
 
-  memset(&host_info, 0, sizeof host_info);
+  memset(&hostInfo, 0, sizeof hostInfo);
 
-  host_info.ai_family = AF_UNSPEC;     
-  host_info.ai_socktype = SOCK_STREAM; 
-  host_info.ai_flags = AI_PASSIVE;    
+  hostInfo.ai_family = AF_UNSPEC;     
+  hostInfo.ai_socktype = SOCK_STREAM; 
+  hostInfo.ai_flags = AI_PASSIVE;    
 
-  status = getaddrinfo(NULL, "43000", &host_info, &host_info_list);
+  status = getaddrinfo(NULL, "43000", &hostInfo, &hostInfoList);
   if (status != 0)  cout << "getaddrinfo error" << gai_strerror(status) << endl;
 
   int socketfd ; 
-  socketfd = socket(host_info_list->ai_family,host_info_list->ai_socktype,host_info_list->ai_protocol);
+  socketfd = socket(hostInfoList->ai_family,hostInfoList->ai_socktype,hostInfoList->ai_protocol);
   if (socketfd == -1)  cout << "socket error " << endl;
 
   int yes = 1;
   status = setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
-  status = bind(socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
+  status = bind(socketfd, hostInfoList->ai_addr, hostInfoList->ai_addrlen);
   if (status == -1)  cout << "bind error" << endl ;
 
   status =  listen(socketfd, 5);//5 is the number of "on hold"
   if (status == -1)  cout << "listen error" << endl;
-  freeaddrinfo(host_info_list);
+  freeaddrinfo(hostInfoList);
 
-  m_listenSocket = socketfd;
+  mListenSocket = socketfd;
 
-  int status_mme;
-  struct addrinfo host_info_mme;
-  struct addrinfo *host_info_list_mme;
+  int statusMme;
+  struct addrinfo hostInfoMme;
+  struct addrinfo *hostInfoListMme;
 
-  memset(&host_info_mme, 0, sizeof host_info_mme);
-  host_info_mme.ai_family = AF_UNSPEC;
-  host_info_mme.ai_socktype = SOCK_STREAM;
+  memset(&hostInfoMme, 0, sizeof hostInfoMme);
+  hostInfoMme.ai_family = AF_UNSPEC;
+  hostInfoMme.ai_socktype = SOCK_STREAM;
 
-  status_mme = getaddrinfo("127.0.0.1","43001",&host_info_mme, &host_info_list_mme);
-  if (status_mme != 0) cout << "getaddrinfo error" << endl;
+  statusMme = getaddrinfo("127.0.0.1","43001",&hostInfoMme, &hostInfoListMme);
+  if (statusMme != 0) cout << "getaddrinfo error" << endl;
   int socketMme;
-  socketMme = socket(host_info_list_mme->ai_family, host_info_list_mme->ai_socktype, host_info_list_mme->ai_protocol);
+  socketMme = socket(hostInfoListMme->ai_family, hostInfoListMme->ai_socktype, hostInfoListMme->ai_protocol);
   if(socketMme == 1) cout << "socket error" << endl;
 
-  status_mme = connect (socketMme, host_info_list_mme->ai_addr, host_info_list_mme->ai_addrlen);
-  freeaddrinfo(host_info_list_mme);
+  statusMme = connect (socketMme, hostInfoListMme->ai_addr, hostInfoListMme->ai_addrlen);
+  freeaddrinfo(hostInfoListMme);
 
-  m_mmeSocket = socketMme;
-  m_log = new Log("EnbLog.txt");
-  m_nbMessages = 0;
+  mMmeSocket = socketMme;
+  mLog = new Log("EnbLog.txt");
+  mNbMessages = 0;
 }
 
 void EnbEventHandler::run () {    
   struct epoll_event ev, events[MAX_EVENTS];
-  int conn_sock, nfds, epollfd;
+  int connSock, nfds, epollfd;
 
   epollfd = epoll_create(10);
   if (epollfd == -1) {
@@ -76,9 +76,9 @@ void EnbEventHandler::run () {
     exit(EXIT_FAILURE);
   }
   ev.events = EPOLLIN;
-  ev.data.fd = m_listenSocket;
-  if (epoll_ctl(epollfd, EPOLL_CTL_ADD, m_listenSocket, &ev) == -1) {
-    perror("epoll_ctl: m_listenSocket");
+  ev.data.fd = mListenSocket;
+  if (epoll_ctl(epollfd, EPOLL_CTL_ADD, mListenSocket, &ev) == -1) {
+    perror("epoll_ctl: mListenSocket");
     exit(EXIT_FAILURE);
   }
   
@@ -90,40 +90,39 @@ void EnbEventHandler::run () {
     }
     
     for (int n = 0; n < nfds; ++n) {
-      if (events[n].data.fd == m_listenSocket) {
-	int new_sd;
-	struct sockaddr_storage their_addr;
-	socklen_t addr_size = sizeof(their_addr);
-	conn_sock = accept(m_listenSocket, (struct sockaddr *)&their_addr, &addr_size);
-	if (conn_sock == -1) {
+      if (events[n].data.fd == mListenSocket) {
+	struct sockaddr_storage theirAddr;
+	socklen_t addrSize = sizeof(theirAddr);
+	connSock = accept(mListenSocket, (struct sockaddr *)&theirAddr, &addrSize);
+	if (connSock == -1) {
 	  perror("accept");
 	  exit(EXIT_FAILURE);
 	}
-	make_socket_non_blocking(conn_sock);
+	makeSocketNonBlocking(connSock);
 	ev.events = EPOLLIN | EPOLLET;
-	ev.data.fd = conn_sock;
-	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock,
+	ev.data.fd = connSock;
+	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connSock,
 		      &ev) == -1) {
-	  perror("epoll_ctl: conn_sock");
+	  perror("epoll_ctl: connSock");
 	  exit(EXIT_FAILURE);
 	}
-	handleNewUe(conn_sock);
+	handleNewUe(connSock);
       }
       else {
-	ssize_t bytes_recieved;
-	char incoming_data_buffer[1000];
-	bytes_recieved = recv(events[n].data.fd, incoming_data_buffer,1000, 0);
-	if (bytes_recieved == 0) {cout << "host shut down." << endl;}
-	if (bytes_recieved == -1){cout << "recieve error!" << endl;}
-	if (bytes_recieved != -1 && bytes_recieved != 0){
-	  incoming_data_buffer[bytes_recieved] = '\0';
+	ssize_t bytesRecieved;
+	char incomingDataBuffer[1000];
+	bytesRecieved = recv(events[n].data.fd, incomingDataBuffer,1000, 0);
+	if (bytesRecieved == 0) {cout << "host shut down." << endl;}
+	if (bytesRecieved == -1){cout << "recieve error!" << endl;}
+	if (bytesRecieved != -1 && bytesRecieved != 0){
+	  incomingDataBuffer[bytesRecieved] = '\0';
 	  GOOGLE_PROTOBUF_VERIFY_VERSION;
     
 	  RrcMessage rrcMessage;
-	  string str_message(incoming_data_buffer, bytes_recieved);
-	  rrcMessage.ParseFromString(str_message);
-	  map<int,UeContextEnb>::iterator temp_it = m_ueContexts.find(events[n].data.fd);		    
-	  UeContextEnb ueContext = temp_it->second;
+	  string strMessage(incomingDataBuffer, bytesRecieved);
+	  rrcMessage.ParseFromString(strMessage);
+	  map<int,UeContextEnb>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
+	  UeContextEnb ueContext = tempIt->second;
 	
 	  handleUeMessage(rrcMessage, ueContext);		     
 	  
@@ -133,16 +132,16 @@ void EnbEventHandler::run () {
   }
 }
 
-void EnbEventHandler::handleNewUe(int conn_sock){
-  UeContextEnb *ueContext = new UeContextEnb(conn_sock,m_mmeSocket,m_log);
-  m_ueContexts.insert(pair<int,UeContextEnb>(conn_sock,*ueContext));
+void EnbEventHandler::handleNewUe(int connSock){
+  UeContextEnb *ueContext = new UeContextEnb(connSock,mMmeSocket,mLog);
+  mUeContexts.insert(pair<int,UeContextEnb>(connSock,*ueContext));
 } 
 
 void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueContext){
-  m_nbMessages++;
-  ostringstream message_log;
-  message_log << "Total number of messages received in the eNodeB: " << m_nbMessages << endl;
-  m_log->writeToLog(message_log.str());
+  mNbMessages++;
+  ostringstream messageLog;
+  messageLog << "Total number of messages received in the eNodeB: " << mNbMessages << endl;
+  mLog->writeToLog(messageLog.str());
   switch (rrcMessage.messagetype()){
     case 0 : //RaPreamble
       {RaPreamble rapreamble;

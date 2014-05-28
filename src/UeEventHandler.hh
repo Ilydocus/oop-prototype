@@ -11,9 +11,9 @@ class UeEventHandler: public EventHandler{
   void run();
 
   private:
-  UeContextUe *m_ueContext;
-  int m_enbSocket;
-  int m_ueId;
+  UeContextUe *mUeContext;
+  int mEnbSocket;
+  int mUeId;
 
   void createRaPreamble (RaPreamble *rapreamble, int ueId);
   void sendRaPreamble (int socketfd, int ueId);

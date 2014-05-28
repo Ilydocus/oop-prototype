@@ -6,7 +6,7 @@
 
 struct UeStateMme{
   int mmeUeS1ApId;
-  int securityKey_mme;
+  int securityKeyMme;
 };
 
 class UeContextMme : public UeContext
@@ -18,8 +18,8 @@ class UeContextMme : public UeContext
   void printState();
 
  private:
-  int m_enbSocket;
-  UeStateMme *m_state;
+  int mEnbSocket;
+  UeStateMme *mState;
 };
 
 #endif

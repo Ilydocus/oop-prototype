@@ -6,15 +6,15 @@
 using namespace std;
 
 Log::Log(string fileName){
-  m_file.open(fileName.c_str());
+  mFile.open(fileName.c_str());
 }
 
 Log::~Log(){
-  m_file.close();
+  mFile.close();
 }
 
 void Log::writeToLog(string message){
-  m_file << currentDateTime() << message << endl;
+  mFile << currentDateTime() << message << endl;
 }
 
 const string Log::currentDateTime(){

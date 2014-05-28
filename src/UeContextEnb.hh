@@ -15,7 +15,7 @@ enum RrcState {RRC_Idle, RRC_Connected};
 
 struct UeStateEnb{
   RrcState rrcState;
-  int c_rnti;
+  int cRnti;
   Imsi_message imsi;
   string srbIdentity;
   int enbUeS1ApId;
@@ -37,9 +37,9 @@ class UeContextEnb : public UeContext
   void printState();
 
  private:
-  int m_ueSocket;
-  int m_mmeSocket;
-  UeStateEnb *m_state;
+  int mUeSocket;
+  int mMmeSocket;
+  UeStateEnb *mState;
 
   string printRatCapabilities(RatCapability *ratCapabilities);
   string printRatCapabilities(UeCapabilityInformation message);

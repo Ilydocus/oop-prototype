@@ -5,17 +5,17 @@
 #include "EventHandler.hh"
 
 class EnbEventHandler: public EventHandler{
-  public:
+public:
   EnbEventHandler();
   void run();
 
-  private:
-  map<int,UeContextEnb> m_ueContexts;
-  int m_listenSocket;
-  int m_mmeSocket;
-  int m_nbMessages;
+private:
+  map<int,UeContextEnb> mUeContexts;
+  int mListenSocket;
+  int mMmeSocket;
+  int mNbMessages;
 
-  void handleNewUe(int conn_sock);
+  void handleNewUe(int connSock);
   void handleUeMessage(RrcMessage rrcMessage,UeContextEnb ueContext);
 };
 

@@ -9,31 +9,31 @@
 
 using namespace std;
 
-UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket, Log *log):m_ueSocket(ueSocket),m_mmeSocket(mmeSocket){
-  m_state = new UeStateEnb;
-  m_state->rrcState=RRC_Idle;
-  m_state->c_rnti=-1;
-  (m_state->imsi).set_mcc("-1");
-  (m_state->imsi).set_mnc("-1");
-  (m_state->imsi).set_msin("-1");
-  m_state->srbIdentity="-1";
-  m_state->enbUeS1ApId=-1;
+UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket, Log *log):mUeSocket(ueSocket),mMmeSocket(mmeSocket){
+  mState = new UeStateEnb;
+  mState->rrcState=RRC_Idle;
+  mState->cRnti=-1;
+  (mState->imsi).set_mcc("-1");
+  (mState->imsi).set_mnc("-1");
+  (mState->imsi).set_msin("-1");
+  mState->srbIdentity="-1";
+  mState->enbUeS1ApId=-1;
   for (int i = 0;i<NB_RAT;i++){
-    (m_state->ratCapabilities[i]).set_rat(NO_RAT);
-    (m_state->ratCapabilities[i]).set_issupported(false);
+    (mState->ratCapabilities[i]).set_rat(NO_RAT);
+    (mState->ratCapabilities[i]).set_issupported(false);
   }
-  m_state->securityKey=-1;
-  m_state->epsBearerId="-1";
+  mState->securityKey=-1;
+  mState->epsBearerId="-1";
 
-  m_log = log;
+  mLog = log;
 }
 
 void UeContextEnb::handleRaPreamble(RaPreamble message){
-  ostringstream message_log;
-  message_log << "Message received from Ue: RaPreamble {Rnti Type: " << message.ueidrntitype() << " Rnti Value: " << message.ueidrntivalue() << " }" << endl; 
-  m_log->writeToLog(message_log.str());
+  ostringstream messageLog;
+  messageLog << "Message received from Ue: RaPreamble {Rnti Type: " << message.ueidrntitype() << " Rnti Value: " << message.ueidrntivalue() << " }" << endl; 
+  mLog->writeToLog(messageLog.str());
 
-  m_state->c_rnti = message.ueidrntivalue();
+  mState->cRnti = message.ueidrntivalue();
 
   RaResponse *raResponse = new RaResponse;
   raResponse->set_ueidrntitype(RA_RNTI);
@@ -44,16 +44,16 @@ void UeContextEnb::handleRaPreamble(RaPreamble message){
   rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRaR);
   rrcMessage.set_allocated_messagerar(raResponse);
 
-  sendRrcMessage(m_ueSocket,rrcMessage);
+  sendRrcMessage(mUeSocket,rrcMessage);
 }
 
 void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
 
-  ostringstream message_log;
-  message_log << "Message received from Ue: RrcConnectionRequest {Rnti Type: " << message.ueidrntitype() << " Rnti Value: " << message.ueidrntivalue() << " UE identity is : " << (message.ueidentity()).mcc()<<"-"<< (message.ueidentity()).mnc() << "-"<< (message.ueidentity()).msin() <<" }" << endl; 
-  m_log->writeToLog(message_log.str());
+  ostringstream messageLog;
+  messageLog << "Message received from Ue: RrcConnectionRequest {Rnti Type: " << message.ueidrntitype() << " Rnti Value: " << message.ueidrntivalue() << " UE identity is : " << (message.ueidentity()).mcc()<<"-"<< (message.ueidentity()).mnc() << "-"<< (message.ueidentity()).msin() <<" }" << endl; 
+  mLog->writeToLog(messageLog.str());
 
-  m_state->imsi = message.ueidentity();
+  mState->imsi = message.ueidentity();
 
   RrcMessage rrcMessage;
   bool reject;
@@ -70,7 +70,7 @@ void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
   else {
     string * srbId = new string;
     genRandId(srbId, 8);
-    m_state->srbIdentity = *srbId;
+    mState->srbIdentity = *srbId;
 
     RrcConnectionSetup *rrcCS = new RrcConnectionSetup;
     rrcCS->set_ueidrntitype(C_RNTI);
@@ -81,44 +81,44 @@ void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
     rrcMessage.set_allocated_messagerrccs(rrcCS);
     }
 
-  sendRrcMessage(m_ueSocket,rrcMessage);
+  sendRrcMessage(mUeSocket,rrcMessage);
 }
 
 void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message){
-  ostringstream message_log;
-  message_log << "Message received from Ue: RrcConnectionSetupComplete {C-Rnti: " << message.uecrnti() << " PLMN identity: " << message.selectedplmnidentity() << " }" << endl; 
-  m_log->writeToLog(message_log.str());
+  ostringstream messageLog;
+  messageLog << "Message received from Ue: RrcConnectionSetupComplete {C-Rnti: " << message.uecrnti() << " PLMN identity: " << message.selectedplmnidentity() << " }" << endl; 
+  mLog->writeToLog(messageLog.str());
 
-  m_state->rrcState = RRC_Connected;
-  m_state->enbUeS1ApId = 17 * message.uecrnti();
+  mState->rrcState = RRC_Connected;
+  mState->enbUeS1ApId = 17 * message.uecrnti();
   
   S1ApInitialUeMessage *initialUeMessage = new S1ApInitialUeMessage;
   initialUeMessage->set_enb_ue_s1ap_id(17 * message.uecrnti());
   initialUeMessage->set_epsattachtype(EpsAttach);
   Imsi_message *tempImsi = new Imsi_message();
-  *tempImsi = m_state->imsi;
+  *tempImsi = mState->imsi;
   initialUeMessage->set_allocated_identity(tempImsi);
 
   S1Message s1Message;
   s1Message.set_messagetype(S1Message_MessageType_TypeS1ApIUeM);
   s1Message.set_allocated_messages1apiuem(initialUeMessage);
 
-  sendS1Message(m_mmeSocket,s1Message);
+  sendS1Message(mMmeSocket,s1Message);
 
   S1Message *response = new S1Message;
-  int receiveSuccess = receiveS1Message(m_mmeSocket,response);
+  int receiveSuccess = receiveS1Message(mMmeSocket,response);
   
   if(receiveSuccess){
     S1ApInitialContextSetupRequest initialCSRequest;
     initialCSRequest = response->messages1apicsrequest();
 
-    m_state->securityKey = initialCSRequest.securitykey();
-    m_state->epsBearerId = initialCSRequest.epsbearerid();
+    mState->securityKey = initialCSRequest.securitykey();
+    mState->epsBearerId = initialCSRequest.epsbearerid();
 
     string plainMessage = "ciphered";
     string encryptedMessage; 
     byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
-    memset (key,m_state->securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
+    memset (key,mState->securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
     memset (iv,0x00,CryptoPP::AES::BLOCKSIZE);
     CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
     CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption (aesEncryption, iv);
@@ -134,14 +134,14 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
     rrcMessage.set_messagetype(RrcMessage_MessageType_TypeSecurityMCommand);
     rrcMessage.set_allocated_messagesecuritymcommand(securityMCommand);
     
-    sendRrcMessage(m_ueSocket,rrcMessage);
+    sendRrcMessage(mUeSocket,rrcMessage);
   }
 }
 
 void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
-  ostringstream message_log;
-  message_log << "Message received from Ue: SecurityModeComplete {C-Rnti: " << message.uecrnti() << " Security Mode Success: " << message.securitymodesuccess() << " }" << endl; 
-  m_log->writeToLog(message_log.str());
+  ostringstream messageLog;
+  messageLog << "Message received from Ue: SecurityModeComplete {C-Rnti: " << message.uecrnti() << " Security Mode Success: " << message.securitymodesuccess() << " }" << endl; 
+  mLog->writeToLog(messageLog.str());
 
   RrcMessage rrcMessage;
   if(message.securitymodesuccess()){
@@ -164,46 +164,46 @@ void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
     rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReject);
     rrcMessage.set_allocated_messagerrccreject(rrcCReject);
 
-    m_state->rrcState = RRC_Idle;
+    mState->rrcState = RRC_Idle;
     printState();
   }
-  sendRrcMessage(m_ueSocket,rrcMessage);
+  sendRrcMessage(mUeSocket,rrcMessage);
 }
 
 void UeContextEnb::handleUeCapabilityInformation(UeCapabilityInformation message){
-  ostringstream message_log;
-  message_log << "Message received from Ue: UeCapabilityInformation {C-Rnti: " << message.uecrnti() << " Ue RAT capabilities: " << printRatCapabilities(message) <<" }" << endl;
-  m_log->writeToLog(message_log.str());
+  ostringstream messageLog;
+  messageLog << "Message received from Ue: UeCapabilityInformation {C-Rnti: " << message.uecrnti() << " Ue RAT capabilities: " << printRatCapabilities(message) <<" }" << endl;
+  mLog->writeToLog(messageLog.str());
   
   if (message.uecapabilityratlist_size() != NB_RAT){
     cerr << "Incompatible numbers of RAT" << endl;
     return;
   }
   for(int i = 0; i<message.uecapabilityratlist_size();i++){
-    (m_state->ratCapabilities[i]).set_rat(message.uecapabilityratlist(i).rat());
-    (m_state->ratCapabilities[i]).set_issupported(message.uecapabilityratlist(i).issupported());
+    (mState->ratCapabilities[i]).set_rat(message.uecapabilityratlist(i).rat());
+    (mState->ratCapabilities[i]).set_issupported(message.uecapabilityratlist(i).issupported());
   }
 
   RrcConnectionReconfiguration *rrcCReconfiguration = new RrcConnectionReconfiguration;
   rrcCReconfiguration->set_uecrnti(message.uecrnti());
-  rrcCReconfiguration->set_epsradiobeareridentity(m_state->epsBearerId);
+  rrcCReconfiguration->set_epsradiobeareridentity(mState->epsBearerId);
 
   RrcMessage rrcMessage;
   rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReconfiguration);
   rrcMessage.set_allocated_messagerrccreconfiguration(rrcCReconfiguration);
   
-  sendRrcMessage(m_ueSocket,rrcMessage);
+  sendRrcMessage(mUeSocket,rrcMessage);
 }
 
 void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message){
-  ostringstream message_log;
-  message_log << "Message received from Ue: RrcConnectionReconfigurationComplete {C-Rnti: " << message.uecrnti() << " EPS Radio Bearer Activated: " << message.epsradiobeareractivated() << " }" << endl; 
-  m_log->writeToLog(message_log.str());
+  ostringstream messageLog;
+  messageLog << "Message received from Ue: RrcConnectionReconfigurationComplete {C-Rnti: " << message.uecrnti() << " EPS Radio Bearer Activated: " << message.epsradiobeareractivated() << " }" << endl; 
+  mLog->writeToLog(messageLog.str());
   
   if(message.epsradiobeareractivated()){
     S1Message s1Message;
     S1ApInitialContextSetupResponse *iCSResponse = new S1ApInitialContextSetupResponse;
-    iCSResponse->set_enb_ue_s1ap_id(m_state->enbUeS1ApId);
+    iCSResponse->set_enb_ue_s1ap_id(mState->enbUeS1ApId);
     string *erabId = new string;
     genRandId(erabId,5);
     iCSResponse->set_allocated_erabid(erabId);
@@ -211,7 +211,7 @@ void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReco
     s1Message.set_messagetype(S1Message_MessageType_TypeS1ApICSResponse);
     s1Message.set_allocated_messages1apicsresponse(iCSResponse);
 
-    sendS1Message(m_mmeSocket,s1Message);
+    sendS1Message(mMmeSocket,s1Message);
  
     RrcMessage rrcMessage;
     RrcConnectionAccept *rrcCA = new RrcConnectionAccept;
@@ -220,7 +220,7 @@ void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReco
     rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCA);
     rrcMessage.set_allocated_messagerrcca(rrcCA);
 
-    sendRrcMessage(m_ueSocket,rrcMessage);
+    sendRrcMessage(mUeSocket,rrcMessage);
     printState();
   }
   else {
@@ -232,17 +232,17 @@ void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReco
     rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCReject);
     rrcMessage.set_allocated_messagerrccreject(rrcCReject);
 
-    m_state->rrcState = RRC_Idle;
+    mState->rrcState = RRC_Idle;
 
-    sendRrcMessage(m_ueSocket,rrcMessage);
+    sendRrcMessage(mUeSocket,rrcMessage);
     printState();
   }
 }
 
 void UeContextEnb::printState(){
   ostringstream state;
-  state << "Context at the end: UeContextEnb {RRC state: " << m_state->rrcState << " C-Rnti: " << m_state->c_rnti << " Imsi: " <<  (m_state->imsi).mcc()<<"-"<< (m_state->imsi).mnc() << "-"<< (m_state->imsi).msin() << " SRB identity: "<<m_state->srbIdentity << " EnB S1 Identity: " << m_state->enbUeS1ApId << " RAT capabilities: " << printRatCapabilities(m_state->ratCapabilities) << " security key: " << m_state->securityKey << " EPS bearer id: " << m_state->epsBearerId << "}" << endl; 
-  m_log->writeToLog(state.str());
+  state << "Context at the end: UeContextEnb {RRC state: " << mState->rrcState << " C-Rnti: " << mState->cRnti << " Imsi: " <<  (mState->imsi).mcc()<<"-"<< (mState->imsi).mnc() << "-"<< (mState->imsi).msin() << " SRB identity: "<<mState->srbIdentity << " EnB S1 Identity: " << mState->enbUeS1ApId << " RAT capabilities: " << printRatCapabilities(mState->ratCapabilities) << " security key: " << mState->securityKey << " EPS bearer id: " << mState->epsBearerId << "}" << endl; 
+  mLog->writeToLog(state.str());
 }
 
 string UeContextEnb::printRatCapabilities(RatCapability *ratCapabilities){

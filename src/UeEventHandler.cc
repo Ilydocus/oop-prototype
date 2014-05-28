@@ -9,46 +9,46 @@
 
 UeEventHandler::UeEventHandler(int ueId,Log *log){
   int status;
-  struct addrinfo host_info;
-  struct addrinfo *host_info_list;
+  struct addrinfo hostInfo;
+  struct addrinfo *hostInfoList;
 
-  memset(&host_info, 0, sizeof host_info);
-  host_info.ai_family = AF_UNSPEC;
-  host_info.ai_socktype = SOCK_STREAM;
+  memset(&hostInfo, 0, sizeof hostInfo);
+  hostInfo.ai_family = AF_UNSPEC;
+  hostInfo.ai_socktype = SOCK_STREAM;
 
-  status = getaddrinfo("127.0.0.1","43000",&host_info, &host_info_list);
+  status = getaddrinfo("127.0.0.1","43000",&hostInfo, &hostInfoList);
   if (status != 0) std::cout << "getaddrinfo error" << std::endl; 
   int socketfd;
-  socketfd = socket(host_info_list->ai_family, host_info_list->ai_socktype, host_info_list->ai_protocol);
+  socketfd = socket(hostInfoList->ai_family, hostInfoList->ai_socktype, hostInfoList->ai_protocol);
   if(socketfd == 1) std::cout << "socket error" << std::endl; 
 
-  status = connect (socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
+  status = connect (socketfd, hostInfoList->ai_addr, hostInfoList->ai_addrlen);
 
-  m_enbSocket = socketfd;
-  m_ueContext = new UeContextUe(ueId, m_enbSocket,log);
-  m_log = log;
-  m_ueId = ueId;
+  mEnbSocket = socketfd;
+  mUeContext = new UeContextUe(ueId, mEnbSocket,log);
+  mLog = log;
+  mUeId = ueId;
 
-  freeaddrinfo(host_info_list);
+  freeaddrinfo(hostInfoList);
 }
 
 void UeEventHandler::run(){
-  m_ueContext->sendRaPreamble();
-  m_ueContext->handleRaResponse();
-  bool reject = m_ueContext->handleRrcConnectionSetup();
+  mUeContext->sendRaPreamble();
+  mUeContext->handleRaResponse();
+  bool reject = mUeContext->handleRrcConnectionSetup();
   if (!reject){
-    m_ueContext->handleSecurityModeCommand();
-    bool reject_2 = m_ueContext->handleUeCapabilityEnquiry();
-    if (!reject_2){
-      m_ueContext->handleRrcConnectionReconfiguration();
+    mUeContext->handleSecurityModeCommand();
+    bool reject2 = mUeContext->handleUeCapabilityEnquiry();
+    if (!reject2){
+      mUeContext->handleRrcConnectionReconfiguration();
     }
   }
 }
 
 UeEventHandler::~UeEventHandler(){
   google::protobuf::ShutdownProtobufLibrary();
-  std::cout << "UE "<< m_ueId << " switched off..." << std::endl;
-  close(m_enbSocket); 
-  delete m_ueContext; 
+  std::cout << "UE "<< mUeId << " switched off..." << std::endl;
+  close(mEnbSocket); 
+  delete mUeContext; 
   pthread_exit(NULL);
 }

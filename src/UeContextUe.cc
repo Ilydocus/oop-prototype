@@ -9,103 +9,103 @@
 
 UeContextUe::UeContextUe(int ueId,int enbSocket,Log *log){
 
-  m_enbSocket = enbSocket;
-  m_state.securityKey = ueId * 18;
-  m_ueId = ueId;
-  m_log = log;
+  mEnbSocket = enbSocket;
+  mState.securityKey = ueId * 18;
+  mUeId = ueId;
+  mLog = log;
 
-  Imsi_message *temp_imsi = new Imsi_message;
-  genImsi(temp_imsi);
-  m_state.imsi = *temp_imsi;
-  delete temp_imsi;
+  Imsi_message *tempImsi = new Imsi_message;
+  genImsi(tempImsi);
+  mState.imsi = *tempImsi;
+  delete tempImsi;
 }
 
 void UeContextUe::genImsi(Imsi_message *imsi){
   //All the imsi are Swedish ones
-  string *randomId_mnc= new string;
-  string *randomId_msin= new string;
-  genRandId(randomId_mnc,2);
-  genRandId(randomId_msin,10);
+  string *randomIdMnc= new string;
+  string *randomIdMsin= new string;
+  genRandId(randomIdMnc,2);
+  genRandId(randomIdMsin,10);
 
-  string *temp_mcc = new string("260");
-  imsi->set_mcc(*temp_mcc);
-  imsi->set_mnc(*randomId_mnc);
-  imsi->set_msin(*randomId_msin);
+  string *tempMcc = new string("260");
+  imsi->set_mcc(*tempMcc);
+  imsi->set_mnc(*randomIdMnc);
+  imsi->set_msin(*randomIdMsin);
   
-  delete randomId_mnc;
-  delete randomId_msin;
-  delete temp_mcc;
+  delete randomIdMnc;
+  delete randomIdMsin;
+  delete tempMcc;
 }
 
 void UeContextUe::sendRaPreamble (){
   RaPreamble *raPreamble = new RaPreamble;
   raPreamble->set_ueidrntitype(RA_RNTI);
-  raPreamble->set_ueidrntivalue(m_ueId);
+  raPreamble->set_ueidrntivalue(mUeId);
   
   RrcMessage rrcMessage;
   rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRaP);
   rrcMessage.set_allocated_messagerap(raPreamble);
 
-  sendRrcMessage(m_enbSocket,rrcMessage);
+  sendRrcMessage(mEnbSocket,rrcMessage);
 }
 
 void UeContextUe::handleRaResponse () {
   RrcMessage *message = new RrcMessage;
-  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  int receiveSuccess = receiveRrcMessage(mEnbSocket,message);
   if(receiveSuccess){
     if (message->messagetype() != RrcMessage_MessageType_TypeRaR) cerr << "Invalid message type, should be RaResponse" << endl;
     RaResponse raResponse;
     raResponse = message->messagerar();
     delete message;
-    ostringstream message_log;
-    message_log << "Message received from ENodeB: RaResponse {Rnti Type: " << raResponse.ueidrntitype() << " Ra-Rnti value: " << raResponse.ueidrntivalue() << " C-Rnti: " << raResponse.ueidcrnti() << " }" << endl; 
-    m_log->writeToLog(message_log.str());
+    ostringstream messageLog;
+    messageLog << "Message received from ENodeB: RaResponse {Rnti Type: " << raResponse.ueidrntitype() << " Ra-Rnti value: " << raResponse.ueidrntivalue() << " C-Rnti: " << raResponse.ueidcrnti() << " }" << endl; 
+    mLog->writeToLog(messageLog.str());
     
     RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
     rrcConnectionRequest->set_ueidrntitype(C_RNTI);
     rrcConnectionRequest->set_ueidrntivalue(raResponse.ueidrntivalue());
-    Imsi_message *tempImsi = new Imsi_message(m_state.imsi);
+    Imsi_message *tempImsi = new Imsi_message(mState.imsi);
     rrcConnectionRequest->set_allocated_ueidentity(tempImsi);
-    RrcMessage rrcMessage_o;
-    rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
-    rrcMessage_o.set_allocated_messagerrccrequest(rrcConnectionRequest);
+    RrcMessage rrcMessageO;
+    rrcMessageO.set_messagetype(RrcMessage_MessageType_TypeRrcCRequest);
+    rrcMessageO.set_allocated_messagerrccrequest(rrcConnectionRequest);
     
-    sendRrcMessage(m_enbSocket,rrcMessage_o);
+    sendRrcMessage(mEnbSocket,rrcMessageO);
   }
 }
 
 bool UeContextUe::handleRrcConnectionSetup () {
   RrcMessage *message = new RrcMessage;
-  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  int receiveSuccess = receiveRrcMessage(mEnbSocket,message);
   if(receiveSuccess){
     switch (message->messagetype()) {
       case RrcMessage_MessageType_TypeRrcCS :
 	{RrcConnectionSetup rrcConnectionSetup;
 	rrcConnectionSetup = message->messagerrccs();
 	delete message;
-	ostringstream message_log;
-	message_log << "Message received from ENodeB: RrcConnectionSetup {Rnti Type: " << rrcConnectionSetup.ueidrntitype() << " Rnti value: " << rrcConnectionSetup.ueidrntivalue() << " Srb Identity: " << rrcConnectionSetup.srbidentity() << " }" << endl; 
-	m_log->writeToLog(message_log.str());
+	ostringstream messageLog;
+	messageLog << "Message received from ENodeB: RrcConnectionSetup {Rnti Type: " << rrcConnectionSetup.ueidrntitype() << " Rnti value: " << rrcConnectionSetup.ueidrntivalue() << " Srb Identity: " << rrcConnectionSetup.srbidentity() << " }" << endl; 
+	mLog->writeToLog(messageLog.str());
 
-	m_state.srbId = rrcConnectionSetup.srbidentity();
+	mState.srbId = rrcConnectionSetup.srbidentity();
 
 	RrcConnectionSetupComplete *rrcCSC = new RrcConnectionSetupComplete;
 	rrcCSC->set_uecrnti(rrcConnectionSetup.ueidrntivalue());
-	rrcCSC->set_selectedplmnidentity((m_state.imsi).mcc() + (m_state.imsi).mnc());
-	RrcMessage rrcMessage_o;
-	rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCSC);
-	rrcMessage_o.set_allocated_messagerrccsc(rrcCSC);
+	rrcCSC->set_selectedplmnidentity((mState.imsi).mcc() + (mState.imsi).mnc());
+	RrcMessage rrcMessageO;
+	rrcMessageO.set_messagetype(RrcMessage_MessageType_TypeRrcCSC);
+	rrcMessageO.set_allocated_messagerrccsc(rrcCSC);
 	
-	sendRrcMessage(m_enbSocket,rrcMessage_o);
+	sendRrcMessage(mEnbSocket,rrcMessageO);
 	return false;}
 	break;
       case RrcMessage_MessageType_TypeRrcCReject :
 	{RrcConnectionReject rrcConnectionReject;
 	rrcConnectionReject = message->messagerrccreject();
 	delete message;
-	ostringstream message_log;
-	message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
-	m_log->writeToLog(message_log.str());
+	ostringstream messageLog;
+	messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
+	mLog->writeToLog(messageLog.str());
 	printState();
 	return true;}
 	break;
@@ -118,20 +118,20 @@ bool UeContextUe::handleRrcConnectionSetup () {
 
 void UeContextUe::handleSecurityModeCommand () {
   RrcMessage *message = new RrcMessage;
-  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  int receiveSuccess = receiveRrcMessage(mEnbSocket,message);
   if(receiveSuccess){
     if (message->messagetype() != RrcMessage_MessageType_TypeSecurityMCommand) cerr << "Invalid message type, should be SecurityModeCommand" << endl;
     SecurityModeCommand securityMCommand;
     securityMCommand = message->messagesecuritymcommand();
     delete message;
-    ostringstream message_log;
-    message_log << "Message received from ENodeB: SecurityModeCommand {C-Rnti: " << securityMCommand.uecrnti() << " Message_security: " << securityMCommand.message_security() << " }" << endl; 
-    m_log->writeToLog(message_log.str());
+    ostringstream messageLog;
+    messageLog << "Message received from ENodeB: SecurityModeCommand {C-Rnti: " << securityMCommand.uecrnti() << " Message_security: " << securityMCommand.message_security() << " }" << endl; 
+    mLog->writeToLog(messageLog.str());
 
     string decryptedMessage;
     string cryptedMessage = securityMCommand.message_security();
     byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
-    memset (key,m_state.securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
+    memset (key,mState.securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
     memset (iv,0x00,CryptoPP::AES::BLOCKSIZE);
     CryptoPP::AES::Decryption aesDecryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
     CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption (aesDecryption, iv);
@@ -146,26 +146,26 @@ void UeContextUe::handleSecurityModeCommand () {
     securityMComplete->set_uecrnti(securityMCommand.uecrnti());
     securityMComplete->set_securitymodesuccess(securityModeSuccess);
 
-    RrcMessage rrcMessage_o;
-    rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeSecurityMComplete);
-    rrcMessage_o.set_allocated_messagesecuritymcomplete(securityMComplete);
+    RrcMessage rrcMessageO;
+    rrcMessageO.set_messagetype(RrcMessage_MessageType_TypeSecurityMComplete);
+    rrcMessageO.set_allocated_messagesecuritymcomplete(securityMComplete);
 
-    sendRrcMessage(m_enbSocket,rrcMessage_o);
+    sendRrcMessage(mEnbSocket,rrcMessageO);
   }
 }
 
 bool UeContextUe::handleUeCapabilityEnquiry () {
   RrcMessage *message = new RrcMessage;
-  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  int receiveSuccess = receiveRrcMessage(mEnbSocket,message);
   if(receiveSuccess){
     switch (message->messagetype()) {
       case RrcMessage_MessageType_TypeUeCE :
 	{UeCapabilityEnquiry ueCE;
 	ueCE = message->messageuece();
 	delete message;
-	ostringstream message_log;
-	message_log << "Message received from ENodeB: UeCapabilityEnquiry {C-Rnti: " << ueCE.uecrnti() << " CapabilityRequest: " << printCapabilityRequest(ueCE) << " }" << endl; 
-	m_log->writeToLog(message_log.str());
+	ostringstream messageLog;
+	messageLog << "Message received from ENodeB: UeCapabilityEnquiry {C-Rnti: " << ueCE.uecrnti() << " CapabilityRequest: " << printCapabilityRequest(ueCE) << " }" << endl; 
+	mLog->writeToLog(messageLog.str());
 
 	UeCapabilityInformation *ueCI = new UeCapabilityInformation;
 	ueCI->set_uecrnti(ueCE.uecrnti());
@@ -175,20 +175,20 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 	  ratCap->set_rat(ueCE.uecapabilityrequest(i));
 	  ratCap->set_issupported(rand() % 2);
 	}
-	RrcMessage rrcMessage_o;
-	rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeUeCI);
-	rrcMessage_o.set_allocated_messageueci(ueCI);
+	RrcMessage rrcMessageO;
+	rrcMessageO.set_messagetype(RrcMessage_MessageType_TypeUeCI);
+	rrcMessageO.set_allocated_messageueci(ueCI);
 
-	sendRrcMessage(m_enbSocket,rrcMessage_o);
+	sendRrcMessage(mEnbSocket,rrcMessageO);
 	return false;}
 	break;
       case RrcMessage_MessageType_TypeRrcCReject :
 	{RrcConnectionReject rrcConnectionReject;
 	rrcConnectionReject = message->messagerrccreject();
 	delete message;
-	ostringstream message_log;
-	message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
-	m_log->writeToLog(message_log.str());
+	ostringstream messageLog;
+	messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
+	mLog->writeToLog(messageLog.str());
 	printState();
 	return true;}
 	break;
@@ -201,15 +201,15 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 
 void UeContextUe::handleRrcConnectionReconfiguration(){
   RrcMessage *message = new RrcMessage;
-  int receiveSuccess = receiveRrcMessage(m_enbSocket,message);
+  int receiveSuccess = receiveRrcMessage(mEnbSocket,message);
   if(receiveSuccess){
     if (message->messagetype() != RrcMessage_MessageType_TypeRrcCReconfiguration) cerr << "Invalid message type, should be RrcConnectionReconfiguration" << endl;
     RrcConnectionReconfiguration rrcCReconfiguration;
     rrcCReconfiguration = message->messagerrccreconfiguration();
     delete message;
-    ostringstream message_log;
-    message_log << "Message received from ENodeB: RrcConnectionReconfiguration {C-Rnti: " << rrcCReconfiguration.uecrnti() << " Eps radio bearer identity: " << rrcCReconfiguration.epsradiobeareridentity() << " }" << endl;
-    m_log->writeToLog(message_log.str());
+    ostringstream messageLog;
+    messageLog << "Message received from ENodeB: RrcConnectionReconfiguration {C-Rnti: " << rrcCReconfiguration.uecrnti() << " Eps radio bearer identity: " << rrcCReconfiguration.epsradiobeareridentity() << " }" << endl;
+    mLog->writeToLog(messageLog.str());
 		    		    
     bool epsBearerActivated;
     string epsBearer = rrcCReconfiguration.epsradiobeareridentity();
@@ -221,30 +221,30 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
     rrcCRC->set_uecrnti(rrcCReconfiguration.uecrnti());
     rrcCRC->set_epsradiobeareractivated(epsBearerActivated);
  
-    RrcMessage rrcMessage_o;
-    rrcMessage_o.set_messagetype(RrcMessage_MessageType_TypeRrcCRC);
-    rrcMessage_o.set_allocated_messagerrccrc(rrcCRC);
+    RrcMessage rrcMessageO;
+    rrcMessageO.set_messagetype(RrcMessage_MessageType_TypeRrcCRC);
+    rrcMessageO.set_allocated_messagerrccrc(rrcCRC);
 
-    sendRrcMessage(m_enbSocket,rrcMessage_o);
+    sendRrcMessage(mEnbSocket,rrcMessageO);
     
     RrcMessage *message2 = new RrcMessage;
-    int receiveSuccess2 = receiveRrcMessage(m_enbSocket,message2);
+    int receiveSuccess2 = receiveRrcMessage(mEnbSocket,message2);
     if(receiveSuccess2){
       switch (message2->messagetype()){
         case RrcMessage_MessageType_TypeRrcCA :
           {RrcConnectionAccept rrcCA;
 	  rrcCA = message2->messagerrcca();
 	  delete message2;
-	  message_log << "Message received from ENodeB: RrcConnectionAccept {C-Rnti: " << rrcCA.uecrnti() << " }" << endl;
-	  m_log->writeToLog(message_log.str());
+	  messageLog << "Message received from ENodeB: RrcConnectionAccept {C-Rnti: " << rrcCA.uecrnti() << " }" << endl;
+	  mLog->writeToLog(messageLog.str());
 	  printState();}
 	  break;
         case RrcMessage_MessageType_TypeRrcCReject :
 	  {RrcConnectionReject rrcConnectionReject;
 	  rrcConnectionReject = message2->messagerrccreject();
 	  delete message2;
-	  message_log << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
-	  m_log->writeToLog(message_log.str());
+	  messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
+	  mLog->writeToLog(messageLog.str());
 	  printState();}
 	  break;
         default:
@@ -257,8 +257,8 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
 
 void UeContextUe::printState(){
   ostringstream state;
-  state << "Context at the end: UeContextUe {Imsi: " << (m_state.imsi).mcc()<<"-"<< (m_state.imsi).mnc() << "-"<< (m_state.imsi).msin() << " Security key:" << m_state.securityKey << " SRB Id: " << m_state.srbId << "}" << endl; 
-  m_log->writeToLog(state.str());
+  state << "Context at the end: UeContextUe {Imsi: " << (mState.imsi).mcc()<<"-"<< (mState.imsi).mnc() << "-"<< (mState.imsi).msin() << " Security key:" << mState.securityKey << " SRB Id: " << mState.srbId << "}" << endl; 
+  mLog->writeToLog(state.str());
 }
 
 string UeContextUe::printCapabilityRequest(UeCapabilityEnquiry message){

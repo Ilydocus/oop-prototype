@@ -17,39 +17,39 @@ using namespace std;
 
 MmeEventHandler::MmeEventHandler(){
   int status;
-  struct addrinfo host_info;      
-  struct addrinfo *host_info_list; 
+  struct addrinfo hostInfo;      
+  struct addrinfo *hostInfoList; 
 
-  memset(&host_info, 0, sizeof host_info);
+  memset(&hostInfo, 0, sizeof hostInfo);
 
-  host_info.ai_family = AF_UNSPEC;     
-  host_info.ai_socktype = SOCK_STREAM; 
-  host_info.ai_flags = AI_PASSIVE;    
+  hostInfo.ai_family = AF_UNSPEC;     
+  hostInfo.ai_socktype = SOCK_STREAM; 
+  hostInfo.ai_flags = AI_PASSIVE;    
 
-  status = getaddrinfo(NULL, "43001", &host_info, &host_info_list); 
+  status = getaddrinfo(NULL, "43001", &hostInfo, &hostInfoList); 
   if (status != 0)  cout << "getaddrinfo error" << gai_strerror(status) << endl;
 
   int socketfd ; 
-  socketfd = socket(host_info_list->ai_family, host_info_list->ai_socktype,host_info_list->ai_protocol);
+  socketfd = socket(hostInfoList->ai_family, hostInfoList->ai_socktype,hostInfoList->ai_protocol);
   if (socketfd == -1)  cout << "socket error " << endl;
 
   int yes = 1;
   status = setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
-  status = bind(socketfd, host_info_list->ai_addr, host_info_list->ai_addrlen);
+  status = bind(socketfd, hostInfoList->ai_addr, hostInfoList->ai_addrlen);
   if (status == -1)  cout << "bind error" << endl;
 
   status =  listen(socketfd, 5);//5 is the number of "on hold"
   if (status == -1)  cout << "listen error" << endl;
-  freeaddrinfo(host_info_list);
+  freeaddrinfo(hostInfoList);
 
-  m_listenSocket = socketfd;
-  m_log = new Log("MmeLog.txt");
-  m_nbMessages = 0;
+  mListenSocket = socketfd;
+  mLog = new Log("MmeLog.txt");
+  mNbMessages = 0;
 }
 
 void MmeEventHandler::run () {    
   struct epoll_event ev, events[MAX_EVENTS];
-  int conn_sock, nfds, epollfd;
+  int connSock, nfds, epollfd;
 
   epollfd = epoll_create(10);
   if (epollfd == -1) {
@@ -57,9 +57,9 @@ void MmeEventHandler::run () {
     exit(EXIT_FAILURE);
   }
   ev.events = EPOLLIN;
-  ev.data.fd = m_listenSocket;
-  if (epoll_ctl(epollfd, EPOLL_CTL_ADD, m_listenSocket, &ev) == -1) {
-    perror("epoll_ctl: m_listenSocket");
+  ev.data.fd = mListenSocket;
+  if (epoll_ctl(epollfd, EPOLL_CTL_ADD, mListenSocket, &ev) == -1) {
+    perror("epoll_ctl: mListenSocket");
     exit(EXIT_FAILURE);
   }
   
@@ -71,42 +71,41 @@ void MmeEventHandler::run () {
     }
 
     for (int n = 0; n < nfds; ++n) {
-      if (events[n].data.fd == m_listenSocket) {
-	int new_sd;
-	struct sockaddr_storage their_addr;
-	socklen_t addr_size = sizeof(their_addr);
-	conn_sock = accept(m_listenSocket, (struct sockaddr *)&their_addr, &addr_size);
-	if (conn_sock == -1) {
+      if (events[n].data.fd == mListenSocket) {
+	struct sockaddr_storage theirAddr;
+	socklen_t addrSize = sizeof(theirAddr);
+	connSock = accept(mListenSocket, (struct sockaddr *)&theirAddr, &addrSize);
+	if (connSock == -1) {
 	  perror("accept");
 	  exit(EXIT_FAILURE);
 	}
-	make_socket_non_blocking(conn_sock);
+	makeSocketNonBlocking(connSock);
 	ev.events = EPOLLIN | EPOLLET;
-	ev.data.fd = conn_sock;
-	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock,
+	ev.data.fd = connSock;
+	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connSock,
 		      &ev) == -1) {
-	  perror("epoll_ctl: conn_sock");
+	  perror("epoll_ctl: connSock");
 	  exit(EXIT_FAILURE);
 	}
-	handleNewUe(conn_sock);
+	handleNewUe(connSock);
       }
       else {
-	ssize_t bytes_recieved;
-	char incoming_data_buffer[1000];
-	bytes_recieved = recv(events[n].data.fd, incoming_data_buffer,1000, 0);
+	ssize_t bytesRecieved;
+	char incomingDataBuffer[1000];
+	bytesRecieved = recv(events[n].data.fd, incomingDataBuffer,1000, 0);
 	
-	if (bytes_recieved == 0) {cout << "host shut down." << endl ;}
-	if (bytes_recieved == -1){cout << "recieve error!" << endl ;}
-	if (bytes_recieved != -1 && bytes_recieved != 0){
-	  incoming_data_buffer[bytes_recieved] = '\0';
+	if (bytesRecieved == 0) {cout << "host shut down." << endl ;}
+	if (bytesRecieved == -1){cout << "recieve error!" << endl ;}
+	if (bytesRecieved != -1 && bytesRecieved != 0){
+	  incomingDataBuffer[bytesRecieved] = '\0';
 	  GOOGLE_PROTOBUF_VERIFY_VERSION;
     
 	  S1Message s1Message;
-	  string str_message(incoming_data_buffer, bytes_recieved);
-	  s1Message.ParseFromString(str_message);
+	  string strMessage(incomingDataBuffer, bytesRecieved);
+	  s1Message.ParseFromString(strMessage);
 	  
-	  map<int,UeContextMme>::iterator temp_it = m_ueContexts.find(events[n].data.fd);		    
-	  UeContextMme ueContext = temp_it->second;
+	  map<int,UeContextMme>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
+	  UeContextMme ueContext = tempIt->second;
 	  
 	  handleUeMessage(s1Message, ueContext);		       
 	}
@@ -115,16 +114,16 @@ void MmeEventHandler::run () {
   }
 }
 
-void MmeEventHandler::handleNewUe(int conn_sock){
-  UeContextMme *ueContext = new UeContextMme(conn_sock,m_log);
-  m_ueContexts.insert(pair<int,UeContextMme>(conn_sock,*ueContext));
+void MmeEventHandler::handleNewUe(int connSock){
+  UeContextMme *ueContext = new UeContextMme(connSock,mLog);
+  mUeContexts.insert(pair<int,UeContextMme>(connSock,*ueContext));
 } 
 
 void MmeEventHandler::handleUeMessage(S1Message s1Message, UeContextMme ueContext){
-  m_nbMessages++;
-  ostringstream message_log;
-  message_log << "Total number of messages received in the MME: " << m_nbMessages << endl;
-  m_log->writeToLog(message_log.str());
+  mNbMessages++;
+  ostringstream messageLog;
+  messageLog << "Total number of messages received in the MME: " << mNbMessages << endl;
+  mLog->writeToLog(messageLog.str());
   switch (s1Message.messagetype()){
     case 0 : //S1ApInitialUeMessage
       {S1ApInitialUeMessage initialUeMessage;

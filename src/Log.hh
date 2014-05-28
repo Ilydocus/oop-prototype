@@ -14,7 +14,7 @@ public:
   void writeToLog(string message);
 private:
   const string currentDateTime();
-  ofstream m_file;
+  ofstream mFile;
 };
 
 #endif

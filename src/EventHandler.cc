@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <cstdio>
 
-int EventHandler::make_socket_non_blocking (int sfd)
+int EventHandler::makeSocketNonBlocking (int sfd)
 {
   int flags, s;
 

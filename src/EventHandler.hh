@@ -5,8 +5,8 @@
 
 class EventHandler{
 protected:
-  Log *m_log;
-  int make_socket_non_blocking (int sfd);  
+  Log *mLog;
+  int makeSocketNonBlocking (int sfd);  
 };
 
 #endif
