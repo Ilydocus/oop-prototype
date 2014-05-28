@@ -5,16 +5,14 @@
 #include "RrcMessages.pb.h"
 #include "UeContext.hh"
 
-using namespace std;
-
 struct UeStateUe{
   Imsi_message imsi;
-  string srbId;
+  std::string srbId;
   int securityKey;
 };
 
 class UeContextUe : public UeContext {
- public:
+public:
   UeContextUe(int ueId,int enbSocket,Log *log);
   void sendRaPreamble ();
   void handleRaResponse ();
@@ -24,13 +22,13 @@ class UeContextUe : public UeContext {
   void handleRrcConnectionReconfiguration();
   void printState();
 
- private:
+private:
   int mEnbSocket;
   UeStateUe mState;
   int mUeId;
 
   void genImsi (Imsi_message *imsi);
-  string printCapabilityRequest(UeCapabilityEnquiry message);
+  std::string printCapabilityRequest(UeCapabilityEnquiry message);
 
 };
 

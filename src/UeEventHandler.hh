@@ -5,12 +5,12 @@
 #include "EventHandler.hh"
 
 class UeEventHandler: public EventHandler{
-  public:
+public:
   UeEventHandler(int ueId, Log *log);
   ~UeEventHandler();
   void run();
 
-  private:
+private:
   UeContextUe *mUeContext;
   int mEnbSocket;
   int mUeId;

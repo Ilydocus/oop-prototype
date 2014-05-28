@@ -22,12 +22,12 @@ UeContextUe::UeContextUe(int ueId,int enbSocket,Log *log){
 
 void UeContextUe::genImsi(Imsi_message *imsi){
   //All the imsi are Swedish ones
-  string *randomIdMnc= new string;
-  string *randomIdMsin= new string;
+  std::string *randomIdMnc= new std::string;
+  std::string *randomIdMsin= new std::string;
   genRandId(randomIdMnc,2);
   genRandId(randomIdMsin,10);
 
-  string *tempMcc = new string("260");
+  std::string *tempMcc = new std::string("260");
   imsi->set_mcc(*tempMcc);
   imsi->set_mnc(*randomIdMnc);
   imsi->set_msin(*randomIdMsin);
@@ -53,12 +53,12 @@ void UeContextUe::handleRaResponse () {
   RrcMessage *message = new RrcMessage;
   int receiveSuccess = receiveRrcMessage(mEnbSocket,message);
   if(receiveSuccess){
-    if (message->messagetype() != RrcMessage_MessageType_TypeRaR) cerr << "Invalid message type, should be RaResponse" << endl;
+    if (message->messagetype() != RrcMessage_MessageType_TypeRaR) std::cerr << "Invalid message type, should be RaResponse" << std::endl;
     RaResponse raResponse;
     raResponse = message->messagerar();
     delete message;
-    ostringstream messageLog;
-    messageLog << "Message received from ENodeB: RaResponse {Rnti Type: " << raResponse.ueidrntitype() << " Ra-Rnti value: " << raResponse.ueidrntivalue() << " C-Rnti: " << raResponse.ueidcrnti() << " }" << endl; 
+    std::ostringstream messageLog;
+    messageLog << "Message received from ENodeB: RaResponse {Rnti Type: " << raResponse.ueidrntitype() << " Ra-Rnti value: " << raResponse.ueidrntivalue() << " C-Rnti: " << raResponse.ueidcrnti() << " }" << std::endl; 
     mLog->writeToLog(messageLog.str());
     
     RrcConnectionRequest *rrcConnectionRequest = new RrcConnectionRequest;
@@ -83,8 +83,8 @@ bool UeContextUe::handleRrcConnectionSetup () {
 	{RrcConnectionSetup rrcConnectionSetup;
 	rrcConnectionSetup = message->messagerrccs();
 	delete message;
-	ostringstream messageLog;
-	messageLog << "Message received from ENodeB: RrcConnectionSetup {Rnti Type: " << rrcConnectionSetup.ueidrntitype() << " Rnti value: " << rrcConnectionSetup.ueidrntivalue() << " Srb Identity: " << rrcConnectionSetup.srbidentity() << " }" << endl; 
+	std::ostringstream messageLog;
+	messageLog << "Message received from ENodeB: RrcConnectionSetup {Rnti Type: " << rrcConnectionSetup.ueidrntitype() << " Rnti value: " << rrcConnectionSetup.ueidrntivalue() << " Srb Identity: " << rrcConnectionSetup.srbidentity() << " }" << std::endl; 
 	mLog->writeToLog(messageLog.str());
 
 	mState.srbId = rrcConnectionSetup.srbidentity();
@@ -103,15 +103,15 @@ bool UeContextUe::handleRrcConnectionSetup () {
 	{RrcConnectionReject rrcConnectionReject;
 	rrcConnectionReject = message->messagerrccreject();
 	delete message;
-	ostringstream messageLog;
-	messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
+	std::ostringstream messageLog;
+	messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << std::endl; 
 	mLog->writeToLog(messageLog.str());
 	printState();
 	return true;}
 	break;
       default:
 	delete message;
-	cerr << "Invalid message type, should be RrcConnectionSetup or RrcConnectionReject" << endl;
+	std::cerr << "Invalid message type, should be RrcConnectionSetup or RrcConnectionReject" << std::endl;
   };
   }
 }
@@ -120,16 +120,16 @@ void UeContextUe::handleSecurityModeCommand () {
   RrcMessage *message = new RrcMessage;
   int receiveSuccess = receiveRrcMessage(mEnbSocket,message);
   if(receiveSuccess){
-    if (message->messagetype() != RrcMessage_MessageType_TypeSecurityMCommand) cerr << "Invalid message type, should be SecurityModeCommand" << endl;
+    if (message->messagetype() != RrcMessage_MessageType_TypeSecurityMCommand) std::cerr << "Invalid message type, should be SecurityModeCommand" << std::endl;
     SecurityModeCommand securityMCommand;
     securityMCommand = message->messagesecuritymcommand();
     delete message;
-    ostringstream messageLog;
-    messageLog << "Message received from ENodeB: SecurityModeCommand {C-Rnti: " << securityMCommand.uecrnti() << " Message_security: " << securityMCommand.message_security() << " }" << endl; 
+    std::ostringstream messageLog;
+    messageLog << "Message received from ENodeB: SecurityModeCommand {C-Rnti: " << securityMCommand.uecrnti() << " Message_security: " << securityMCommand.message_security() << " }" << std::endl; 
     mLog->writeToLog(messageLog.str());
 
-    string decryptedMessage;
-    string cryptedMessage = securityMCommand.message_security();
+    std::string decryptedMessage;
+    std::string cryptedMessage = securityMCommand.message_security();
     byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
     memset (key,mState.securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
     memset (iv,0x00,CryptoPP::AES::BLOCKSIZE);
@@ -163,8 +163,8 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 	{UeCapabilityEnquiry ueCE;
 	ueCE = message->messageuece();
 	delete message;
-	ostringstream messageLog;
-	messageLog << "Message received from ENodeB: UeCapabilityEnquiry {C-Rnti: " << ueCE.uecrnti() << " CapabilityRequest: " << printCapabilityRequest(ueCE) << " }" << endl; 
+	std::ostringstream messageLog;
+	messageLog << "Message received from ENodeB: UeCapabilityEnquiry {C-Rnti: " << ueCE.uecrnti() << " CapabilityRequest: " << printCapabilityRequest(ueCE) << " }" << std::endl; 
 	mLog->writeToLog(messageLog.str());
 
 	UeCapabilityInformation *ueCI = new UeCapabilityInformation;
@@ -186,15 +186,15 @@ bool UeContextUe::handleUeCapabilityEnquiry () {
 	{RrcConnectionReject rrcConnectionReject;
 	rrcConnectionReject = message->messagerrccreject();
 	delete message;
-	ostringstream messageLog;
-	messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
+	std::ostringstream messageLog;
+	messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << std::endl; 
 	mLog->writeToLog(messageLog.str());
 	printState();
 	return true;}
 	break;
       default:
 	delete message;
-	cerr << "Invalid message type, should be UeCapabilityEnquiry or RrcConnectionReject" << endl;
+	std::cerr << "Invalid message type, should be UeCapabilityEnquiry or RrcConnectionReject" << std::endl;
     };
   }
 }
@@ -203,16 +203,16 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
   RrcMessage *message = new RrcMessage;
   int receiveSuccess = receiveRrcMessage(mEnbSocket,message);
   if(receiveSuccess){
-    if (message->messagetype() != RrcMessage_MessageType_TypeRrcCReconfiguration) cerr << "Invalid message type, should be RrcConnectionReconfiguration" << endl;
+    if (message->messagetype() != RrcMessage_MessageType_TypeRrcCReconfiguration) std::cerr << "Invalid message type, should be RrcConnectionReconfiguration" << std::endl;
     RrcConnectionReconfiguration rrcCReconfiguration;
     rrcCReconfiguration = message->messagerrccreconfiguration();
     delete message;
-    ostringstream messageLog;
-    messageLog << "Message received from ENodeB: RrcConnectionReconfiguration {C-Rnti: " << rrcCReconfiguration.uecrnti() << " Eps radio bearer identity: " << rrcCReconfiguration.epsradiobeareridentity() << " }" << endl;
+    std::ostringstream messageLog;
+    messageLog << "Message received from ENodeB: RrcConnectionReconfiguration {C-Rnti: " << rrcCReconfiguration.uecrnti() << " Eps radio bearer identity: " << rrcCReconfiguration.epsradiobeareridentity() << " }" << std::endl;
     mLog->writeToLog(messageLog.str());
 		    		    
     bool epsBearerActivated;
-    string epsBearer = rrcCReconfiguration.epsradiobeareridentity();
+    std::string epsBearer = rrcCReconfiguration.epsradiobeareridentity();
     int len = (int)epsBearer.length();
     if ((epsBearer[0]== epsBearer[len]) == '9'){ epsBearerActivated = false;}
     else {epsBearerActivated = true;}
@@ -235,7 +235,7 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
           {RrcConnectionAccept rrcCA;
 	  rrcCA = message2->messagerrcca();
 	  delete message2;
-	  messageLog << "Message received from ENodeB: RrcConnectionAccept {C-Rnti: " << rrcCA.uecrnti() << " }" << endl;
+	  messageLog << "Message received from ENodeB: RrcConnectionAccept {C-Rnti: " << rrcCA.uecrnti() << " }" << std::endl;
 	  mLog->writeToLog(messageLog.str());
 	  printState();}
 	  break;
@@ -243,12 +243,12 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
 	  {RrcConnectionReject rrcConnectionReject;
 	  rrcConnectionReject = message2->messagerrccreject();
 	  delete message2;
-	  messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << endl; 
+	  messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << rrcConnectionReject.uecrnti() << " Waiting time: " << rrcConnectionReject.waitingtime() << " }" << std::endl; 
 	  mLog->writeToLog(messageLog.str());
 	  printState();}
 	  break;
         default:
-	  cerr << "Invalid message type, should be RrcConnectionAccept or RrcConnectionReject" << endl;
+	  std::cerr << "Invalid message type, should be RrcConnectionAccept or RrcConnectionReject" << std::endl;
 	  delete message2;
       };
     }
@@ -256,13 +256,13 @@ void UeContextUe::handleRrcConnectionReconfiguration(){
 }
 
 void UeContextUe::printState(){
-  ostringstream state;
-  state << "Context at the end: UeContextUe {Imsi: " << (mState.imsi).mcc()<<"-"<< (mState.imsi).mnc() << "-"<< (mState.imsi).msin() << " Security key:" << mState.securityKey << " SRB Id: " << mState.srbId << "}" << endl; 
+  std::ostringstream state;
+  state << "Context at the end: UeContextUe {Imsi: " << (mState.imsi).mcc()<<"-"<< (mState.imsi).mnc() << "-"<< (mState.imsi).msin() << " Security key:" << mState.securityKey << " SRB Id: " << mState.srbId << "}" << std::endl; 
   mLog->writeToLog(state.str());
 }
 
-string UeContextUe::printCapabilityRequest(UeCapabilityEnquiry message){
-  ostringstream request;
+std::string UeContextUe::printCapabilityRequest(UeCapabilityEnquiry message){
+  std::ostringstream request;
   for(int i = 0; i<message.uecapabilityrequest_size();i++){
     request << message.uecapabilityrequest(i) <<",";
   }

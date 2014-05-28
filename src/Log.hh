@@ -5,16 +5,14 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
-
 class Log {
 public:
-  Log(string fileName);
+  Log(std::string fileName);
   ~Log();
-  void writeToLog(string message);
+  void writeToLog(std::string message);
 private:
-  const string currentDateTime();
-  ofstream mFile;
+  const std::string currentDateTime();
+  std::ofstream mFile;
 };
 
 #endif

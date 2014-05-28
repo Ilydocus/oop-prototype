@@ -5,12 +5,12 @@
 #include "EventHandler.hh"
 
 class MmeEventHandler: public EventHandler{
-  public:
+public:
   MmeEventHandler();
   void run();
 
-  private:
-  map<int,UeContextMme> mUeContexts;
+private:
+  std::map<int,UeContextMme> mUeContexts;
   int mListenSocket;
   int mNbMessages;
 

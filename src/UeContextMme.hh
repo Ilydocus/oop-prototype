@@ -9,15 +9,14 @@ struct UeStateMme{
   int securityKeyMme;
 };
 
-class UeContextMme : public UeContext
-{
- public:
+class UeContextMme : public UeContext{
+public:
   UeContextMme(int enbSocket, Log *log);
   void handleS1ApInitialUeMessage(S1ApInitialUeMessage message); 
   void handleS1ApInitialContextSetupResponse(S1ApInitialContextSetupResponse message); 
   void printState();
 
- private:
+private:
   int mEnbSocket;
   UeStateMme *mState;
 };

@@ -5,19 +5,19 @@
 #include <netdb.h>
 #include <iostream>
 
-void UeContext::genRandId(string * id,const int len){
+void UeContext::genRandId(std::string * id,const int len){
   char temp[len];
   static const char num[11] = "0123456789";
   for (int i = 0; i<len; ++i){
     temp[i] = num[(int)((double)rand() / ((double)RAND_MAX + 1)*(sizeof(num)-1))];
   }
   temp[len]=0;
-  string s(temp);
+  std::string s(temp);
   *id = s;
 }
 
 void UeContext::sendRrcMessage(int socket, RrcMessage message){
-  string outputMessage;
+  std::string outputMessage;
   message.SerializeToString(&outputMessage);
 
   int len;
@@ -27,7 +27,7 @@ void UeContext::sendRrcMessage(int socket, RrcMessage message){
 }
 
 void UeContext::sendS1Message(int socket, S1Message message){
-  string outputMessage;
+  std::string outputMessage;
   message.SerializeToString(&outputMessage);
 
   int len;
@@ -46,7 +46,7 @@ int UeContext::receiveRrcMessage(int socket,RrcMessage *message){
     incomingDataBuffer[bytesRecieved] = '\0';
 
     GOOGLE_PROTOBUF_VERIFY_VERSION;  
-    string strMessage(incomingDataBuffer, bytesRecieved);
+    std::string strMessage(incomingDataBuffer, bytesRecieved);
     message->ParseFromString(strMessage);
     return 1;
   }
@@ -62,7 +62,7 @@ int UeContext::receiveS1Message(int socket,S1Message *message){
     incomingDataBuffer[bytesRecieved] = '\0';
 
     GOOGLE_PROTOBUF_VERIFY_VERSION;  
-    string strMessage(incomingDataBuffer, bytesRecieved);
+    std::string strMessage(incomingDataBuffer, bytesRecieved);
     message->ParseFromString(strMessage);
     return 1;
   }

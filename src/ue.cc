@@ -1,8 +1,6 @@
 #include "UeEventHandler.hh"
 #include <pthread.h>
 
-using namespace std;
-
 struct arg_struct{
   int ueId;
   Log *log;

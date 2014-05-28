@@ -3,9 +3,7 @@
 #include <cstdio>
 #include <ctime>
 
-using namespace std;
-
-Log::Log(string fileName){
+Log::Log(std::string fileName){
   mFile.open(fileName.c_str());
 }
 
@@ -13,11 +11,11 @@ Log::~Log(){
   mFile.close();
 }
 
-void Log::writeToLog(string message){
-  mFile << currentDateTime() << message << endl;
+void Log::writeToLog(std::string message){
+  mFile << currentDateTime() << message << std::endl;
 }
 
-const string Log::currentDateTime(){
+const std::string Log::currentDateTime(){
   time_t now=time(0);
   struct tm tstruct;
   char buf[80];

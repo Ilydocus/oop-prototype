@@ -10,7 +10,7 @@ public:
   void run();
 
 private:
-  map<int,UeContextEnb> mUeContexts;
+  std::map<int,UeContextEnb> mUeContexts;
   int mListenSocket;
   int mMmeSocket;
   int mNbMessages;

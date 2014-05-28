@@ -6,11 +6,9 @@
 #include "S1Messages.pb.h"
 #include "Log.hh"
 
-using namespace std;
-
 class UeContext {
 protected:
-  void genRandId(string * id,const int len);
+  void genRandId(std::string * id,const int len);
   void sendRrcMessage(int socket, RrcMessage message);
   void sendS1Message(int socket, S1Message message);
   int receiveRrcMessage(int socket,RrcMessage *message);

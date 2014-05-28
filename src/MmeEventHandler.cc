@@ -13,8 +13,6 @@
 
 #define MAX_EVENTS 10 
 
-using namespace std;
-
 MmeEventHandler::MmeEventHandler(){
   int status;
   struct addrinfo hostInfo;      
@@ -27,19 +25,19 @@ MmeEventHandler::MmeEventHandler(){
   hostInfo.ai_flags = AI_PASSIVE;    
 
   status = getaddrinfo(NULL, "43001", &hostInfo, &hostInfoList); 
-  if (status != 0)  cout << "getaddrinfo error" << gai_strerror(status) << endl;
+  if (status != 0)  std::cout << "getaddrinfo error" << gai_strerror(status) << std::endl;
 
   int socketfd ; 
   socketfd = socket(hostInfoList->ai_family, hostInfoList->ai_socktype,hostInfoList->ai_protocol);
-  if (socketfd == -1)  cout << "socket error " << endl;
+  if (socketfd == -1)  std::cout << "socket error " << std::endl;
 
   int yes = 1;
   status = setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
   status = bind(socketfd, hostInfoList->ai_addr, hostInfoList->ai_addrlen);
-  if (status == -1)  cout << "bind error" << endl;
+  if (status == -1)  std::cout << "bind error" << std::endl;
 
   status =  listen(socketfd, 5);//5 is the number of "on hold"
-  if (status == -1)  cout << "listen error" << endl;
+  if (status == -1)  std::cout << "listen error" << std::endl;
   freeaddrinfo(hostInfoList);
 
   mListenSocket = socketfd;
@@ -94,17 +92,17 @@ void MmeEventHandler::run () {
 	char incomingDataBuffer[1000];
 	bytesRecieved = recv(events[n].data.fd, incomingDataBuffer,1000, 0);
 	
-	if (bytesRecieved == 0) {cout << "host shut down." << endl ;}
-	if (bytesRecieved == -1){cout << "recieve error!" << endl ;}
+	if (bytesRecieved == 0) {std::cout << "host shut down." << std::endl ;}
+	if (bytesRecieved == -1){std::cout << "recieve error!" << std::endl ;}
 	if (bytesRecieved != -1 && bytesRecieved != 0){
 	  incomingDataBuffer[bytesRecieved] = '\0';
 	  GOOGLE_PROTOBUF_VERIFY_VERSION;
     
 	  S1Message s1Message;
-	  string strMessage(incomingDataBuffer, bytesRecieved);
+	  std::string strMessage(incomingDataBuffer, bytesRecieved);
 	  s1Message.ParseFromString(strMessage);
 	  
-	  map<int,UeContextMme>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
+	  std::map<int,UeContextMme>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
 	  UeContextMme ueContext = tempIt->second;
 	  
 	  handleUeMessage(s1Message, ueContext);		       
@@ -116,13 +114,13 @@ void MmeEventHandler::run () {
 
 void MmeEventHandler::handleNewUe(int connSock){
   UeContextMme *ueContext = new UeContextMme(connSock,mLog);
-  mUeContexts.insert(pair<int,UeContextMme>(connSock,*ueContext));
+  mUeContexts.insert(std::pair<int,UeContextMme>(connSock,*ueContext));
 } 
 
 void MmeEventHandler::handleUeMessage(S1Message s1Message, UeContextMme ueContext){
   mNbMessages++;
-  ostringstream messageLog;
-  messageLog << "Total number of messages received in the MME: " << mNbMessages << endl;
+  std::ostringstream messageLog;
+  messageLog << "Total number of messages received in the MME: " << mNbMessages << std::endl;
   mLog->writeToLog(messageLog.str());
   switch (s1Message.messagetype()){
     case 0 : //S1ApInitialUeMessage
@@ -136,6 +134,6 @@ void MmeEventHandler::handleUeMessage(S1Message s1Message, UeContextMme ueContex
       ueContext.handleS1ApInitialContextSetupResponse(initialCSResponse);}
       break;
     default: 
-      cerr << "Unexpected message type in MME" << endl;
+      std::cerr << "Unexpected message type in MME" << std::endl;
   }
 }

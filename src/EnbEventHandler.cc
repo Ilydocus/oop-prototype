@@ -13,8 +13,6 @@
 
 #define MAX_EVENTS 10 
 
-using namespace std;
-
 EnbEventHandler::EnbEventHandler(){
   int status;
   struct addrinfo hostInfo;      
@@ -27,19 +25,19 @@ EnbEventHandler::EnbEventHandler(){
   hostInfo.ai_flags = AI_PASSIVE;    
 
   status = getaddrinfo(NULL, "43000", &hostInfo, &hostInfoList);
-  if (status != 0)  cout << "getaddrinfo error" << gai_strerror(status) << endl;
+  if (status != 0)  std::cout << "getaddrinfo error" << gai_strerror(status) << std::endl;
 
   int socketfd ; 
   socketfd = socket(hostInfoList->ai_family,hostInfoList->ai_socktype,hostInfoList->ai_protocol);
-  if (socketfd == -1)  cout << "socket error " << endl;
+  if (socketfd == -1)  std::cout << "socket error " << std::endl;
 
   int yes = 1;
   status = setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
   status = bind(socketfd, hostInfoList->ai_addr, hostInfoList->ai_addrlen);
-  if (status == -1)  cout << "bind error" << endl ;
+  if (status == -1)  std::cout << "bind error" << std::endl ;
 
   status =  listen(socketfd, 5);//5 is the number of "on hold"
-  if (status == -1)  cout << "listen error" << endl;
+  if (status == -1)  std::cout << "listen error" << std::endl;
   freeaddrinfo(hostInfoList);
 
   mListenSocket = socketfd;
@@ -53,10 +51,10 @@ EnbEventHandler::EnbEventHandler(){
   hostInfoMme.ai_socktype = SOCK_STREAM;
 
   statusMme = getaddrinfo("127.0.0.1","43001",&hostInfoMme, &hostInfoListMme);
-  if (statusMme != 0) cout << "getaddrinfo error" << endl;
+  if (statusMme != 0) std::cout << "getaddrinfo error" << std::endl;
   int socketMme;
   socketMme = socket(hostInfoListMme->ai_family, hostInfoListMme->ai_socktype, hostInfoListMme->ai_protocol);
-  if(socketMme == 1) cout << "socket error" << endl;
+  if(socketMme == 1) std::cout << "socket error" << std::endl;
 
   statusMme = connect (socketMme, hostInfoListMme->ai_addr, hostInfoListMme->ai_addrlen);
   freeaddrinfo(hostInfoListMme);
@@ -112,16 +110,16 @@ void EnbEventHandler::run () {
 	ssize_t bytesRecieved;
 	char incomingDataBuffer[1000];
 	bytesRecieved = recv(events[n].data.fd, incomingDataBuffer,1000, 0);
-	if (bytesRecieved == 0) {cout << "host shut down." << endl;}
-	if (bytesRecieved == -1){cout << "recieve error!" << endl;}
+	if (bytesRecieved == 0) {std::cout << "host shut down." << std::endl;}
+	if (bytesRecieved == -1){std::cout << "recieve error!" << std::endl;}
 	if (bytesRecieved != -1 && bytesRecieved != 0){
 	  incomingDataBuffer[bytesRecieved] = '\0';
 	  GOOGLE_PROTOBUF_VERIFY_VERSION;
     
 	  RrcMessage rrcMessage;
-	  string strMessage(incomingDataBuffer, bytesRecieved);
+	  std::string strMessage(incomingDataBuffer, bytesRecieved);
 	  rrcMessage.ParseFromString(strMessage);
-	  map<int,UeContextEnb>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
+	  std::map<int,UeContextEnb>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
 	  UeContextEnb ueContext = tempIt->second;
 	
 	  handleUeMessage(rrcMessage, ueContext);		     
@@ -134,13 +132,13 @@ void EnbEventHandler::run () {
 
 void EnbEventHandler::handleNewUe(int connSock){
   UeContextEnb *ueContext = new UeContextEnb(connSock,mMmeSocket,mLog);
-  mUeContexts.insert(pair<int,UeContextEnb>(connSock,*ueContext));
+  mUeContexts.insert(std::pair<int,UeContextEnb>(connSock,*ueContext));
 } 
 
 void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueContext){
   mNbMessages++;
-  ostringstream messageLog;
-  messageLog << "Total number of messages received in the eNodeB: " << mNbMessages << endl;
+  std::ostringstream messageLog;
+  messageLog << "Total number of messages received in the eNodeB: " << mNbMessages << std::endl;
   mLog->writeToLog(messageLog.str());
   switch (rrcMessage.messagetype()){
     case 0 : //RaPreamble
@@ -174,6 +172,6 @@ void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueCont
       ueContext.handleRrcConnectionReconfigurationComplete(rrcCRC);}
       break;
     default: 
-      cerr << "Unexpected message type in eNodeB" << endl;
+      std::cerr << "Unexpected message type in eNodeB" << std::endl;
   }
 }

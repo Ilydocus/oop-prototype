@@ -9,24 +9,21 @@
 
 #define NB_RAT 5
 
-using namespace std;
-
 enum RrcState {RRC_Idle, RRC_Connected};
 
 struct UeStateEnb{
   RrcState rrcState;
   int cRnti;
   Imsi_message imsi;
-  string srbIdentity;
+  std::string srbIdentity;
   int enbUeS1ApId;
   RatCapability ratCapabilities[NB_RAT];
   int securityKey;
-  string epsBearerId; 
+  std::string epsBearerId; 
 };
 
-class UeContextEnb : public UeContext
-{
- public:
+class UeContextEnb : public UeContext{
+public:
   UeContextEnb(int ueSocket, int mmeSocket, Log* log);
   void handleRaPreamble(RaPreamble message);
   void handleRrcConnectionRequest(RrcConnectionRequest message);
@@ -36,13 +33,13 @@ class UeContextEnb : public UeContext
   void handleRrcConnectionReconfigurationComplete (RrcConnectionReconfigurationComplete message);
   void printState();
 
- private:
+private:
   int mUeSocket;
   int mMmeSocket;
   UeStateEnb *mState;
 
-  string printRatCapabilities(RatCapability *ratCapabilities);
-  string printRatCapabilities(UeCapabilityInformation message);
+  std::string printRatCapabilities(RatCapability *ratCapabilities);
+  std::string printRatCapabilities(UeCapabilityInformation message);
 };
 
 #endif
