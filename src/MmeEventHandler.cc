@@ -45,6 +45,15 @@ MmeEventHandler::MmeEventHandler(){
   mNbMessages = 0;
 }
 
+MmeEventHandler::~MmeEventHandler(){
+  for (UeMap::iterator it = mUeContexts.begin(); it != mUeContexts.end(); ++it){
+    UeContextMme *ueContext = it->second;
+    delete ueContext;
+  }
+  delete mLog;
+  google::protobuf::ShutdownProtobufLibrary();
+}
+
 void MmeEventHandler::run () {    
   struct epoll_event ev, events[MAX_EVENTS];
   int connSock, nfds, epollfd;
@@ -81,7 +90,7 @@ void MmeEventHandler::run () {
 	ssize_t sz = read(STDIN_FILENO,buf,15);
 	buf[sz-1]= '\0';
 	std::cout << "Exited on reading " << buf << std::endl;
-	exit(0);
+	return;
       }
       if (events[n].data.fd == mListenSocket) {
 	struct sockaddr_storage theirAddr;
@@ -116,8 +125,8 @@ void MmeEventHandler::run () {
 	  std::string strMessage(incomingDataBuffer, bytesRecieved);
 	  s1Message.ParseFromString(strMessage);
 	  
-	  std::map<int,UeContextMme>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
-	  UeContextMme ueContext = tempIt->second;
+	  UeMap::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
+	  UeContextMme *ueContext = tempIt->second;
 	  
 	  handleEnbMessage(s1Message, ueContext);		       
 	}
@@ -128,10 +137,10 @@ void MmeEventHandler::run () {
 
 void MmeEventHandler::handleNewUe(int connSock){
   UeContextMme *ueContext = new UeContextMme(connSock,mLog);
-  mUeContexts.insert(std::pair<int,UeContextMme>(connSock,*ueContext));
+  mUeContexts.insert(std::pair<int,UeContextMme*>(connSock,ueContext));
 } 
 
-void MmeEventHandler::handleEnbMessage(S1Message s1Message, UeContextMme ueContext){
+void MmeEventHandler::handleEnbMessage(S1Message s1Message, UeContextMme *ueContext){
   mNbMessages++;
   std::ostringstream messageLog;
   messageLog << "Total number of messages received in the MME: " << mNbMessages << std::endl;
@@ -140,12 +149,12 @@ void MmeEventHandler::handleEnbMessage(S1Message s1Message, UeContextMme ueConte
     case S1Message_MessageType_TypeS1ApIUeM : 
       {S1ApInitialUeMessage initialUeMessage;
       initialUeMessage = s1Message.messages1apiuem();
-      ueContext.handleS1ApInitialUeMessage(initialUeMessage);}
+      ueContext->handleS1ApInitialUeMessage(initialUeMessage);}
       break;
     case  S1Message_MessageType_TypeS1ApICSResponse : 
       {S1ApInitialContextSetupResponse initialCSResponse;
       initialCSResponse = s1Message.messages1apicsresponse();
-      ueContext.handleS1ApInitialContextSetupResponse(initialCSResponse);}
+      ueContext->handleS1ApInitialContextSetupResponse(initialCSResponse);}
       break;
     default: 
       std::cerr << "Unexpected message type in MME" << std::endl;

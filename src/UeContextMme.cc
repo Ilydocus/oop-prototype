@@ -13,6 +13,10 @@ UeContextMme::UeContextMme(int enbSocket,Log * log):mEnbSocket(enbSocket)
   mLog = log;
 } 
 
+UeContextMme::~UeContextMme(){
+  delete mState;
+}
+
 void UeContextMme::handleS1ApInitialUeMessage(S1ApInitialUeMessage message){
   std::ostringstream messageLog;
   messageLog << "Message received from ENodeB: S1ApInitialUeMessage {Enb Ue S1Ap Id: " << message.enb_ue_s1ap_id() << " EPS Attach Type: " << message.epsattachtype() << " UE identity is : " << (message.identity()).mcc()<<"-"<< (message.identity()).mnc() << "-"<< (message.identity()).msin()<< " }" << std::endl; 

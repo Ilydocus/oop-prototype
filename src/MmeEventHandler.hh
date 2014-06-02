@@ -7,15 +7,17 @@
 class MmeEventHandler: public EventHandler{
 public:
   MmeEventHandler();
+  ~MmeEventHandler();
   void run();
 
 private:
-  std::map<int,UeContextMme> mUeContexts;
+  typedef std::map<int,UeContextMme*> UeMap;
+  UeMap mUeContexts;
   int mListenSocket;
   int mNbMessages;
 
   void handleNewUe(int connSock);
-  void handleEnbMessage(S1Message s1Message,UeContextMme ueContext);
+  void handleEnbMessage(S1Message s1Message,UeContextMme *ueContext);
 
 };
 

@@ -12,6 +12,7 @@ struct UeStateMme{
 class UeContextMme : public UeContext{
 public:
   UeContextMme(int enbSocket, Log *log);
+  ~UeContextMme();
   void handleS1ApInitialUeMessage(S1ApInitialUeMessage message); 
   void handleS1ApInitialContextSetupResponse(S1ApInitialContextSetupResponse message); 
   void printState();
