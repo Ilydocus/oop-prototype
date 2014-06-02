@@ -25,6 +25,7 @@ struct UeStateEnb{
 class UeContextEnb : public UeContext{
 public:
   UeContextEnb(int ueSocket, int mmeSocket, Log* log);
+  ~UeContextEnb();
   void handleRaPreamble(RaPreamble message);
   void handleRrcConnectionRequest(RrcConnectionRequest message);
   void handleRrcConnectionSetupComplete(RrcConnectionSetupComplete message);

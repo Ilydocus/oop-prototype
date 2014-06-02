@@ -25,6 +25,10 @@ UeContextEnb::UeContextEnb(int ueSocket, int mmeSocket, Log *log):mUeSocket(ueSo
   mLog = log;
 }
 
+UeContextEnb::~UeContextEnb(){
+  delete mState;
+}
+
 void UeContextEnb::handleRaPreamble(RaPreamble message){
   std::ostringstream messageLog;
   messageLog << "Message received from Ue: RaPreamble {Rnti Type: " << message.ueidrntitype() << " Rnti Value: " << message.ueidrntivalue() << " }" << std::endl; 
@@ -68,6 +72,7 @@ void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
     std::string * srbId = new std::string;
     genRandId(srbId, 8);
     mState->srbIdentity = *srbId;
+    delete srbId;
 
     RrcConnectionSetup *rrcCS = new RrcConnectionSetup;
     rrcCS->set_ueidrntitype(C_RNTI);

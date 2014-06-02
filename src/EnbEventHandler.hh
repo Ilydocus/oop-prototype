@@ -7,16 +7,18 @@
 class EnbEventHandler: public EventHandler{
 public:
   EnbEventHandler();
+  ~EnbEventHandler();
   void run();
 
 private:
-  std::map<int,UeContextEnb> mUeContexts;
+  typedef std::map<int,UeContextEnb*> UeMap;
+  UeMap mUeContexts;
   int mListenSocket;
   int mMmeSocket;
   int mNbMessages;
 
   void handleNewUe(int connSock);
-  void handleUeMessage(RrcMessage rrcMessage,UeContextEnb ueContext);
+  void handleUeMessage(RrcMessage rrcMessage,UeContextEnb *ueContext);
 };
 
 #endif

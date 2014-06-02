@@ -64,6 +64,15 @@ EnbEventHandler::EnbEventHandler(){
   mNbMessages = 0;
 }
 
+EnbEventHandler::~EnbEventHandler(){
+  for (UeMap::iterator it = mUeContexts.begin(); it != mUeContexts.end(); ++it){
+    UeContextEnb *ueContext = it->second;
+    delete ueContext;
+  }
+  delete mLog;
+  google::protobuf::ShutdownProtobufLibrary();
+}
+
 void EnbEventHandler::run () {    
   struct epoll_event ev, events[MAX_EVENTS];
   int connSock, nfds, epollfd;
@@ -100,7 +109,7 @@ void EnbEventHandler::run () {
 	ssize_t sz = read(STDIN_FILENO,buf,15);
 	buf[sz-1]= '\0';
 	std::cout << "Exited on reading " << buf << std::endl;
-	exit(0);
+	return;
       }
       if (events[n].data.fd == mListenSocket) {
 	struct sockaddr_storage theirAddr;
@@ -133,8 +142,8 @@ void EnbEventHandler::run () {
 	  RrcMessage rrcMessage;
 	  std::string strMessage(incomingDataBuffer, bytesRecieved);
 	  rrcMessage.ParseFromString(strMessage);
-	  std::map<int,UeContextEnb>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
-	  UeContextEnb ueContext = tempIt->second;
+	  UeMap::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
+	  UeContextEnb *ueContext = tempIt->second;
 	
 	  handleUeMessage(rrcMessage, ueContext);		     
 	  
@@ -146,10 +155,10 @@ void EnbEventHandler::run () {
 
 void EnbEventHandler::handleNewUe(int connSock){
   UeContextEnb *ueContext = new UeContextEnb(connSock,mMmeSocket,mLog);
-  mUeContexts.insert(std::pair<int,UeContextEnb>(connSock,*ueContext));
+  mUeContexts.insert(std::pair<int,UeContextEnb*>(connSock,ueContext));
 } 
 
-void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueContext){
+void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb *ueContext){
   mNbMessages++;
   std::ostringstream messageLog;
   messageLog << "Total number of messages received in the eNodeB: " << mNbMessages << std::endl;
@@ -158,32 +167,32 @@ void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueCont
     case RrcMessage_MessageType_TypeRaP : 
       {RaPreamble raPreamble;
       raPreamble = rrcMessage.messagerap();
-      ueContext.handleRaPreamble(raPreamble);}
+      ueContext->handleRaPreamble(raPreamble);}
       break;
     case RrcMessage_MessageType_TypeRrcCRequest : 
       {RrcConnectionRequest rrcCRequest;
       rrcCRequest = rrcMessage.messagerrccrequest();
-      ueContext.handleRrcConnectionRequest(rrcCRequest);}
+      ueContext->handleRrcConnectionRequest(rrcCRequest);}
       break;
     case RrcMessage_MessageType_TypeRrcCSC : 
       {RrcConnectionSetupComplete rrcConnectionSetupComplete;
       rrcConnectionSetupComplete = rrcMessage.messagerrccsc();
-      ueContext.handleRrcConnectionSetupComplete(rrcConnectionSetupComplete);}
+      ueContext->handleRrcConnectionSetupComplete(rrcConnectionSetupComplete);}
       break;
     case RrcMessage_MessageType_TypeSecurityMComplete : 
       {SecurityModeComplete securityModeComplete;
       securityModeComplete = rrcMessage.messagesecuritymcomplete();
-      ueContext.handleSecurityModeComplete(securityModeComplete);}
+      ueContext->handleSecurityModeComplete(securityModeComplete);}
       break;
     case RrcMessage_MessageType_TypeUeCI :
       {UeCapabilityInformation ueCI;
       ueCI = rrcMessage.messageueci();
-      ueContext.handleUeCapabilityInformation(ueCI);}
+      ueContext->handleUeCapabilityInformation(ueCI);}
       break;
     case RrcMessage_MessageType_TypeRrcCRC : 
       {RrcConnectionReconfigurationComplete rrcCRC;
       rrcCRC = rrcMessage.messagerrccrc();
-      ueContext.handleRrcConnectionReconfigurationComplete(rrcCRC);}
+      ueContext->handleRrcConnectionReconfigurationComplete(rrcCRC);}
       break;
     default: 
       std::cout << "Unexpected message type in eNodeB" << std::endl;
