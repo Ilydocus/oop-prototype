@@ -15,7 +15,7 @@ private:
   int mNbMessages;
 
   void handleNewUe(int connSock);
-  void handleUeMessage(S1Message rrcMessage,UeContextMme ueContext);
+  void handleEnbMessage(S1Message s1Message,UeContextMme ueContext);
 
 };
 

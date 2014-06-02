@@ -12,6 +12,7 @@ void UeContext::genRandId(std::string * id,const int len){
     temp[i] = num[(int)((double)rand() / ((double)RAND_MAX + 1)*(sizeof(num)-1))];
   }
   temp[len]=0;
+  
   std::string s(temp);
   *id = s;
 }

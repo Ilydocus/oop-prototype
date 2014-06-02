@@ -6,18 +6,19 @@
 
 class UeEventHandler: public EventHandler{
 public:
-  UeEventHandler(Log *log);
+  UeEventHandler();
   ~UeEventHandler();
   void run();
   void powerOnUes(int nbOfUes);
 
 private:
+  typedef std::map<int,UeContextUe*> UeMap;
   int mEpollfd;
   int mNbCompletedUes;
   int mNbCreatedUes;
-  std::map<int,UeContextUe> mUeContexts;
+  UeMap mUeContexts;
 
-  void handleEnbMessage(RrcMessage rrcMessage,UeContextUe ueContext);
+  void handleEnbMessage(RrcMessage rrcMessage,UeContextUe *ueContext);
   void handleNewUe(int connSock,int ueId);
 };
 

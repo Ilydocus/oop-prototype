@@ -23,6 +23,7 @@ UeContextUe::UeContextUe(int ueId,int enbSocket,Log *log){
 }
 
 UeContextUe::~UeContextUe(){
+  delete mState;
 }
 
 void UeContextUe::genImsi(Imsi_message *imsi){
@@ -191,3 +192,4 @@ std::string UeContextUe::printCapabilityRequest(UeCapabilityEnquiry message){
   }
   return request.str();
 }
+

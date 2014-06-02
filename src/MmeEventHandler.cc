@@ -60,6 +60,13 @@ void MmeEventHandler::run () {
     perror("epoll_ctl: mListenSocket");
     exit(EXIT_FAILURE);
   }
+
+  ev.events = EPOLLIN;
+  ev.data.fd = STDIN_FILENO;
+  if (epoll_ctl(epollfd, EPOLL_CTL_ADD, STDIN_FILENO, &ev) == -1) {
+    perror("epoll_ctl: std::stdin");
+    exit(EXIT_FAILURE);
+  }
   
   for (;;) {
     nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1);
@@ -69,6 +76,13 @@ void MmeEventHandler::run () {
     }
 
     for (int n = 0; n < nfds; ++n) {
+      if (events[n].data.fd == STDIN_FILENO) {
+	char buf[15];
+	ssize_t sz = read(STDIN_FILENO,buf,15);
+	buf[sz-1]= '\0';
+	std::cout << "Exited on reading " << buf << std::endl;
+	exit(0);
+      }
       if (events[n].data.fd == mListenSocket) {
 	struct sockaddr_storage theirAddr;
 	socklen_t addrSize = sizeof(theirAddr);
@@ -105,7 +119,7 @@ void MmeEventHandler::run () {
 	  std::map<int,UeContextMme>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
 	  UeContextMme ueContext = tempIt->second;
 	  
-	  handleUeMessage(s1Message, ueContext);		       
+	  handleEnbMessage(s1Message, ueContext);		       
 	}
       }
     }
@@ -117,7 +131,7 @@ void MmeEventHandler::handleNewUe(int connSock){
   mUeContexts.insert(std::pair<int,UeContextMme>(connSock,*ueContext));
 } 
 
-void MmeEventHandler::handleUeMessage(S1Message s1Message, UeContextMme ueContext){
+void MmeEventHandler::handleEnbMessage(S1Message s1Message, UeContextMme ueContext){
   mNbMessages++;
   std::ostringstream messageLog;
   messageLog << "Total number of messages received in the MME: " << mNbMessages << std::endl;

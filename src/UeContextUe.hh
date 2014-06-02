@@ -24,7 +24,7 @@ public:
   void handleRrcConnectionReject(RrcConnectionReject message);
   void handleRrcConnectionAccept(RrcConnectionAccept message);
   void printState();
-
+ 
 private:
   int mEnbSocket;
   UeStateUe *mState;

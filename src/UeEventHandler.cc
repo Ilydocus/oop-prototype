@@ -9,8 +9,18 @@
 
 #define MAX_EVENTS 10 
 
-UeEventHandler::UeEventHandler(Log *log){
-  mLog = log; 
+UeEventHandler::UeEventHandler()
+  :mNbCreatedUes(0),mNbCompletedUes(0){
+  mLog = new Log("UesLog.txt"); 
+}
+
+UeEventHandler::~UeEventHandler(){
+  for (UeMap::iterator it = mUeContexts.begin(); it != mUeContexts.end(); ++it){
+    UeContextUe *ueContext = it->second;
+    delete ueContext;
+  }
+  delete mLog;
+  google::protobuf::ShutdownProtobufLibrary();
 }
 
 void UeEventHandler::powerOnUes(int nbOfUes){
@@ -50,6 +60,7 @@ void UeEventHandler::powerOnUes(int nbOfUes){
     makeSocketNonBlocking(socketfd);
         
     struct epoll_event ev;
+    memset(&ev, 0, sizeof ev);
     ev.events = EPOLLOUT; 
     ev.data.fd = socketfd;
     if (epoll_ctl (mEpollfd,EPOLL_CTL_ADD, socketfd, &ev) == -1){
@@ -66,6 +77,9 @@ void UeEventHandler::run(){
   int nfds;
   epoll_event events[MAX_EVENTS];
   epoll_event eventMask;
+  memset(&eventMask, 0, sizeof eventMask);
+
+
   for (;;) {
     nfds = epoll_wait(mEpollfd, events, MAX_EVENTS, -1);
     if (nfds == -1) {
@@ -75,9 +89,9 @@ void UeEventHandler::run(){
     
     for (int n = 0; n < nfds; ++n) {
       if (events[n].events & EPOLLOUT) {
-	std::map<int,UeContextUe>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
-	UeContextUe ueContext = tempIt->second;
-	ueContext.sendRaPreamble();
+	UeMap::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
+	UeContextUe *ueContext = tempIt->second;
+	ueContext->sendRaPreamble();
 
 	eventMask.events =  EPOLLIN | EPOLLET;
 	eventMask.data.fd = events[n].data.fd;
@@ -100,10 +114,11 @@ void UeEventHandler::run(){
 	     RrcMessage rrcMessage;
 	     std::string strMessage(incomingDataBuffer, bytesRecieved);
 	     rrcMessage.ParseFromString(strMessage);
-	     std::map<int,UeContextUe>::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
-	     UeContextUe ueContext = tempIt->second;
+	     UeMap::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
+	     UeContextUe *ueContext = tempIt->second;
 	
-	     handleEnbMessage(rrcMessage, ueContext);		     
+	     handleEnbMessage(rrcMessage, ueContext);	
+	     if (mNbCreatedUes == mNbCompletedUes) return;
 	   }
 	}
       }
@@ -111,57 +126,49 @@ void UeEventHandler::run(){
   }
 }
 
-UeEventHandler::~UeEventHandler(){
-  google::protobuf::ShutdownProtobufLibrary();
-}
-
 void UeEventHandler::handleNewUe(int connSock, int ueId){
-  UeContextUe *ueContext = new UeContextUe(ueId,connSock,mLog);
-  mUeContexts.insert(std::pair<int,UeContextUe>(connSock,*ueContext));
+  UeContextUe *tempUeContext = new UeContextUe(ueId,connSock,mLog);
+  mUeContexts.insert(std::pair<int,UeContextUe*>(connSock,tempUeContext));
 }
 
-void UeEventHandler::handleEnbMessage(RrcMessage rrcMessage, UeContextUe ueContext){
+void UeEventHandler::handleEnbMessage(RrcMessage rrcMessage, UeContextUe *ueContext){
   switch (rrcMessage.messagetype()){
     case RrcMessage_MessageType_TypeRaR : 
       {RaResponse raR;
       raR = rrcMessage.messagerar();
-      ueContext.handleRaResponse(raR);}
+      ueContext->handleRaResponse(raR);}
       break;
     case RrcMessage_MessageType_TypeRrcCS : 
       {RrcConnectionSetup rrcCS;
       rrcCS = rrcMessage.messagerrccs();
-      ueContext.handleRrcConnectionSetup(rrcCS);}
+      ueContext->handleRrcConnectionSetup(rrcCS);}
       break;
     case RrcMessage_MessageType_TypeSecurityMCommand : 
       {SecurityModeCommand securityMCommand;
       securityMCommand = rrcMessage.messagesecuritymcommand();
-      ueContext.handleSecurityModeCommand(securityMCommand);}
+      ueContext->handleSecurityModeCommand(securityMCommand);}
       break;
     case RrcMessage_MessageType_TypeUeCE :
       {UeCapabilityEnquiry ueCE;
       ueCE = rrcMessage.messageuece();
-      ueContext.handleUeCapabilityEnquiry(ueCE);}
+      ueContext->handleUeCapabilityEnquiry(ueCE);}
       break;
     case RrcMessage_MessageType_TypeRrcCReconfiguration : 
       {RrcConnectionReconfiguration rrcCReconfiguration;
       rrcCReconfiguration = rrcMessage.messagerrccreconfiguration();
-      ueContext.handleRrcConnectionReconfiguration(rrcCReconfiguration);}
+      ueContext->handleRrcConnectionReconfiguration(rrcCReconfiguration);}
       break;
     case RrcMessage_MessageType_TypeRrcCReject : 
       {RrcConnectionReject rrcCReject;
       rrcCReject = rrcMessage.messagerrccreject();
-      ueContext.handleRrcConnectionReject(rrcCReject);
-      mNbCompletedUes++;
-      if (mNbCreatedUes == mNbCompletedUes) exit(0);	
-      }
+      ueContext->handleRrcConnectionReject(rrcCReject);
+      mNbCompletedUes++;}
       break;
     case RrcMessage_MessageType_TypeRrcCA : 
       {RrcConnectionAccept rrcCA;
       rrcCA = rrcMessage.messagerrcca();
-      ueContext.handleRrcConnectionAccept(rrcCA);
-      mNbCompletedUes++;
-      if (mNbCreatedUes == mNbCompletedUes) exit(0);
-      }
+      ueContext->handleRrcConnectionAccept(rrcCA);
+      mNbCompletedUes++;}
       break;
     default: 
       std::cout << "Unexpected message type in Ue" << std::endl;

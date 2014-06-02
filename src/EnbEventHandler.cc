@@ -79,6 +79,13 @@ void EnbEventHandler::run () {
     perror("epoll_ctl: mListenSocket");
     exit(EXIT_FAILURE);
   }
+
+  ev.events = EPOLLIN;
+  ev.data.fd = STDIN_FILENO;
+  if (epoll_ctl(epollfd, EPOLL_CTL_ADD, STDIN_FILENO, &ev) == -1) {
+    perror("epoll_ctl: std::stdin");
+    exit(EXIT_FAILURE);
+  }
   
   for (;;) {
     nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1);
@@ -88,6 +95,13 @@ void EnbEventHandler::run () {
     }
     
     for (int n = 0; n < nfds; ++n) {
+      if (events[n].data.fd == STDIN_FILENO) {
+	char buf[15];
+	ssize_t sz = read(STDIN_FILENO,buf,15);
+	buf[sz-1]= '\0';
+	std::cout << "Exited on reading " << buf << std::endl;
+	exit(0);
+      }
       if (events[n].data.fd == mListenSocket) {
 	struct sockaddr_storage theirAddr;
 	socklen_t addrSize = sizeof(theirAddr);
