@@ -123,12 +123,12 @@ void MmeEventHandler::handleUeMessage(S1Message s1Message, UeContextMme ueContex
   messageLog << "Total number of messages received in the MME: " << mNbMessages << std::endl;
   mLog->writeToLog(messageLog.str());
   switch (s1Message.messagetype()){
-    case 0 : //S1ApInitialUeMessage
+    case S1Message_MessageType_TypeS1ApIUeM : 
       {S1ApInitialUeMessage initialUeMessage;
       initialUeMessage = s1Message.messages1apiuem();
       ueContext.handleS1ApInitialUeMessage(initialUeMessage);}
       break;
-    case 2 : //S1ApInitialContextSetupResponse
+    case  S1Message_MessageType_TypeS1ApICSResponse : 
       {S1ApInitialContextSetupResponse initialCSResponse;
       initialCSResponse = s1Message.messages1apicsresponse();
       ueContext.handleS1ApInitialContextSetupResponse(initialCSResponse);}

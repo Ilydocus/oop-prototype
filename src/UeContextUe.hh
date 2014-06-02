@@ -14,17 +14,20 @@ struct UeStateUe{
 class UeContextUe : public UeContext {
 public:
   UeContextUe(int ueId,int enbSocket,Log *log);
+  ~UeContextUe();
   void sendRaPreamble ();
-  void handleRaResponse ();
-  bool handleRrcConnectionSetup ();
-  void handleSecurityModeCommand ();  
-  bool handleUeCapabilityEnquiry();
-  void handleRrcConnectionReconfiguration();
+  void handleRaResponse (RaResponse message);
+  void handleRrcConnectionSetup (RrcConnectionSetup message);
+  void handleSecurityModeCommand (SecurityModeCommand message);  
+  void handleUeCapabilityEnquiry(UeCapabilityEnquiry message);
+  void handleRrcConnectionReconfiguration(RrcConnectionReconfiguration message);
+  void handleRrcConnectionReject(RrcConnectionReject message);
+  void handleRrcConnectionAccept(RrcConnectionAccept message);
   void printState();
 
 private:
   int mEnbSocket;
-  UeStateUe mState;
+  UeStateUe *mState;
   int mUeId;
 
   void genImsi (Imsi_message *imsi);

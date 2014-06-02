@@ -6,17 +6,19 @@
 
 class UeEventHandler: public EventHandler{
 public:
-  UeEventHandler(int ueId, Log *log);
+  UeEventHandler(Log *log);
   ~UeEventHandler();
   void run();
+  void powerOnUes(int nbOfUes);
 
 private:
-  UeContextUe *mUeContext;
-  int mEnbSocket;
-  int mUeId;
+  int mEpollfd;
+  int mNbCompletedUes;
+  int mNbCreatedUes;
+  std::map<int,UeContextUe> mUeContexts;
 
-  void createRaPreamble (RaPreamble *rapreamble, int ueId);
-  void sendRaPreamble (int socketfd, int ueId);
+  void handleEnbMessage(RrcMessage rrcMessage,UeContextUe ueContext);
+  void handleNewUe(int connSock,int ueId);
 };
 
 #endif

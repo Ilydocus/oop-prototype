@@ -141,37 +141,37 @@ void EnbEventHandler::handleUeMessage(RrcMessage rrcMessage, UeContextEnb ueCont
   messageLog << "Total number of messages received in the eNodeB: " << mNbMessages << std::endl;
   mLog->writeToLog(messageLog.str());
   switch (rrcMessage.messagetype()){
-    case 0 : //RaPreamble
-      {RaPreamble rapreamble;
-      rapreamble = rrcMessage.messagerap();
-      ueContext.handleRaPreamble(rapreamble);}
+    case RrcMessage_MessageType_TypeRaP : 
+      {RaPreamble raPreamble;
+      raPreamble = rrcMessage.messagerap();
+      ueContext.handleRaPreamble(raPreamble);}
       break;
-    case 2 : //RrcConnectionRequest
+    case RrcMessage_MessageType_TypeRrcCRequest : 
       {RrcConnectionRequest rrcCRequest;
       rrcCRequest = rrcMessage.messagerrccrequest();
       ueContext.handleRrcConnectionRequest(rrcCRequest);}
       break;
-    case 4 : //RrcConnectionSetupComplete
+    case RrcMessage_MessageType_TypeRrcCSC : 
       {RrcConnectionSetupComplete rrcConnectionSetupComplete;
       rrcConnectionSetupComplete = rrcMessage.messagerrccsc();
       ueContext.handleRrcConnectionSetupComplete(rrcConnectionSetupComplete);}
       break;
-    case 6 : //SecurityModeComplete
+    case RrcMessage_MessageType_TypeSecurityMComplete : 
       {SecurityModeComplete securityModeComplete;
       securityModeComplete = rrcMessage.messagesecuritymcomplete();
       ueContext.handleSecurityModeComplete(securityModeComplete);}
       break;
-    case 8 : //UeCapabilityInformation
+    case RrcMessage_MessageType_TypeUeCI :
       {UeCapabilityInformation ueCI;
       ueCI = rrcMessage.messageueci();
       ueContext.handleUeCapabilityInformation(ueCI);}
       break;
-    case 10 : //RrcConnectionReconfigurationComplete
+    case RrcMessage_MessageType_TypeRrcCRC : 
       {RrcConnectionReconfigurationComplete rrcCRC;
       rrcCRC = rrcMessage.messagerrccrc();
       ueContext.handleRrcConnectionReconfigurationComplete(rrcCRC);}
       break;
     default: 
-      std::cerr << "Unexpected message type in eNodeB" << std::endl;
+      std::cout << "Unexpected message type in eNodeB" << std::endl;
   }
 }
