@@ -11,8 +11,6 @@ protected:
   void genRandId(std::string * id,const int len);
   void sendRrcMessage(int socket, RrcMessage message);
   void sendS1Message(int socket, S1Message message);
-  int receiveRrcMessage(int socket,RrcMessage *message);
-  int receiveS1Message(int socket,S1Message *message);
   virtual void printState() =0;
   Log *mLog;
 };

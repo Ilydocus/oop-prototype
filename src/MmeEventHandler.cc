@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <utility>
 #include <sstream>
+#include <cerrno>
 
 #define MAX_EVENTS 10 
 
@@ -25,19 +26,19 @@ MmeEventHandler::MmeEventHandler(){
   hostInfo.ai_flags = AI_PASSIVE;    
 
   status = getaddrinfo(NULL, "43001", &hostInfo, &hostInfoList); 
-  if (status != 0)  std::cout << "getaddrinfo error" << gai_strerror(status) << std::endl;
+  if (status != 0)  std::cerr << "getaddrinfo error" << gai_strerror(status) << std::endl;
 
   int socketfd ; 
   socketfd = socket(hostInfoList->ai_family, hostInfoList->ai_socktype,hostInfoList->ai_protocol);
-  if (socketfd == -1)  std::cout << "socket error " << std::endl;
+  if (socketfd == -1)  std::cerr << "socket error " << std::endl;
 
   int yes = 1;
   status = setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
   status = bind(socketfd, hostInfoList->ai_addr, hostInfoList->ai_addrlen);
-  if (status == -1)  std::cout << "bind error" << std::endl;
+  if (status == -1)  std::cerr << "bind error" << std::endl;
 
   status =  listen(socketfd, 5);//5 is the number of "on hold"
-  if (status == -1)  std::cout << "listen error" << std::endl;
+  if (status == -1)  std::cerr << "listen error" << std::endl;
   freeaddrinfo(hostInfoList);
 
   mListenSocket = socketfd;
@@ -76,7 +77,8 @@ void MmeEventHandler::run () {
     perror("epoll_ctl: std::stdin");
     exit(EXIT_FAILURE);
   }
-  
+  uint32_t length;
+  length = 0;
   for (;;) {
     nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1);
     if (nfds == -1) {
@@ -111,24 +113,53 @@ void MmeEventHandler::run () {
 	handleNewUe(connSock);
       }
       else {
-	ssize_t bytesRecieved;
-	char incomingDataBuffer[1000];
-	bytesRecieved = recv(events[n].data.fd, incomingDataBuffer,1000, 0);
-	
-	if (bytesRecieved == 0) {std::cout << "host shut down." << std::endl ;}
-	if (bytesRecieved == -1){std::cout << "recieve error!" << std::endl ;}
-	if (bytesRecieved != -1 && bytesRecieved != 0){
-	  incomingDataBuffer[bytesRecieved] = '\0';
-	  GOOGLE_PROTOBUF_VERIFY_VERSION;
-    
-	  S1Message s1Message;
-	  std::string strMessage(incomingDataBuffer, bytesRecieved);
-	  s1Message.ParseFromString(strMessage);
+	for(;;){
+	  ssize_t bytesReceived;
+	  if (length == 0){
+	    uint32_t  nlength;
+	    bytesReceived = recv(events[n].data.fd, &nlength, 4, 0);
+	    if (bytesReceived == 0) {std::cout << "host shut down." << std::endl ;break;}
+	    if (bytesReceived == -1){
+	    if (errno == EAGAIN) {
+	      //End of data available
+	      break;
+	    }
+	    else {
+	      std::cerr << "recieve error!" <<std::endl;
+	      break;
+	    }
+	  }
+	    length = ntohl(nlength);
+	  }
 	  
-	  UeMap::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
-	  UeContextMme *ueContext = tempIt->second;
-	  
-	  handleEnbMessage(s1Message, ueContext);		       
+	  char incomingDataBuffer[length];
+	  bytesReceived = recv(events[n].data.fd, incomingDataBuffer,length, 0);
+	  if (bytesReceived == 0) {std::cout << "host shut down." << std::endl;break;}
+	  if (bytesReceived == -1){
+	    if (errno == EAGAIN) {
+	      //End of data available
+	      break;
+	    }
+	    else {
+	      std::cerr << "recieve error!" <<std::endl;
+	      break;
+	    }
+	  }
+	  if (bytesReceived != -1 && bytesReceived != 0){
+	    incomingDataBuffer[bytesReceived] = '\0';
+	    GOOGLE_PROTOBUF_VERIFY_VERSION;
+	    
+	    S1Message s1Message;
+	    std::string strMessage(incomingDataBuffer, bytesReceived);
+	    s1Message.ParseFromString(strMessage);
+	    
+	    UeMap::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
+	    UeContextMme *ueContext = tempIt->second;
+	    
+	    handleEnbMessage(s1Message, ueContext);
+	    
+	    length = 0;
+	  }
 	}
       }
     }

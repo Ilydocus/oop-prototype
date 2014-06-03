@@ -11,14 +11,17 @@ public:
   void run();
 
 private:
-  typedef std::map<int,UeContextEnb*> UeMap;
-  UeMap mUeContexts;
+  typedef std::map<int,UeContextEnb*> UeMapUe;
+  typedef std::map<int,UeContextEnb*> UeMapMme;
+  UeMapUe mUeContextsUe;
+  UeMapMme mUeContextsMme;
   int mListenSocket;
   int mMmeSocket;
   int mNbMessages;
 
   void handleNewUe(int connSock);
   void handleUeMessage(RrcMessage rrcMessage,UeContextEnb *ueContext);
+  void handleMmeMessage(S1Message S1Message);
 };
 
 #endif

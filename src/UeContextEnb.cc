@@ -77,7 +77,7 @@ void UeContextEnb::handleRrcConnectionRequest(RrcConnectionRequest message){
     RrcConnectionSetup *rrcCS = new RrcConnectionSetup;
     rrcCS->set_ueidrntitype(C_RNTI);
     rrcCS->set_ueidrntivalue(message.ueidrntivalue());
-    rrcCS->set_srbidentity(*srbId);
+    rrcCS->set_srbidentity(mState->srbIdentity);
 
     rrcMessage.set_messagetype(RrcMessage_MessageType_TypeRrcCS);
     rrcMessage.set_allocated_messagerrccs(rrcCS);
@@ -106,38 +106,36 @@ void UeContextEnb::handleRrcConnectionSetupComplete(RrcConnectionSetupComplete m
   s1Message.set_allocated_messages1apiuem(initialUeMessage);
 
   sendS1Message(mMmeSocket,s1Message);
+}
 
-  S1Message *response = new S1Message;
-  int receiveSuccess = receiveS1Message(mMmeSocket,response);
+void UeContextEnb::handleS1ApInitialContextSetupRequest(S1ApInitialContextSetupRequest message){
+  std::ostringstream messageLog;
+  messageLog << "Message received from Mme: S1ApInitialContextSetupRequest {Mme Ue S1Ap Id: " << message.mme_ue_s1ap_id() << " Enb Ue S1Ap Id: " << message.enb_ue_s1ap_id() << " Security Key: " << message.securitykey() << " Eps bearer id: " << message.epsbearerid() << " }" << std::endl; 
+  mLog->writeToLog(messageLog.str());
+
+  mState->securityKey = message.securitykey();
+  mState->epsBearerId = message.epsbearerid();
   
-  if(receiveSuccess){
-    S1ApInitialContextSetupRequest initialCSRequest;
-    initialCSRequest = response->messages1apicsrequest();
-
-    mState->securityKey = initialCSRequest.securitykey();
-    mState->epsBearerId = initialCSRequest.epsbearerid();
-
-    std::string plainMessage = "ciphered";
-    std::string encryptedMessage; 
-    byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
-    memset (key,mState->securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
-    memset (iv,0x00,CryptoPP::AES::BLOCKSIZE);
-    CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
-    CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption (aesEncryption, iv);
-    CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink(encryptedMessage));
-    stfEncryptor.Put(reinterpret_cast<const unsigned char*>(plainMessage.c_str()),plainMessage.length()+1);
-    stfEncryptor.MessageEnd();
-    
-    SecurityModeCommand *securityMCommand = new SecurityModeCommand;
-    securityMCommand->set_uecrnti(initialCSRequest.enb_ue_s1ap_id()/17);
-    securityMCommand->set_message_security(encryptedMessage);
-    
-    RrcMessage rrcMessage;
-    rrcMessage.set_messagetype(RrcMessage_MessageType_TypeSecurityMCommand);
-    rrcMessage.set_allocated_messagesecuritymcommand(securityMCommand);
-    
-    sendRrcMessage(mUeSocket,rrcMessage);
-  }
+  std::string plainMessage = "ciphered";
+  std::string encryptedMessage; 
+  byte key[CryptoPP::AES::DEFAULT_KEYLENGTH], iv[CryptoPP::AES::BLOCKSIZE];
+  memset (key,mState->securityKey,CryptoPP::AES::DEFAULT_KEYLENGTH);
+  memset (iv,0x00,CryptoPP::AES::BLOCKSIZE);
+  CryptoPP::AES::Encryption aesEncryption(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
+  CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEncryption (aesEncryption, iv);
+  CryptoPP::StreamTransformationFilter stfEncryptor(cbcEncryption, new CryptoPP::StringSink(encryptedMessage));
+  stfEncryptor.Put(reinterpret_cast<const unsigned char*>(plainMessage.c_str()),plainMessage.length()+1);
+  stfEncryptor.MessageEnd();
+  
+  SecurityModeCommand *securityMCommand = new SecurityModeCommand;
+  securityMCommand->set_uecrnti(message.enb_ue_s1ap_id()/17);
+  securityMCommand->set_message_security(encryptedMessage);
+  
+  RrcMessage rrcMessage;
+  rrcMessage.set_messagetype(RrcMessage_MessageType_TypeSecurityMCommand);
+  rrcMessage.set_allocated_messagesecuritymcommand(securityMCommand);
+  
+  sendRrcMessage(mUeSocket,rrcMessage);
 }
 
 void UeContextEnb::handleSecurityModeComplete(SecurityModeComplete message){
@@ -214,7 +212,7 @@ void UeContextEnb::handleRrcConnectionReconfigurationComplete (RrcConnectionReco
     s1Message.set_allocated_messages1apicsresponse(iCSResponse);
 
     sendS1Message(mMmeSocket,s1Message);
- 
+
     RrcMessage rrcMessage;
     RrcConnectionAccept *rrcCA = new RrcConnectionAccept;
     rrcCA->set_uecrnti(message.uecrnti());

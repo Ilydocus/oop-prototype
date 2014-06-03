@@ -175,8 +175,8 @@ void UeContextUe::handleRrcConnectionAccept(RrcConnectionAccept message){
   messageLog << "Message received from ENodeB: RrcConnectionAccept {C-Rnti: " << message.uecrnti() << " }" << std::endl;
   mLog->writeToLog(messageLog.str());
   printState();
-  std::cout << "UE "<< mUeId << " switched off..." << std::endl;
   close(mEnbSocket);
+  std::cout << "UE "<< mUeId << " switched off..." << std::endl;
 }
 
 void UeContextUe::printState(){

@@ -31,41 +31,11 @@ void UeContext::sendS1Message(int socket, S1Message message){
   std::string outputMessage;
   message.SerializeToString(&outputMessage);
 
-  int len;
+  uint32_t nlength = htonl(outputMessage.length());
   ssize_t bytesSent;
+  bytesSent = send (socket, &nlength, 4, 0);
   bytesSent = send (socket, outputMessage.c_str(), 
 		     outputMessage.length(), 0);
 }
  
-int UeContext::receiveRrcMessage(int socket,RrcMessage *message){
-  ssize_t bytesRecieved;
-  char incomingDataBuffer[1000];
-  bytesRecieved = recv(socket, incomingDataBuffer,1000, 0);
-  if (bytesRecieved == 0) {std::cout << "host shut down." << std::endl;return 0;}
-  if (bytesRecieved == -1){std::cout << "recieve error!" << std::endl;return 0;}
-  if (bytesRecieved != -1 && bytesRecieved != 0){
-    incomingDataBuffer[bytesRecieved] = '\0';
-
-    GOOGLE_PROTOBUF_VERIFY_VERSION;  
-    std::string strMessage(incomingDataBuffer, bytesRecieved);
-    message->ParseFromString(strMessage);
-    return 1;
-  }
-}
-
-int UeContext::receiveS1Message(int socket,S1Message *message){
-  ssize_t bytesRecieved;
-  char incomingDataBuffer[1000];
-  bytesRecieved = recv(socket, incomingDataBuffer,1000, 0);
-  if (bytesRecieved == 0) {std::cout << "host shut down." << std::endl;return 0;}
-  if (bytesRecieved == -1){std::cout << "recieve error!" << std::endl;return 0;}
-  if (bytesRecieved != -1 && bytesRecieved != 0){
-    incomingDataBuffer[bytesRecieved] = '\0';
-
-    GOOGLE_PROTOBUF_VERIFY_VERSION;  
-    std::string strMessage(incomingDataBuffer, bytesRecieved);
-    message->ParseFromString(strMessage);
-    return 1;
-  }
-}
 
