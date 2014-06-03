@@ -43,6 +43,10 @@ void UeContextUe::genImsi(Imsi_message *imsi){
   delete tempMcc;
 }
 
+void UeContextUe::setBeginProcedure(){
+  gettimeofday(&mBeginProcedure, NULL);
+}
+
 void UeContextUe::sendRaPreamble (){
   RaPreamble *raPreamble = new RaPreamble;
   raPreamble->set_ueidrntitype(RA_RNTI);
@@ -165,6 +169,11 @@ void UeContextUe::handleRrcConnectionReject(RrcConnectionReject message){
   std::ostringstream messageLog;
   messageLog << "Message received from ENodeB: RrcConnectionReject {C-Rnti: " << message.uecrnti() << " Waiting time: " << message.waitingtime() << " }" << std::endl; 
   mLog->writeToLog(messageLog.str());
+  gettimeofday(&mEndProcedure, NULL);
+  double elapsedTime = (mEndProcedure.tv_sec - mBeginProcedure.tv_sec) * 1000000.0;
+  elapsedTime += (mEndProcedure.tv_usec - mBeginProcedure.tv_usec);
+  messageLog << "For completing(Reject) Ue nb " << mCompletedRank << " with C-Rnti "<< message.uecrnti() << " : beginning of procedure " << mBeginProcedure.tv_usec  + mBeginProcedure.tv_sec*1000000 << " end of procedure " << mEndProcedure.tv_usec  + mEndProcedure.tv_sec *1000000 << " -> Elapsed time(UeSide): " << elapsedTime << " microseconds" << std::endl;
+  mLog->writeToLog(messageLog.str());
   printState();
   std::cout << "UE "<< mUeId << " switched off..." << std::endl;
   close(mEnbSocket);
@@ -174,9 +183,18 @@ void UeContextUe::handleRrcConnectionAccept(RrcConnectionAccept message){
   std::ostringstream messageLog;
   messageLog << "Message received from ENodeB: RrcConnectionAccept {C-Rnti: " << message.uecrnti() << " }" << std::endl;
   mLog->writeToLog(messageLog.str());
+  gettimeofday(&mEndProcedure, NULL);
+  double elapsedTime = (mEndProcedure.tv_sec - mBeginProcedure.tv_sec) * 1000000.0;
+  elapsedTime += (mEndProcedure.tv_usec - mBeginProcedure.tv_usec);
+  messageLog << "For completing(Accept) Ue nb " << mCompletedRank << " with C-Rnti "<< message.uecrnti() << " : beginning of procedure " << mBeginProcedure.tv_usec  + mBeginProcedure.tv_sec *1000000 << " end of procedure " << mEndProcedure.tv_usec  + mEndProcedure.tv_sec*1000000 << " -> Elapsed time(UeSide): " << elapsedTime << " microseconds" << std::endl;
+  mLog->writeToLog(messageLog.str());
   printState();
   close(mEnbSocket);
   std::cout << "UE "<< mUeId << " switched off..." << std::endl;
+}
+
+void UeContextUe::setCompletedRank(int rank){
+  mCompletedRank = rank;
 }
 
 void UeContextUe::printState(){

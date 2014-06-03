@@ -94,6 +94,7 @@ void UeEventHandler::run(){
       if (events[n].events & EPOLLOUT) {
 	UeMap::iterator tempIt = mUeContexts.find(events[n].data.fd);		    
 	UeContextUe *ueContext = tempIt->second;
+	ueContext->setBeginProcedure();
 	ueContext->sendRaPreamble();
 
 	eventMask.events =  EPOLLIN | EPOLLET;
@@ -123,7 +124,8 @@ void UeEventHandler::run(){
 	     handleEnbMessage(rrcMessage, ueContext);	
 	     if (mNbCreatedUes == mNbCompletedUes) {
 	       gettimeofday(&mEndTime, NULL);
-	       time_t elapsedTime = mEndTime.tv_usec - mBeginTime.tv_usec;
+	       double elapsedTime = (mEndTime.tv_sec - mBeginTime.tv_sec) * 1000000.0;
+	       elapsedTime += (mEndTime.tv_usec - mBeginTime.tv_usec);
 	       std::ostringstream messageLog;
 	       messageLog << "Elapsed time for " << mNbCreatedUes << " UEs: " << elapsedTime << " microseconds." << std::endl; 
 	       mLog->writeToLog(messageLog.str());
@@ -171,14 +173,16 @@ void UeEventHandler::handleEnbMessage(RrcMessage rrcMessage, UeContextUe *ueCont
     case RrcMessage_MessageType_TypeRrcCReject : 
       {RrcConnectionReject rrcCReject;
       rrcCReject = rrcMessage.messagerrccreject();
-      ueContext->handleRrcConnectionReject(rrcCReject);
-      mNbCompletedUes++;}
+      mNbCompletedUes++;
+      ueContext->setCompletedRank(mNbCompletedUes);
+      ueContext->handleRrcConnectionReject(rrcCReject);}
       break;
     case RrcMessage_MessageType_TypeRrcCA : 
       {RrcConnectionAccept rrcCA;
       rrcCA = rrcMessage.messagerrcca();
-      ueContext->handleRrcConnectionAccept(rrcCA);
-      mNbCompletedUes++;}
+      mNbCompletedUes++;
+      ueContext->setCompletedRank(mNbCompletedUes);
+      ueContext->handleRrcConnectionAccept(rrcCA);}
       break;
     default: 
       std::cout << "Unexpected message type in Ue" << std::endl;
