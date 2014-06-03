@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <map>
 #include <sys/epoll.h>
+#include <sstream>
 
 #define MAX_EVENTS 10 
 
@@ -24,6 +25,8 @@ UeEventHandler::~UeEventHandler(){
 }
 
 void UeEventHandler::powerOnUes(int nbOfUes){
+  gettimeofday(&mBeginTime, NULL);
+
   mEpollfd = epoll_create(MAX_EVENTS);
   if (mEpollfd == -1) {
     perror("epoll_create");
@@ -118,7 +121,14 @@ void UeEventHandler::run(){
 	     UeContextUe *ueContext = tempIt->second;
 	
 	     handleEnbMessage(rrcMessage, ueContext);	
-	     if (mNbCreatedUes == mNbCompletedUes) return;
+	     if (mNbCreatedUes == mNbCompletedUes) {
+	       gettimeofday(&mEndTime, NULL);
+	       time_t elapsedTime = mEndTime.tv_usec - mBeginTime.tv_usec;
+	       std::ostringstream messageLog;
+	       messageLog << "Elapsed time for " << mNbCreatedUes << " UEs: " << elapsedTime << " microseconds." << std::endl; 
+	       mLog->writeToLog(messageLog.str());
+	       return;
+	     }
 	   }
 	}
       }

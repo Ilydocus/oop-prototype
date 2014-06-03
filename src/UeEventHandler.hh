@@ -3,6 +3,7 @@
 
 #include "UeContextUe.hh"
 #include "EventHandler.hh"
+#include <sys/time.h>
 
 class UeEventHandler: public EventHandler{
 public:
@@ -17,6 +18,8 @@ private:
   int mNbCompletedUes;
   int mNbCreatedUes;
   UeMap mUeContexts;
+  timeval mBeginTime;
+  timeval mEndTime;
 
   void handleEnbMessage(RrcMessage rrcMessage,UeContextUe *ueContext);
   void handleNewUe(int connSock,int ueId);
