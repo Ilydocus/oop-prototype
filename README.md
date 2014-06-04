@@ -27,12 +27,12 @@ Several sequence diagrams describing the messaging sequence according to differe
 
 ##UE program
 
-The UEs are created in the method powerOnUes (UeEventHandler.cc, l.27).
+The UEs are created using the method powerOnUes (ue.cc, line 7 and UeEventHandler.cc, line 27).
 
 The first message (RaPreamble) is sent from within the epoll loop, line 98 (UeEventHandler.cc).
-Subsequent messages are received by the event loop and handled by the method handleEnbMessage (UeEventHandler.cc, l.124 and l.146).
+Subsequent messages are received by the event loop and handled by the method handleEnbMessage (UeEventHandler.cc, line 124 and line 146).
 
-The methods to handle the different messages are in the file UeContextUe.cc
+The methods used to send the RaPreamble message and to handle the different received messages are in the file UeContextUe.cc
 
 ##eNodeB program
 
