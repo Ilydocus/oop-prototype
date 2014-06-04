@@ -25,7 +25,7 @@ Several sequence diagrams describing the messaging sequence according to differe
 
 #How does it work?
 
-##For the UE program
+##UE program
 
 The UEs are created in the method powerOnUes (UeEventHandler.cc, l.27).
 
@@ -34,19 +34,19 @@ Subsequent messages are received by the event loop and handled by the method han
 
 The methods to handle the different messages are in the file UeContextUe.cc
 
-##For the eNodeB program
+##eNodeB program
 
 The messages coming from the UEs and the MME are handled in the epoll loop. The code for messages coming from the UEs begins line 196 (EnbEventHandler.cc), for messages coming from the MME it begins line 128 (EnbEventHandler.cc).
 
 The methods to handle the different messages are in the file UeContextEnb.cc
 
-##For the MME program
+##MME program
 
 The messages coming from the eNodeB are handled in the epoll loop from line 116 (MmeEventHandler.cc).
 
 The methods to handle the different messages are in the file UeContextMme.cc
 
-##For the messages
+##Messages
 
 RRC and S1 messages are described in the RrcMessages.proto and S1Messages.proto files, from which the Protocol Buffers API generates the related C++ files.
 
