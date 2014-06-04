@@ -6,6 +6,7 @@ oop-prototype
 Implementation of a simplified version of the "attach UE" procedure in the RRC protocol of LTE, using the object-oriented paradigm and C++.
 
 The protoype is composed of three programs that represent the behaviour of the three types of actors in the procedure:
+
     - the UEs (in ue.cc)
     - the eNodeB (in in eNodeB.cc)
     - the MME (in mme.cc)
