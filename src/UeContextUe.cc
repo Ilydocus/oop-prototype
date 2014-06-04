@@ -174,8 +174,9 @@ void UeContextUe::handleRrcConnectionReject(RrcConnectionReject message){
   gettimeofday(&mEndProcedure, NULL);
   double elapsedTime = (mEndProcedure.tv_sec - mBeginProcedure.tv_sec) * 1000000.0;
   elapsedTime += (mEndProcedure.tv_usec - mBeginProcedure.tv_usec);
-  messageLog << "For completing(Reject) Ue nb " << mCompletedRank << " with C-Rnti "<< message.uecrnti() << " : beginning of procedure " << mBeginProcedure.tv_usec  + mBeginProcedure.tv_sec*1000000 << " end of procedure " << mEndProcedure.tv_usec  + mEndProcedure.tv_sec *1000000 << " -> Elapsed time(UeSide): " << elapsedTime << " microseconds" << std::endl;
-  mLog->writeToLog(messageLog.str());
+  std::ostringstream messageLog2;
+  messageLog2 << "For completing(Reject) Ue nb " << mCompletedRank << " with C-Rnti "<< message.uecrnti() << " : beginning of procedure " << mBeginProcedure.tv_usec  + mBeginProcedure.tv_sec*1000000 << " end of procedure " << mEndProcedure.tv_usec  + mEndProcedure.tv_sec *1000000 << " -> Elapsed time(UeSide): " << elapsedTime << " microseconds" << std::endl;
+  mLog->writeToLog(messageLog2.str());
 
   close(mEnbSocket);
 }
@@ -189,8 +190,9 @@ void UeContextUe::handleRrcConnectionAccept(RrcConnectionAccept message){
   gettimeofday(&mEndProcedure, NULL);
   double elapsedTime = (mEndProcedure.tv_sec - mBeginProcedure.tv_sec) * 1000000.0;
   elapsedTime += (mEndProcedure.tv_usec - mBeginProcedure.tv_usec);
-  messageLog << "For completing(Accept) Ue nb " << mCompletedRank << " with C-Rnti "<< message.uecrnti() << " : beginning of procedure " << mBeginProcedure.tv_usec  + mBeginProcedure.tv_sec *1000000 << " end of procedure " << mEndProcedure.tv_usec  + mEndProcedure.tv_sec*1000000 << " -> Elapsed time(UeSide): " << elapsedTime << " microseconds" << std::endl;
-  mLog->writeToLog(messageLog.str());
+  std::ostringstream messageLog2;
+  messageLog2 << "For completing(Accept) Ue nb " << mCompletedRank << " with C-Rnti "<< message.uecrnti() << " : beginning of procedure " << mBeginProcedure.tv_usec  + mBeginProcedure.tv_sec *1000000 << " end of procedure " << mEndProcedure.tv_usec  + mEndProcedure.tv_sec*1000000 << " -> Elapsed time(UeSide): " << elapsedTime << " microseconds" << std::endl;
+  mLog->writeToLog(messageLog2.str());
  
   close(mEnbSocket);
 }

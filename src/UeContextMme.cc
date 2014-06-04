@@ -49,9 +49,10 @@ void UeContextMme::handleS1ApInitialContextSetupResponse(S1ApInitialContextSetup
   printState();
 
   timeval endProcedure;
+  std::ostringstream messageLog2;
   gettimeofday(&endProcedure, NULL);
-  messageLog << "For Ue with C-Rnti " << message.enb_ue_s1ap_id()/17 << " : end of procedure " << endProcedure.tv_usec + endProcedure.tv_sec * 1000000 << std::endl;
-  mLog->writeToLog(messageLog.str());
+  messageLog2 << "For Ue with C-Rnti " << message.enb_ue_s1ap_id()/17 << " : end of procedure " << endProcedure.tv_usec + endProcedure.tv_sec * 1000000 << std::endl;
+  mLog->writeToLog(messageLog2.str());
 }
 
 void UeContextMme::printState(){
