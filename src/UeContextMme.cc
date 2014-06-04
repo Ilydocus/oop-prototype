@@ -46,11 +46,12 @@ void UeContextMme::handleS1ApInitialContextSetupResponse(S1ApInitialContextSetup
   std::ostringstream messageLog;
   messageLog << "Message received from ENodeB: S1ApInitialContextResponse {Enb Ue S1Ap Id: " << message.enb_ue_s1ap_id() << " ERab Id: " << message.erabid() << " }" << std::endl; 
   mLog->writeToLog(messageLog.str());
+  printState();
+
   timeval endProcedure;
   gettimeofday(&endProcedure, NULL);
   messageLog << "For Ue with C-Rnti " << message.enb_ue_s1ap_id()/17 << " : end of procedure " << endProcedure.tv_usec + endProcedure.tv_sec * 1000000 << std::endl;
   mLog->writeToLog(messageLog.str());
-  printState();
 }
 
 void UeContextMme::printState(){
