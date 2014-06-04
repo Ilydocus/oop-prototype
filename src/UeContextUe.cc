@@ -148,10 +148,10 @@ void UeContextUe::handleRrcConnectionReconfiguration(RrcConnectionReconfiguratio
   messageLog << "Message received from ENodeB: RrcConnectionReconfiguration {C-Rnti: " << message.uecrnti() << " Eps radio bearer identity: " << message.epsradiobeareridentity() << " }" << std::endl;
   mLog->writeToLog(messageLog.str());
 		    		    
-  bool epsBearerActivated;
+  bool epsBearerActivated = false;
   std::string epsBearer = message.epsradiobeareridentity();
-  int len = (int)epsBearer.length();
-  if ((epsBearer[0]== epsBearer[len]) == '9'){ epsBearerActivated = false;}
+  int len = epsBearer.length();
+  if (epsBearer[0]== epsBearer[len -1] && epsBearer[0]== '9'){ epsBearerActivated = false;}
   else {epsBearerActivated = true;}
 
   RrcConnectionReconfigurationComplete *rrcCRC = new RrcConnectionReconfigurationComplete;
