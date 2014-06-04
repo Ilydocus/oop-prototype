@@ -3,7 +3,7 @@ oop-prototype
 
 #Description
 
-Implementation of a simplified version of the "attach UE" procedure in the RRC protocol of LTE, using the object-oriented programming paradigm and C++.
+Implementation of a simplified version of the connection setup procedure of the RRC protocol in LTE, using the object-oriented programming paradigm and C++.
 
 The protoype is composed of three programs that represent the behaviour of the three types of actors in the procedure:
 
