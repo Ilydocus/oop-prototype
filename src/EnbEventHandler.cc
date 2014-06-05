@@ -16,8 +16,8 @@
 
 EnbEventHandler::EnbEventHandler(){
   int status;
-  struct addrinfo hostInfo;      
-  struct addrinfo *hostInfoList; 
+  addrinfo hostInfo;      
+  addrinfo *hostInfoList; 
 
   memset(&hostInfo, 0, sizeof hostInfo);
 
@@ -37,15 +37,15 @@ EnbEventHandler::EnbEventHandler(){
   status = bind(socketfd, hostInfoList->ai_addr, hostInfoList->ai_addrlen);
   if (status == -1)  std::cerr << "bind error" << std::endl ;
 
-  status =  listen(socketfd, 5);//5 is the number of "on hold"
+  status =  listen(socketfd, 5);
   if (status == -1)  std::cerr << "listen error" << std::endl;
   freeaddrinfo(hostInfoList);
 
   mListenSocket = socketfd;
 
   int statusMme;
-  struct addrinfo hostInfoMme;
-  struct addrinfo *hostInfoListMme;
+  addrinfo hostInfoMme;
+  addrinfo *hostInfoListMme;
 
   memset(&hostInfoMme, 0, sizeof hostInfoMme);
   hostInfoMme.ai_family = AF_UNSPEC;
@@ -76,32 +76,32 @@ EnbEventHandler::~EnbEventHandler(){
 }
 
 void EnbEventHandler::run () {    
-  struct epoll_event ev, events[MAX_EVENTS];
+  epoll_event ev, events[MAX_EVENTS];
   int connSock, nfds, epollfd;
 
   epollfd = epoll_create(MAX_EVENTS);
   if (epollfd == -1) {
-    perror("epoll_create");
+    std::cerr << "error in epoll_create" << std::endl;
     exit(EXIT_FAILURE);
   }
   ev.events = EPOLLIN;
   ev.data.fd = mListenSocket;
   if (epoll_ctl(epollfd, EPOLL_CTL_ADD, mListenSocket, &ev) == -1) {
-    perror("epoll_ctl: mListenSocket");
+    std::cerr << "error in epoll_ctl: mListenSocket" << std::endl;
     exit(EXIT_FAILURE);
   }
 
   ev.events = EPOLLIN | EPOLLET;
   ev.data.fd = mMmeSocket;
   if (epoll_ctl(epollfd, EPOLL_CTL_ADD, mMmeSocket, &ev) == -1) {
-    perror("epoll_ctl: mMmeSocket");
+    std::cerr << "error in epoll_ctl: mMmeSocket" << std::endl;
     exit(EXIT_FAILURE);
   }
 
   ev.events = EPOLLIN;
   ev.data.fd = STDIN_FILENO;
   if (epoll_ctl(epollfd, EPOLL_CTL_ADD, STDIN_FILENO, &ev) == -1) {
-    perror("epoll_ctl: std::stdin");
+    std::cerr << "error in epoll_ctl: STDIN_FILENO" << std::endl;
     exit(EXIT_FAILURE);
   }
 
@@ -112,7 +112,7 @@ void EnbEventHandler::run () {
  
     nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1);
     if (nfds == -1) {
-      perror("epoll_pwait");
+      std::cerr << "error in epoll_wait" << std::endl;
       exit(EXIT_FAILURE);
     }
     
@@ -175,11 +175,11 @@ void EnbEventHandler::run () {
       }
       else{
 	if (events[n].data.fd == mListenSocket) {
-	  struct sockaddr_storage theirAddr;
+	  sockaddr_storage theirAddr;
 	  socklen_t addrSize = sizeof(theirAddr);
-	  connSock = accept(mListenSocket, (struct sockaddr *)&theirAddr, &addrSize);
+	  connSock = accept(mListenSocket, (sockaddr *)&theirAddr, &addrSize);
 	  if (connSock == -1) {
-	    perror("accept");
+	    std::cerr << "error in accept" << std::endl;
 	    exit(EXIT_FAILURE);
 	  }
 	  makeSocketNonBlocking(connSock);
@@ -187,7 +187,7 @@ void EnbEventHandler::run () {
 	  ev.data.fd = connSock;
 	  if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connSock,
 			&ev) == -1) {
-	    perror("epoll_ctl: connSock");
+	    std::cerr << "error in epoll_ctl: connSock" << std::endl;
 	    exit(EXIT_FAILURE);
 	  }
 	  handleNewUe(connSock);

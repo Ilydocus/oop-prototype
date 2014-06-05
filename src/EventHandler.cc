@@ -10,7 +10,7 @@ int EventHandler::makeSocketNonBlocking (int sfd)
   flags = fcntl (sfd, F_GETFL, 0);
   if (flags == -1)
     {
-      perror ("fcntl");
+      std::cerr << "error in fcntl" << std::endl;
       return -1;
     }
 
@@ -18,7 +18,7 @@ int EventHandler::makeSocketNonBlocking (int sfd)
   s = fcntl (sfd, F_SETFL, flags);
   if (s == -1)
     {
-      perror ("fcntl");
+      std::cerr << "error in fcntl" << std::endl;
       return -1;
     }
 

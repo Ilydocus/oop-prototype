@@ -29,15 +29,15 @@ void UeEventHandler::powerOnUes(int nbOfUes){
 
   mEpollfd = epoll_create(MAX_EVENTS);
   if (mEpollfd == -1) {
-    perror("epoll_create");
+    std::cerr << "error in epoll_create" << std::endl;
     exit(EXIT_FAILURE);
   }
   
   for (int i = 0;i<nbOfUes;i++){
     int socketfd;
     int status;
-    struct addrinfo hostInfo;
-    struct addrinfo *hostInfoList;
+    addrinfo hostInfo;
+    addrinfo *hostInfoList;
 
     memset(&hostInfo, 0, sizeof hostInfo);
     hostInfo.ai_family = AF_UNSPEC;
@@ -45,29 +45,29 @@ void UeEventHandler::powerOnUes(int nbOfUes){
 
     status = getaddrinfo("127.0.0.1","43000",&hostInfo, &hostInfoList);
     if (status != 0) {
-      perror("getaddrinfo \n");
+      std::cerr << "error in getaddrinfo" << std::endl;
       exit(EXIT_FAILURE);
     }
     socketfd = socket(hostInfoList->ai_family, hostInfoList->ai_socktype, hostInfoList->ai_protocol);
     if(socketfd == 1){
-      perror("socket error \n");
+      std::cerr << "error in socket" << std::endl;
       exit(EXIT_FAILURE);
     }
     
     status = connect (socketfd, hostInfoList->ai_addr, hostInfoList->ai_addrlen);
     if(status == -1) {
-      perror("connect error \n");
+     std::cerr << "error in connect" << std::endl;
       exit(EXIT_FAILURE);
     } 
 
     makeSocketNonBlocking(socketfd);
         
-    struct epoll_event ev;
+    epoll_event ev;
     memset(&ev, 0, sizeof ev);
     ev.events = EPOLLOUT; 
     ev.data.fd = socketfd;
     if (epoll_ctl (mEpollfd,EPOLL_CTL_ADD, socketfd, &ev) == -1){
-      perror("epoll_ctl, adding socket \n");
+     std::cerr << "error in epoll_ctl: socketfd" << std::endl;
       exit(EXIT_FAILURE);
     }
     handleNewUe(socketfd,i+1);
@@ -86,7 +86,7 @@ void UeEventHandler::run(){
   for (;;) {
     nfds = epoll_wait(mEpollfd, events, MAX_EVENTS, -1);
     if (nfds == -1) {
-      perror("epoll_pwait");
+      std::cerr << "error in epoll_wait" << std::endl;
       exit(EXIT_FAILURE);
     }
     
@@ -100,7 +100,7 @@ void UeEventHandler::run(){
 	eventMask.events =  EPOLLIN | EPOLLET;
 	eventMask.data.fd = events[n].data.fd;
 	if (epoll_ctl(mEpollfd, EPOLL_CTL_MOD, events[n].data.fd, &eventMask) != 0){
-	  perror("epoll_ctl, modify socket\n");
+	  std::cerr << "error in epoll_ctl: MOD" << std::endl;
 	  exit(EXIT_FAILURE);
 	}
       }
@@ -110,7 +110,7 @@ void UeEventHandler::run(){
 	   char incomingDataBuffer[1000];
 	   bytesRecieved = recv(events[n].data.fd, incomingDataBuffer,1000, 0);
 	   if (bytesRecieved == 0) {std::cout << "host shut down." << std::endl;}
-	   if (bytesRecieved == -1){std::cout << "recieve error!" << std::endl;}
+	   if (bytesRecieved == -1){std::cerr << "recieve error!" << std::endl;}
 	   if (bytesRecieved != -1 && bytesRecieved != 0){
 	     incomingDataBuffer[bytesRecieved] = '\0';
 	     GOOGLE_PROTOBUF_VERIFY_VERSION;
